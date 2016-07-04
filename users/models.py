@@ -22,7 +22,7 @@ class User(AbstractBaseUser):
     phone_number = models.CharField(max_length=100)
     is_active = models.BooleanField(default=False)
     free_trial_started_at = models.DateTimeField(null=True)
-    free_trial_user = models.BooleanField(default=False)
+    has_a_plan = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -35,4 +35,5 @@ class User(AbstractBaseUser):
         return self.email
 
     def free_trial_is_over(self):
-        return self.free_trial_started_at <= timezone.now() - datetime.timedelta(days=15)
+        if self.free_trial_started_at:
+            return self.free_trial_started_at <= timezone.now() - datetime.timedelta(days=15)
