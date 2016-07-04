@@ -44,6 +44,7 @@ class UserTestCase(TestCase):
         self.assertTrue(user.free_trial_is_over())
 
     def test_free_trial_is_over_border_case_day(self):
+        """The border case day is 15th, this case should return True"""
         user = User.objects.get(id=1)
         user.free_trial_started_at = timezone.now() - datetime.timedelta(days=15)
         self.assertTrue(user.free_trial_is_over())
@@ -69,3 +70,21 @@ class UserTestCase(TestCase):
         user = User.objects.get(id=1)
         user.free_trial_started_at = timezone.now() - datetime.timedelta(**__datetime__)
         self.assertTrue(user.free_trial_is_over())
+
+    def test_free_trial_has_started_not_started(self):
+        """When a user has not started free trial this method should return False"""
+        user = User.objects.get(id=1)
+        user.free_trial_started_at = None
+        self.assertFalse(user.free_trial_has_started())
+
+    def test_free_trial_has_started_already_started(self):
+        """When a user has started free trial this method should return True"""
+        user = User.objects.get(id=1)
+        user.free_trial_started_at = timezone.now()
+        self.assertTrue(user.free_trial_has_started())
+
+    def test_free_trial_has_started_and_over(self):
+        """When a user started free trial and over it this method should return True"""
+        user = User.objects.get(id=1)
+        user.free_trial_started_at = timezone.now() - datetime.timedelta(days=16)
+        self.assertTrue(user.free_trial_has_started())
