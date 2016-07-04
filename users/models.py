@@ -37,3 +37,6 @@ class User(AbstractBaseUser):
     def free_trial_is_over(self):
         if self.free_trial_started_at:
             return self.free_trial_started_at <= timezone.now() - datetime.timedelta(days=15)
+
+    def free_trial_has_started(self):
+        return self.free_trial_started_at is not None
