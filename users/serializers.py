@@ -3,14 +3,13 @@ from .models import *
 
 class CreateUserSerializer(serializers.ModelSerializer):
     """Serializer to create a new user"""
-
     terms_conditions = serializers.BooleanField(write_only=True)
 
     class Meta:
         model = User
         fields = (
             'email', 'password', 'first_name', 'last_name', 'company', 'street_address',
-            'country', 'city', 'phone_number', 'terms_conditions'
+            'country', 'city', 'phone_number', 'terms_conditions', 'pk'
         )
         extra_kwargs = {
             'password': {'write_only': True},
@@ -37,7 +36,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',
             'city', 'phone_number', 'has_a_plan', 'free_trial_started_at', 'created_at',
-            'updated_at'
+            'updated_at', 'pk'
         )
         extra_kwargs = {
             'pk': {'read_only': True},

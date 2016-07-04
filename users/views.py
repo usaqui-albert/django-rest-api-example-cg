@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.tokens import default_token_generator
 from django.db import transaction
 
 from rest_framework import parsers, renderers, status, generics, permissions
@@ -10,7 +9,7 @@ from rest_framework.response import Response
 
 from .models import *
 from .serializers import *
-
+from .tasks import post_create_user
 
 class UserView(generics.ListCreateAPIView):
     """Service to create a new user
@@ -21,6 +20,13 @@ class UserView(generics.ListCreateAPIView):
     """
     serializer_class = CreateUserSerializer
     permission_classes = (permissions.AllowAny,)
+
+    def perform_create(self, serializer):
+        """Re-write of perform_create method to send the email after the user is created"""
+        with transaction.atomic():
+            obj = serializer.save()
+            transaction.on_commit(lambda: post_create_user.delay(obj.id))
+        return self.serializer_class(obj)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
