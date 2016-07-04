@@ -19,6 +19,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^users/', include('users.urls')),
-    url(r'^countries/', include('countries')),
+    url(r'^countries/', include('countries.urls')),
     url(r'^cities/', include('cities.urls')),
 ]

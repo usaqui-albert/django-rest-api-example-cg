@@ -12,3 +12,4 @@ __pycache__/
 dump.rdb
 
 env/
+db.sqlite3
