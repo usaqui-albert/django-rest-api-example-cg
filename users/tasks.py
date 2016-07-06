@@ -20,7 +20,7 @@ def send_email_to_activate(obj_user):
     text_content = ''
     htmly = get_template('email_to_active.html')
     d = Context({'complete_name': str(obj_user.first_name) + ' ' + str(obj_user.last_name),
-                 'confirm_url': 'www.google.com'
+                 'confirm_url': 'www.google.com'  # TODO: set url to the frontend confirm view
                  })
     html_content = htmly.render(d)
     msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
