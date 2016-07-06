@@ -133,8 +133,8 @@ CUSTOM_USER_MODEL = 'users.User'
 # Email INFO
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = ''  # Add the email to use as transporter
-EMAIL_HOST_PASSWORD = ''  # Add the password of this email
+EMAIL_HOST_USER = ''  # TODO: Add the email to use as transporter
+EMAIL_HOST_PASSWORD = ''  # TODO: Add the password of this email
 EMAIL_PORT = 587
 
 REST_FRAMEWORK = {
