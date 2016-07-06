@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'users',
     'countries',
     'cities',
@@ -124,9 +125,21 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# It uses User model for the system authentication
+AUTH_USER_MODEL = 'users.User'
+CUSTOM_USER_MODEL = 'users.User'
+
 # Email INFO
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = ''  # Add the email to use as transporter
 EMAIL_HOST_PASSWORD = ''  # Add the password of this email
 EMAIL_PORT = 587
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
