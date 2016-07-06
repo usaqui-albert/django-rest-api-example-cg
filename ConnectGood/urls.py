@@ -21,6 +21,7 @@ from users.views import LoginView
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^login/', LoginView.as_view()),
+    url(r'^docs/', include('rest_framework_docs.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^countries/', include('countries.urls')),
     url(r'^cities/', include('cities.urls')),
