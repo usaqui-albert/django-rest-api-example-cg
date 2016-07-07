@@ -33,4 +33,6 @@ urlpatterns = [
     url(r'^users/', include('users.urls')),
     url(r'^countries/', include('countries.urls')),
     url(r'^cities/', include('cities.urls')),
+    url(r'^events/', include('events.urls')),
+
 ]

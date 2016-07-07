@@ -7,6 +7,9 @@ class PaymentMethod(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.description
+
 
 class Template(models.Model):
     """Model of the templates to use in the style of the landing pages"""
@@ -16,9 +19,15 @@ class Template(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
+
 
 class TaxReceipt(models.Model):
     """Model of the tax receipt"""
     description = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.description
