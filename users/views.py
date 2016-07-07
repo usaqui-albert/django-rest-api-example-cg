@@ -22,7 +22,10 @@ class UserView(generics.ListCreateAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def perform_create(self, serializer):
-        """Re-write of perform_create method to send the email after the user is created"""
+        """Re-write of perform_create method to send the email after the user is created
+
+        :return: Serialized instance
+        """
         with transaction.atomic():
             obj = serializer.save()
             transaction.on_commit(lambda: post_create_user.delay(obj.id))
@@ -36,3 +39,33 @@ class UserView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = User.objects.all()
         return queryset
+
+
+class LoginView(generics.GenericAPIView):
+    """Service to get a token authentication
+
+    :accepted methods:
+        POST username(email) and password.
+    """
+    throttle_classes = ()
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+    renderer_classes = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer)
+    serializer_class = AuthTokenSerializer
+
+    def post(self, request):
+        """Method for the authentication of a user
+
+        :param request: introduced data, 'email' and 'password'
+        :return: authentication token
+        :except: validation error message if the username and password don't match
+        """
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+
+        Token.objects.filter(user=user).delete()
+        token = Token.objects.create(user=user)
+
+        data = {'token': str(token)}
+        return Response(data, status=status.HTTP_200_OK)
