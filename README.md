@@ -11,11 +11,15 @@ Clonning the project by ssh:
 
     git clone git@bitbucket.org:blanclink/connect-good-be-api.git
 
-Before get into project folder you just cloned you must set the virtual environment typing the following:
+Before get into project folder you just cloned you must create the virtual environment typing the following:
 
     virtualenv env
 
-This command is going to set an environment called "env", after this you can get into the project folder.
+This command is going to create an environment called "env", to activate it run:
+
+    source env/bin/activate
+
+After this you can get into the project folder.
 
     cd connect-good-be-api/
 
@@ -28,3 +32,9 @@ Remember to change to the right branch, then install the dependencies of the pro
     python manage.py runserver <port_number>
 
 If there is no port_number provided it will take by default port 8000.
+
+### Migrations ###
+
+To run migrations to the database you have to type the following command:
+
+    python manage.py migrate
