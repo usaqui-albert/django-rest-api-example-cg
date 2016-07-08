@@ -25,4 +25,6 @@ Remember to change to the right branch, then install the dependencies of the pro
 
 ### Running ###
 
-    python manage.py runserver
+    python manage.py runserver <port_number>
+
+If there is no port_number provided it will take by default port 8000.
