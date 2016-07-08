@@ -1,0 +1,26 @@
+### Installation: ###
+
+Run the following commands to install some dependencies and virtualenv:
+
+     sudo apt-get install python-pip python-dev build-essential
+     sudo pip install virtualenv
+
+Clonning the project by ssh:
+
+    git clone git@bitbucket.org:blanclink/connect-good-be-api.git
+
+Before get into project folder you just cloned you must set the virtual environment typing the following:
+
+    virtualenv env
+
+This command is going to set an environment called "env", after this you can get into the project folder.
+
+    cd connect-good-be-api/
+
+Remember to change to the right branch, then install the dependencies of the project:
+
+    pip install -r requirements.txt
+
+### Running ###
+
+    python manage.py runserver
