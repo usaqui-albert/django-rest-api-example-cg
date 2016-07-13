@@ -2,12 +2,6 @@ from rest_framework import serializers
 from .models import *
 
 
-class PaymentMethodSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PaymentMethod
-        fields = '__all__'
-
-
 class LandingTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Template
@@ -18,3 +12,12 @@ class TaxReceiptSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxReceipt
         fields = '__all__'
+
+        extra_kwargs = {
+            'user': {'read_only': True}
+        }
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['user']
+        obj = TaxReceipt.objects.create(**validated_data)
+        return obj

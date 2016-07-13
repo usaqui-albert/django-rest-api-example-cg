@@ -1,0 +1,42 @@
+[
+  {
+    "model": "users.User",
+    "pk": 1,
+    "fields": {
+      "email": "usaqui.albert@gmail.com",
+      "password": "pbkdf2_sha256$24000$PJ5e00mP9U6x$97kjT2eszHzJDvQPjX1KcmUzNvbF6sDgWRDRHionkXw=",
+      "first_name": "Albert",
+      "last_name": "Usaqui",
+      "company": "Blanclink",
+      "street_address": "Plaza Venezuela",
+      "country": 1,
+      "city": 1,
+      "phone_number": "123-4567",
+      "is_active": true,
+      "free_trial_started_at": null,
+      "has_a_plan": false,
+      "updated_at": "2016-07-11T17:43:19.809415",
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "users.User",
+    "pk": 2,
+    "fields": {
+      "email": "albert.usaqui@blanclink.com",
+      "password": "pbkdf2_sha256$24000$PJ5e00mP9U6x$97kjT2eszHzJDvQPjX1KcmUzNvbF6sDgWRDRHionkXw=",
+      "first_name": "Albert",
+      "last_name": "Usaqui",
+      "company": "Blanclink",
+      "street_address": "Plaza Venezuela",
+      "country": 2,
+      "city": 2,
+      "phone_number": "123-4567",
+      "is_active": true,
+      "free_trial_started_at": null,
+      "has_a_plan": false,
+      "updated_at": "2016-07-11T17:43:19.809415",
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  }
+]

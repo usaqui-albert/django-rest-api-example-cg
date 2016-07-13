@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
-from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.utils import timezone
 
 from rest_framework import parsers, renderers, status, generics, permissions
 from rest_framework.authtoken.models import Token
@@ -12,7 +12,7 @@ from .serializers import *
 from .tasks import post_create_user
 
 class UserView(generics.ListCreateAPIView):
-    """Service to create a new user
+    """Service to create a new user and get all users(temporary)
 
     :accepted methods:
         POST
@@ -63,6 +63,8 @@ class LoginView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+        user.last_login = timezone.now()
+        user.save()
 
         Token.objects.filter(user=user).delete()
         token = Token.objects.create(user=user)

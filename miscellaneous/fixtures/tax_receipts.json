@@ -1,0 +1,32 @@
+[
+  {
+    "model": "miscellaneous.TaxReceipt",
+    "pk": 1,
+    "fields": {
+      "description": "Tax receipt test 1",
+      "user": 1,
+      "updated_at": "2016-07-11T17:43:19.809415",
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "miscellaneous.TaxReceipt",
+    "pk": 2,
+    "fields": {
+      "description": "Tax receipt test 2",
+      "user": 1,
+      "updated_at": "2016-07-11T17:43:19.809415",
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "miscellaneous.TaxReceipt",
+    "pk": 3,
+    "fields": {
+      "description": "Tax receipt test 3",
+      "user": 2,
+      "updated_at": "2016-07-11T17:43:19.809415",
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  }
+]

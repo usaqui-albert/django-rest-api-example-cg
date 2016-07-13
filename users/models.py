@@ -13,7 +13,7 @@ class User(AbstractBaseUser):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     company = models.CharField(max_length=100)
-    street_address = models.CharField(max_length=100)
+    street_address = models.TextField()
     country = models.OneToOneField(Country, related_name='country')
     city = models.OneToOneField(City, related_name='city')
     facebook = models.CharField(max_length=100, null=True)
