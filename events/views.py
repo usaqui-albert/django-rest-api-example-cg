@@ -1,6 +1,8 @@
 from django.db import transaction
-from rest_framework import generics, permissions
 from django.contrib.auth.tokens import default_token_generator
+
+from rest_framework.response import Response
+from rest_framework import generics, permissions, status
 
 from .serializers import *
 from .models import *
@@ -25,3 +27,15 @@ class EventView(generics.ListCreateAPIView):
             UserEvent.objects.create(event=event, user=user, key=key)
             transaction.on_commit(lambda: send_email_to_notify.delay(event, user, key))
         return self.serializer_class(event)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        if 'key' in self.request.GET:
+            queryset = Event.objects.filter(user_event__key=self.request.GET.get('key'))
+        else:
+            queryset = Event.objects.filter(user_event__user=self.request.user.id)
+        return queryset
