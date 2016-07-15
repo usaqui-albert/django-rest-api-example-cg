@@ -39,7 +39,7 @@ To run migrations to the database you have to type the following command:
 
     python manage.py migrate
 
-Running seeders(fixtures):
+### Running seeders(fixtures) ###
 
     python manage.py loaddata countries/fixtures/countries.json
     python manage.py loaddata cities/fixtures/cities.json
