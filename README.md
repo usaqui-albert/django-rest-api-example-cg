@@ -41,8 +41,14 @@ To run migrations to the database you have to type the following command:
 
 ### Running seeders(fixtures) ###
 
+Type the following commands by the order than they appear:
+
     python manage.py loaddata countries/fixtures/countries.json
     python manage.py loaddata cities/fixtures/cities.json
     python manage.py loaddata users/fixtures/users.json
     python manage.py loaddata miscellaneous/fixtures/tax_receipts.json
     python manage.py loaddata miscellaneous/fixtures/customers.json
+
+### Running Celery ###
+
+    celery -A ConnectGood worker -l info
