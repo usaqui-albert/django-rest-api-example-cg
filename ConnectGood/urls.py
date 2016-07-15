@@ -20,17 +20,18 @@ from users.views import LoginView
 from miscellaneous.views import *
 
 urlpatterns = [
-    url(r'^login/', LoginView.as_view()),
-    url(r'^payment/$', PaymentMethodView.as_view()),
-    url(r'^payment/(?P<pk>[0-9]+)/$', PaymentMethodDetail.as_view()),
-    url(r'^template/$', LandingTemplateView.as_view()),
-    url(r'^template/(?P<pk>[0-9]+)/$', LandingTemplateDetail.as_view()),
-    url(r'^tax-receipt/$', TaxReceiptView.as_view()),
-    url(r'^tax-receipt/(?P<pk>[0-9]+)/$', TaxReceiptDetail.as_view()),
+    url(r'^api/v1/login/', LoginView.as_view()),
+    url(r'^api/v1/payments/$', PaymentMethodView.as_view()),
+    url(r'^api/v1/templates/$', LandingTemplateView.as_view()),
+    url(r'^api/v1/templates/(?P<pk>[0-9]+)/$', LandingTemplateDetail.as_view()),
+    url(r'^api/v1/tax-receipts/$', TaxReceiptView.as_view()),
+    url(r'^api/v1/tax-receipts/(?P<pk>[0-9]+)/$', TaxReceiptDetail.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include('rest_framework_docs.urls')),
 
-    url(r'^users/', include('users.urls')),
-    url(r'^countries/', include('countries.urls')),
-    url(r'^cities/', include('cities.urls')),
+    url(r'^api/v1/users/', include('users.urls')),
+    url(r'^api/v1/countries/', include('countries.urls')),
+    url(r'^api/v1/cities/', include('cities.urls')),
+    url(r'^api/v1/events/', include('events.urls')),
+
 ]

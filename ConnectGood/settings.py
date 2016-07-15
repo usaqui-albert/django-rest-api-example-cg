@@ -40,13 +40,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_docs',
+    'corsheaders',
     'users',
     'countries',
     'cities',
     'miscellaneous',
+    'events',
 ]
 
 MIDDLEWARE_CLASSES = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -83,11 +86,17 @@ WSGI_APPLICATION = 'ConnectGood.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'connectgood-mariadb',
+        'USER': 'root',
+        'PASSWORD': '123',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -134,8 +143,8 @@ CUSTOM_USER_MODEL = 'users.User'
 # Email INFO
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = ''  # TODO: Add the email to use as transporter
-EMAIL_HOST_PASSWORD = ''  # TODO: Add the password of this email
+EMAIL_HOST_USER = 'blanclink.test@gmail.com'
+EMAIL_HOST_PASSWORD = 'blanclink.test123456'
 EMAIL_PORT = 587
 
 REST_FRAMEWORK = {
@@ -145,3 +154,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     )
 }
+
+# This is the key to connect to the stripe api
+STRIPE_API_KEY = "sk_test_JutiYwXisOBbK5ORfS1BlqCZ"

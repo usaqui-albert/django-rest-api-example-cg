@@ -2,5 +2,6 @@ from django.conf.urls import url
 from .views import *
 
 urlpatterns = [
-    url(r'^$', CountryView.as_view()),
+    url(r'^$', EventView.as_view()),
+
 ]
