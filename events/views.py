@@ -12,7 +12,7 @@ from events.models import UserEvent
 
 class EventView(generics.ListCreateAPIView):
     queryset = Event.objects.all()
-    serializer_class = EventSerializer
+    serializer_class = CreateEventSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
@@ -34,8 +34,19 @@ class EventView(generics.ListCreateAPIView):
         return Response(serializer.data)
 
     def get_queryset(self):
-        if 'key' in self.request.GET:
-            queryset = Event.objects.filter(user_event__key=self.request.GET.get('key'))
-        else:
-            queryset = Event.objects.filter(user_event__user=self.request.user.id)
+        queryset = Event.objects.filter(user_event__user=self.request.user.id)
+        return queryset
+
+
+class GetEventByToken(generics.RetrieveAPIView):
+    serializer_class = EventSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def retrieve(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        queryset = Event.objects.filter(user_event__key=self.kwargs['key'])
         return queryset
