@@ -38,3 +38,11 @@ If there is no port_number provided it will take by default port 8000.
 To run migrations to the database you have to type the following command:
 
     python manage.py migrate
+
+Running seeders(fixtures):
+
+    python manage.py loaddata countries/fixtures/countries.json
+    python manage.py loaddata cities/fixtures/cities.json
+    python manage.py loaddata users/fixtures/users.json
+    python manage.py loaddata miscellaneous/fixtures/tax_receipts.json
+    python manage.py loaddata miscellaneous/fixtures/customers.json
