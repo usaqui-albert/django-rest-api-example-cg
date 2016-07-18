@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'cities',
     'miscellaneous',
     'events',
+    'charities'
 ]
 
 MIDDLEWARE_CLASSES = [

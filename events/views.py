@@ -23,9 +23,8 @@ class EventView(generics.ListCreateAPIView):
         user = self.request.user
         with transaction.atomic():
             event = serializer.save()
-            key = default_token_generator.make_token(user)
-            UserEvent.objects.create(event=event, user=user, key=key)
-            transaction.on_commit(lambda: send_email_to_notify.delay(event, user, key))
+            user_event = UserEvent.objects.create(event=event, user=user)
+            transaction.on_commit(lambda: send_email_to_notify.delay(event, user, user_event.key))
         return self.serializer_class(event)
 
     def list(self, request, *args, **kwargs):
