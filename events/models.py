@@ -1,10 +1,11 @@
 import datetime
+import uuid
 
 from django.db import models
 from django.utils import timezone
 
 from countries.models import Country
-from miscellaneous.models import Template, TaxReceipt
+from miscellaneous.models import TaxReceipt
 from users.models import User
 
 
@@ -30,7 +31,7 @@ class UserEvent(models.Model):
     """Pivot table to set the relation between User and Events tables"""
     user = models.ForeignKey(User, related_name='user_event')
     event = models.ForeignKey(Event, related_name='user_event')
-    key = models.CharField(max_length=100)
+    key = models.UUIDField(default=uuid.uuid4, editable=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
