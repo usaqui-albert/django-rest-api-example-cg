@@ -31,7 +31,7 @@ Remember to change to the right branch, then install the dependencies of the pro
 
     python manage.py runserver <port_number>
 
-If there is no port_number provided it will take by default port 8000.
+If there is no port_number provided it will take port 8000 by default.
 
 ### Migrations ###
 
@@ -48,6 +48,8 @@ Type the following commands by the order than they appear:
     python manage.py loaddata users/fixtures/users.json
     python manage.py loaddata miscellaneous/fixtures/tax_receipts.json
     python manage.py loaddata miscellaneous/fixtures/customers.json
+    python manage.py loaddata charities/fixtures/charities_by_category.json
+    python manage.py loaddata charities/fixtures/charities_by_country.json
 
 ### Running Celery ###
 
