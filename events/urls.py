@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import *
+from .views import EventView, GetEventByToken
 
 urlpatterns = [
     url(r'^$', EventView.as_view()),

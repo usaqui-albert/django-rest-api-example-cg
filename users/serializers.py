@@ -1,15 +1,24 @@
+import stripe
+
 from rest_framework import serializers
-from .models import *
+from .models import User
+from ConnectGood.settings import STRIPE_API_KEY
 
 class CreateUserSerializer(serializers.ModelSerializer):
     """Serializer to create a new user"""
     terms_conditions = serializers.BooleanField(write_only=True)
+    card_token = serializers.CharField(max_length=100, required=True)
+
+    def __init__(self, *args, **kwargs):
+        super(CreateUserSerializer, self).__init__(*args, **kwargs)
+        stripe.api_key = STRIPE_API_KEY
 
     class Meta:
+        """Relating to a User model and customizing the serializer fields"""
         model = User
         fields = (
             'email', 'password', 'first_name', 'last_name', 'company', 'street_address',
-            'country', 'city', 'phone_number', 'terms_conditions', 'pk'
+            'country', 'city', 'phone_number', 'terms_conditions', 'card_token', 'pk'
         )
         extra_kwargs = {
             'password': {'write_only': True},
@@ -17,13 +26,36 @@ class CreateUserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        del validated_data['terms_conditions']
-        obj = User.objects.create(**validated_data)
-        obj.set_password(obj.password)
-        obj.save()
-        return obj
+        """Method rewrote to customize the creation of a user and handling stripe exceptions
 
-    def validate_terms_conditions(self, value):
+        :param validated_data: request(dict) already validated
+        :except: message of invalid request error when hitting stripe api
+        :return: user object created
+        """
+        del validated_data['terms_conditions']
+        card_token = validated_data.pop('card_token')
+        self.fields.pop('card_token')
+        try:
+            stripe.Customer.create(description='Customer for ' + validated_data['email'],
+                                   source=card_token,
+                                   email=validated_data['email'])
+        except stripe.error.InvalidRequestError as e:
+            body = e.json_body
+            return body['error']['message']
+        else:
+            user = User.objects.create(**validated_data)
+            user.set_password(user.password)
+            user.save()
+        return user
+
+    @staticmethod
+    def validate_terms_conditions(value):
+        """Method to validate the value of terms_conditions field
+
+        :param: value of the terms_conditions field
+        :raise: message of validation error for this field
+        :return: validated value
+        """
         if not value:
             raise serializers.ValidationError("You must accept terms and conditions")
         return value
@@ -31,7 +63,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer to update or get a user information"""
+
     class Meta:
+        """Relating to a User model and excluding password field"""
         model = User
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',

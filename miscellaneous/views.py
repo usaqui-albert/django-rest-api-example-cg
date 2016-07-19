@@ -4,8 +4,8 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 
-from .serializers import *
-from .models import *
+from .serializers import TaxReceiptSerializer
+from .models import CustomerStripe, TaxReceipt
 from .helpers import card_list
 from ConnectGood.settings import STRIPE_API_KEY
 
@@ -21,66 +21,54 @@ class PaymentMethodView(generics.GenericAPIView):
         super(PaymentMethodView, self).__init__(*args, **kwargs)
         stripe.api_key = STRIPE_API_KEY
 
-    serializer_class = LandingTemplateSerializer
+    serializer_class = TaxReceiptSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request):
+        """User adds a new credit card to his related customer in stripe
+
+        :param request: data (JSON requested) and user (User instance)
+        :raise: Http 404 if the user does not have customer related in stripe
+        :return: Http 201 if the card was added to the customer successfully
+        """
         customer_stripe = get_object_or_404(CustomerStripe, user=request.user.id)
         customer = stripe.Customer.retrieve(customer_stripe.customer_id)
         customer.sources.create(source=request.data["card_token"])
         return Response(status=status.HTTP_201_CREATED)
 
-    def get(self, request, *args, **kwargs):
+    @staticmethod
+    def get(request):
+        """User gets a credit cards list information
+
+        :param request: user (User instance)
+        :raise: Http 404 if the user does not have customer related in stripe
+        :return: Http 200 with a list of his credit cards information
+        """
         customer_stripe = get_object_or_404(CustomerStripe, user=request.user.id)
         customer = stripe.Customer.retrieve(customer_stripe.customer_id)
         cards_response = customer.sources.all(limit=3, object='card')
         return Response(card_list(cards_response.data))
 
 
-class LandingTemplateView(generics.ListCreateAPIView):
-    """Service to create a new landing template or get all of them(temporary)
-
-    :accepted methods:
-        POST
-        GET
-    """
-    queryset = Template.objects.all()
-    serializer_class = LandingTemplateSerializer
-    permission_classes = (permissions.AllowAny,)
-
-
-class LandingTemplateDetail(generics.RetrieveUpdateDestroyAPIView):
-    """Service to update, get or delete a landing template(temporary)
-
-    :accepted methods:
-        PUT
-        PATH
-        GET
-        DELETE
-    """
-    queryset = Template.objects.all()
-    serializer_class = LandingTemplateSerializer
-    permission_classes = (permissions.AllowAny,)
-
-
 class TaxReceiptView(generics.ListCreateAPIView):
-    """Service to create a tax receipt and attached to the signed user, get all tax receipt attached to a user
+    """Service to create a tax receipt and attached to the signed user, get all tax receipt
+    attached to a user
 
     :accepted methods:
         POST
         GET
     """
-    queryset = TaxReceipt.objects.all()
     serializer_class = TaxReceiptSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'user': request.user})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def list(self, request, *args, **kwargs):
+    def list(self, request, **kwargs):
         queryset = self.get_queryset()
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -88,17 +76,3 @@ class TaxReceiptView(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = TaxReceipt.objects.filter(user=self.request.user.id)
         return queryset
-
-
-class TaxReceiptDetail(generics.RetrieveUpdateDestroyAPIView):
-    """Service to update, get or delete a tax receipt(temporary)
-
-    :accepted methods:
-        PUT
-        PATH
-        GET
-        DELETE
-    """
-    queryset = TaxReceipt.objects.all()
-    serializer_class = TaxReceiptSerializer
-    permission_classes = (permissions.AllowAny,)

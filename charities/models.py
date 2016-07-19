@@ -3,6 +3,7 @@ from countries.models import Country
 
 
 class CharityCategory(models.Model):
+    """Model for the categories of charities"""
     name = models.CharField(max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -10,6 +11,7 @@ class CharityCategory(models.Model):
 
 
 class CharityCountry(models.Model):
+    """Model for the charities, pivot table between charity category and country"""
     name = models.CharField(max_length=100)
     country = models.ForeignKey(Country, related_name='country_charity')
     charity = models.ForeignKey(CharityCategory, related_name='country_charity')

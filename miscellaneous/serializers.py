@@ -2,12 +2,6 @@ from rest_framework import serializers
 from .models import *
 
 
-class LandingTemplateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Template
-        fields = '__all__'
-
-
 class TaxReceiptSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaxReceipt

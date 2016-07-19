@@ -1,17 +1,20 @@
 from django.db import transaction
-from django.contrib.auth.tokens import default_token_generator
 
 from rest_framework.response import Response
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions
 
-from .serializers import *
-from .models import *
+from .serializers import CreateEventSerializer, EventSerializer
+from .models import Event, UserEvent
 from .tasks import send_email_to_notify
-from events.models import UserEvent
 
 
 class EventView(generics.ListCreateAPIView):
-    queryset = Event.objects.all()
+    """Service to create a new event or get all events related with the authenticated user
+
+    :accepted methods:
+        POST
+        GET
+    """
     serializer_class = CreateEventSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -27,7 +30,7 @@ class EventView(generics.ListCreateAPIView):
             transaction.on_commit(lambda: send_email_to_notify.delay(event, user, user_event.key))
         return self.serializer_class(event)
 
-    def list(self, request, *args, **kwargs):
+    def list(self, request, **kwargs):
         queryset = self.get_queryset()
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
@@ -38,10 +41,15 @@ class EventView(generics.ListCreateAPIView):
 
 
 class GetEventByToken(generics.RetrieveAPIView):
+    """Service for a recipient to get an event detail by a unique token
+
+    :accepted method:
+        GET
+    """
     serializer_class = EventSerializer
     permission_classes = (permissions.AllowAny,)
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, **kwargs):
         queryset = self.get_queryset()
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
