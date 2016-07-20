@@ -29,7 +29,7 @@ class UserView(generics.ListCreateAPIView):
             transaction.on_commit(lambda: post_create_user.delay(obj.id))
             return Response(serializer.data)
         else:
-            return Response({'code_token': [str(obj)]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'stripe_error': [str(obj)]}, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
