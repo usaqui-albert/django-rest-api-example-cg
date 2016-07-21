@@ -25,7 +25,7 @@ class Template(models.Model):
 
 class TaxReceipt(models.Model):
     """Model of the tax receipt"""
-    description = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     user = models.ForeignKey(User, related_name='user')
 
     created_at = models.DateTimeField(auto_now_add=True)

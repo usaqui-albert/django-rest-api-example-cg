@@ -35,8 +35,16 @@ class User(AbstractBaseUser):
         return self.email
 
     def free_trial_is_over(self):
+        """Method to check if a free trial from a user has finished
+
+        :return: True if the free trial has finished, otherwise False
+        """
         if self.free_trial_started_at:
             return self.free_trial_started_at <= timezone.now() - datetime.timedelta(days=15)
 
     def free_trial_has_started(self):
+        """Method to check if a free trial from a user has already started
+
+        :return: True if the free trial has already started, otherwise False
+        """
         return self.free_trial_started_at is not None
