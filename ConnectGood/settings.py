@@ -44,9 +44,11 @@ INSTALLED_APPS = [
     'users',
     'countries',
     'cities',
+    'states',
     'miscellaneous',
     'events',
-    'charities'
+    'charities',
+    'plans'
 ]
 
 MIDDLEWARE_CLASSES = [
