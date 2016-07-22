@@ -42,9 +42,13 @@ class CreateUserSerializer(serializers.ModelSerializer):
         """
         del validated_data['terms_conditions']
         if 'promo_code' in validated_data:
-            del validated_data['promo_code']
+            promo_code = validated_data.pop('promo_code')
             user = create_user_hashing_password(**validated_data)
+            if not user:
+                raise serializers.ValidationError('There was an Integrity Error creating a user')
+            promo_code.update(used=True)
             user.start_free_trial()
+            return user
         elif 'plan_id' in validated_data and 'card_token' in validated_data:
             plan_id = validated_data.pop('plan_id')
             card_token = validated_data.pop('card_token')
@@ -60,18 +64,21 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 return body['error']['message']
             else:
                 user = create_user_hashing_password(**validated_data)
-                if isinstance(user, User):
-                    CustomerStripe.objects.create(user=user, customer_id=customer.id)
-                    return user
-                raise serializers.ValidationError('There was an Integrity Error creating a user')
+                if not user:
+                    raise serializers.ValidationError('There was an Integrity Error creating a user')
+                CustomerStripe.objects.create(user=user, customer_id=customer.id)
+                return user
         else:
-            raise serializers.ValidationError('If there is no promo code you have to send Plan and Card fields')
+            raise serializers.ValidationError(
+                'If there is no promo code you have to send Plan and Card fields'
+            )
 
     @staticmethod
     def validate_terms_conditions(value):
-        """Method to validate the value of terms_conditions field
+        """Method to validate terms_conditions field, if it is null raises a validation
+        error message
 
-        :param: value of the terms_conditions field
+        :param value: value of the terms_conditions field
         :raise: message of validation error for this field
         :return: validated value
         """
@@ -80,10 +87,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
         return value
 
     def validate_card_token(self, value):
-        """
+        """Method to validate card_token field, if there is an error raises a validation error
+        message
 
-        :param value:
-        :return:
+        :param value: value of card_token field
+        :raise: message of validation error if there is no plan_id key
+        :return: validated value
         """
         if 'plan_id' not in self.get_initial():
             raise serializers.ValidationError("This field is allowed only if exists a Plan field")
@@ -92,10 +101,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
         return value
 
     def validate_plan_id(self, value):
-        """
+        """Method to validate plan_id field, if there is an error raises a validation error
+        message
 
-        :param value:
-        :return:
+        :param value: value of the plan_id field
+        :raise: message of validation error if there is no card_token key
+        :return: validated value
         """
         if 'card_token' not in self.get_initial():
             raise serializers.ValidationError("This field is allowed only if exists a Card field")
@@ -105,10 +116,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def validate_promo_code(value):
-        """
+        """Method to validate promo_code field, if there is an error raises a validation error
+        message
 
-        :param value:
-        :return:
+        :param value: value of the promo_code field
+        :raise: message of validation error if promo_code key exists and it is empty
+        :return: django filter object with promo code object in it
         """
         if not value:
             raise serializers.ValidationError("This field can not be blank")
@@ -117,8 +130,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This promo code does not exists")
         if promo_code_stored.get().used:
             raise serializers.ValidationError("This promo code is already used")
-        promo_code_stored.update(used=True)
-        return value
+        return promo_code_stored
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -141,7 +153,12 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 def create_user_hashing_password(**validated_data):
-    print validated_data
+    """Helper method function to create a new user, hash its password and store it in the database
+
+    :param validated_data: request dictionary did by the user
+    :except: if there is an integrity error the method return False
+    :return: user object if the user was successfully created
+    """
     try:
         user = User.objects.create(**validated_data)
         user.set_password(user.password)
