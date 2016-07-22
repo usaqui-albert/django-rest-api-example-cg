@@ -52,9 +52,9 @@ class User(AbstractBaseUser):
         return self.free_trial_started_at is not None
 
     def start_free_trial(self):
-        """
+        """Method to set the free_trial_started_at user field to date object(now)
 
-        :return:
+        :return: True
         """
         self.free_trial_started_at = timezone.now()
         return True
