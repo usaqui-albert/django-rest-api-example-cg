@@ -27,7 +27,9 @@ class UserView(generics.ListCreateAPIView):
         obj = serializer.save()
         if isinstance(obj, User):
             transaction.on_commit(lambda: post_create_user.delay(obj.id))
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if not obj:
+            return Response(status=status.HTTP_409_CONFLICT)
         else:
             return Response({'stripe_error': [str(obj)]}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -1,15 +1,17 @@
 import stripe
 
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 
 from ConnectGood.settings import STRIPE_API_KEY
+from .models import PromoCode
 from miscellaneous.models import CustomerStripe
-from .serializers import SubscriptionSerializer
+from .serializers import SubscriptionSerializer, PromoCodeSerializer
+from .helpers import get_response_plan_list
 
 
-class PlanView(generics.GenericAPIView):
+class PlanView(views.APIView):
     """Service to get a list of Plans
 
     :accepted methods:
@@ -34,15 +36,19 @@ class PlanView(generics.GenericAPIView):
         except stripe.error.APIConnectionError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(plans, status=status.HTTP_200_OK)
+            return Response(get_response_plan_list(plans), status=status.HTTP_200_OK)
 
 
-class Subscription(generics.GenericAPIView):
+class SubscriptionView(generics.GenericAPIView):
     """Method to subscribe to a plan a user(customer) in stripe
 
     :accepted methods:
         POST
     """
+    def __init__(self, **kwargs):
+        super(SubscriptionView, self).__init__(**kwargs)
+        stripe.api_key = STRIPE_API_KEY
+
     serializer_class = SubscriptionSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -66,3 +72,35 @@ class Subscription(generics.GenericAPIView):
             return Response(body, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_201_CREATED)
+
+
+class PromoCodeView(generics.CreateAPIView):
+    """Service for an admin to create a new promo code
+
+    :accepted methods:
+        POST
+    """
+    serializer_class = PromoCodeSerializer
+    permission_classes = (permissions.IsAdminUser,)
+
+
+class CheckingPromoCode(views.APIView):
+    """Service to check if a promo code is valid or not
+
+    :accepted methods:
+        POST
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def post(request):
+        """
+
+        :param request:
+        :return:
+        """
+        promo_code = get_object_or_404(PromoCode, code=request.data['promo_code'])
+        if promo_code.used:
+            return Response({'promo_code': ['Promo code already used']}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response(status=status.HTTP_200_OK)

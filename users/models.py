@@ -5,7 +5,8 @@ from django.db import models
 from django.utils import timezone
 
 from countries.models import Country
-from cities.models import City
+from states.models import State
+
 
 class User(AbstractBaseUser):
     """Model for User object"""
@@ -15,7 +16,8 @@ class User(AbstractBaseUser):
     company = models.CharField(max_length=100)
     street_address = models.TextField()
     country = models.ForeignKey(Country, related_name='country')
-    city = models.ForeignKey(City, related_name='city')
+    city = models.CharField(max_length=100)
+    province = models.ForeignKey(State, related_name='state')
     facebook = models.CharField(max_length=100, null=True)
     twitter = models.CharField(max_length=100, null=True)
     linkedin = models.CharField(max_length=100, null=True)
@@ -48,3 +50,11 @@ class User(AbstractBaseUser):
         :return: True if the free trial has already started, otherwise False
         """
         return self.free_trial_started_at is not None
+
+    def start_free_trial(self):
+        """Method to set the free_trial_started_at user field to date object(now)
+
+        :return: True
+        """
+        self.free_trial_started_at = timezone.now()
+        return True

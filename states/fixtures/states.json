@@ -1,0 +1,434 @@
+[
+  {
+    "model": "states.State",
+    "pk": 1,
+    "fields": {
+      "name": "Alberta",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 2,
+    "fields": {
+      "name": "British Columbia",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 3,
+    "fields": {
+      "name": "Labrador",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 4,
+    "fields": {
+      "name": "Manitoba",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 5,
+    "fields": {
+      "name": "New Brunswick",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 6,
+    "fields": {
+      "name": "Newfoundland",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 7,
+    "fields": {
+      "name": "Nova Scotia",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 8,
+    "fields": {
+      "name": "Nunavut",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 9,
+    "fields": {
+      "name": "North West Terr.",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 10,
+    "fields": {
+      "name": "Ontario",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 11,
+    "fields": {
+      "name": "Prince Edward Is.",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 12,
+    "fields": {
+      "name": "Quebec",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 13,
+    "fields": {
+      "name": "Saskatchewen",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 14,
+    "fields": {
+      "name": "Yukon",
+      "country": 1,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 15,
+    "fields": {
+      "name": "Alabama",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 16,
+    "fields": {
+      "name": "Alaska",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 17,
+    "fields": {
+      "name": "Arkansas",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 18,
+    "fields": {
+      "name": "California",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 19,
+    "fields": {
+      "name": "Connecticut",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 20,
+    "fields": {
+      "name": "Dist. Columbia",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 21,
+    "fields": {
+      "name": "Florida",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 22,
+    "fields": {
+      "name": "Georgia",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 23,
+    "fields": {
+      "name": "Idaho",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 24,
+    "fields": {
+      "name": "Illinois",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 25,
+    "fields": {
+      "name": "Iowa",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 26,
+    "fields": {
+      "name": "Kansas",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 27,
+    "fields": {
+      "name": "Louisiana",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 28,
+    "fields": {
+      "name": "Maine",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 29,
+    "fields": {
+      "name": "Massachusetts",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 30,
+    "fields": {
+      "name": "Michigan",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 31,
+    "fields": {
+      "name": "Mississippi",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 32,
+    "fields": {
+      "name": "Missouri",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 33,
+    "fields": {
+      "name": "Nebraska",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 34,
+    "fields": {
+      "name": "Nevada",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 35,
+    "fields": {
+      "name": "New Jersey",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 36,
+    "fields": {
+      "name": "New Mexico",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 37,
+    "fields": {
+      "name": "North Carolina",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 38,
+    "fields": {
+      "name": "North Dakota",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 39,
+    "fields": {
+      "name": "Oklahoma",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 40,
+    "fields": {
+      "name": "Oregon",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 41,
+    "fields": {
+      "name": "Rhode Island",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 42,
+    "fields": {
+      "name": "South Carolina",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 43,
+    "fields": {
+      "name": "Tennessee",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 44,
+    "fields": {
+      "name": "Texas",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 45,
+    "fields": {
+      "name": "Vermont",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 46,
+    "fields": {
+      "name": "Virginia",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 47,
+    "fields": {
+      "name": "West Virginia",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "states.State",
+    "pk": 48,
+    "fields": {
+      "name": "Wisconsin",
+      "country": 2,
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  }
+]

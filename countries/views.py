@@ -1,7 +1,10 @@
 from rest_framework import generics, permissions
+from django.db.models import Prefetch
 
 from .serializers import CountrySerializer
 from .models import Country
+from states.models import State
+from states.serializers import StateSerializer
 
 
 class CountryView(generics.ListCreateAPIView):
@@ -14,3 +17,32 @@ class CountryView(generics.ListCreateAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
     permission_classes = (permissions.AllowAny,)
+
+
+class CountryDetail(generics.RetrieveAPIView):
+    """Service to get the detail(states) from an specific country
+
+    :accepted methods:
+        GET
+    """
+    serializer_class = CountrySerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        queryset = Country.objects.filter(id=self.kwargs['pk']).prefetch_related(
+            Prefetch('states', queryset=State.objects.filter(country=self.kwargs['pk'])))
+        return queryset
+
+
+class StatesList(generics.ListAPIView):
+    """
+
+    :accepted methods:
+        GET
+    """
+    serializer_class = StateSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        queryset = State.objects.filter(country=self.kwargs['pk'])
+        return queryset
