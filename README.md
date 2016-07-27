@@ -44,11 +44,9 @@ To run migrations to the database you have to type the following command:
 Type the following commands by the order than they appear:
 
     python manage.py loaddata countries/fixtures/countries.json
-    python manage.py loaddata cities/fixtures/cities.json
     python manage.py loaddata states/fixtures/states.json
     python manage.py loaddata plans/fixtures/promo_codes.json
     python manage.py loaddata users/fixtures/users.json
-    python manage.py loaddata miscellaneous/fixtures/tax_receipts.json
     python manage.py loaddata miscellaneous/fixtures/customers.json
     python manage.py loaddata charities/fixtures/charities_by_category.json
     python manage.py loaddata charities/fixtures/charities_by_country.json
