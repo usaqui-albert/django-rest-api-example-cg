@@ -11,7 +11,7 @@
   },
   {
     "model": "plans.PromoCode",
-    "pk": 1,
+    "pk": 2,
     "fields": {
       "code": "promo_code_not_used_2",
       "used": false,
@@ -21,7 +21,7 @@
   },
   {
     "model": "plans.PromoCode",
-    "pk": 1,
+    "pk": 3,
     "fields": {
       "code": "promo_code_not_used_3",
       "used": false,
@@ -31,7 +31,7 @@
   },
   {
     "model": "plans.PromoCode",
-    "pk": 1,
+    "pk": 4,
     "fields": {
       "code": "promo_code_not_used_4",
       "used": false,
@@ -41,7 +41,7 @@
   },
   {
     "model": "plans.PromoCode",
-    "pk": 1,
+    "pk": 5,
     "fields": {
       "code": "promo_code_not_used_5",
       "used": false,
@@ -51,7 +51,7 @@
   },
   {
     "model": "plans.PromoCode",
-    "pk": 2,
+    "pk": 6,
     "fields": {
       "code": "promo_code_used",
       "used": true,
