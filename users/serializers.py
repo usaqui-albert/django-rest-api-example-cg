@@ -3,7 +3,7 @@ import stripe
 from rest_framework import serializers
 from django.db import IntegrityError
 
-from .models import User, CONDITION_CHOICES
+from .models import User
 from plans.models import PromoCode
 from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
