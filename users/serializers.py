@@ -7,6 +7,7 @@ from .models import User
 from plans.models import PromoCode
 from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
+from miscellaneous.helpers import card_list
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -26,7 +27,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'password', 'first_name', 'last_name', 'company', 'street_address',
             'country', 'city', 'phone_number', 'terms_conditions', 'card_token', 'plan_id',
-            'promo_code', 'province', 'pk'
+            'promo_code', 'province', 'tax_receipts_as', 'zip_code', 'pk'
         )
         extra_kwargs = {
             'password': {'write_only': True},
@@ -48,6 +49,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('There was an Integrity Error creating a user')
             promo_code.update(used=True)
             user.start_free_trial()
+            user.save()
             return user
         elif 'plan_id' in validated_data and 'card_token' in validated_data:
             plan_id = validated_data.pop('plan_id')
@@ -64,6 +66,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 return body['error']['message']
             else:
                 user = create_user_hashing_password(**validated_data)
+                user.has_a_plan = True
+                user.save()
                 if not user:
                     raise serializers.ValidationError('There was an Integrity Error creating a user')
                 CustomerStripe.objects.create(user=user, customer_id=customer.id)
@@ -135,6 +139,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer to update or get a user information"""
+    payment_method = serializers.SerializerMethodField()
+    tax_receipts_as = serializers.SerializerMethodField()
+
+    def __init__(self, *args, **kwargs):
+        super(UserSerializer, self).__init__(*args, **kwargs)
+        stripe.api_key = STRIPE_API_KEY
 
     class Meta:
         """Relating to a User model and excluding password field"""
@@ -142,15 +152,34 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',
             'city', 'phone_number', 'has_a_plan', 'free_trial_started_at', 'created_at',
-            'updated_at', 'pk'
+            'updated_at', 'province', 'tax_receipts_as', 'payment_method', 'pk'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
             'has_a_plan': {'read_only': True},
             'free_trial_started_at': {'read_only': True},
+            'payment_method': {'read_only': True},
+            'tax_receipts_as': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True}
         }
+
+    @staticmethod
+    def get_payment_method(instance):
+        if instance.has_a_plan:
+            customer_stripe = CustomerStripe.objects.filter(user=instance.id)
+            if not customer_stripe.exists():
+                raise serializers.ValidationError("There is no stripe customer available for this user")
+            customer = stripe.Customer.retrieve(customer_stripe.get().customer_id)
+            cards_response = customer.sources.all(limit=3, object='card')
+            return card_list(cards_response.data)[0]
+        else:
+            return None
+
+    @staticmethod
+    def get_tax_receipts_as(instance):
+        return instance.get_tax_receipts_as_string()
+
 
 def create_user_hashing_password(**validated_data):
     """Helper method function to create a new user, hash its password and store it in the database

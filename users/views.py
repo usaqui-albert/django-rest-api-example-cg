@@ -27,7 +27,8 @@ class UserView(generics.ListCreateAPIView):
         obj = serializer.save()
         if isinstance(obj, User):
             transaction.on_commit(lambda: post_create_user.delay(obj.id))
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return_serializer = UserSerializer(obj)
+            return Response(return_serializer.data, status=status.HTTP_201_CREATED)
         if not obj:
             return Response(status=status.HTTP_409_CONFLICT)
         else:
@@ -71,5 +72,6 @@ class LoginView(generics.GenericAPIView):
         Token.objects.filter(user=user).delete()
         token = Token.objects.create(user=user)
 
-        data = {'token': str(token)}
+        data = {'token': str(token),
+                'user': UserSerializer(user).data}
         return Response(data, status=status.HTTP_200_OK)
