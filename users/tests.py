@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from .models import User
 from countries.models import Country
-from cities.models import City
+from states.models import State
 
 class UserTestCase(TestCase):
     """Test cases for methods of the User Object"""
@@ -17,20 +17,22 @@ class UserTestCase(TestCase):
         'last_name': 'Doe',
         'street_address': 'Test street address',
         'company': 'Test company name',
-        'phone_number': '123-4567'
+        'phone_number': '123-4567',
+        'tax_receipts_as': 1,
+        'zip_code': '123-456',
+        'city': 'Caracas'
     }
     country = {
         'name': 'Venezuela'
     }
-    city = {
-        'name': 'Caracas'
+    province = {
+        'name': 'Dto. Capital'
     }
 
     def setUp(self):
         country = Country.objects.create(**self.country)
-        self.city['country'] = self.user['country'] = country
-        city = City.objects.create(**self.city)
-        self.user['city'] = city
+        self.province['country'] = self.user['country'] = country
+        self.user['province'] = State.objects.create(**self.province)
         User.objects.create(**self.user)
 
     def test_free_trial_is_over_one_day_left(self):

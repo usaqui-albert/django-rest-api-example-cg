@@ -5,7 +5,6 @@ from django.db import models
 from django.utils import timezone
 
 from countries.models import Country
-from miscellaneous.models import TaxReceipt
 from users.models import User
 
 
@@ -18,7 +17,6 @@ class Event(models.Model):
     landing_message = models.TextField()
     donation_amount = models.DecimalField(max_digits=7, decimal_places=2)
     card_id = models.CharField(max_length=100)
-    tax_receipt = models.ForeignKey(TaxReceipt, related_name='tax_receipt', null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
