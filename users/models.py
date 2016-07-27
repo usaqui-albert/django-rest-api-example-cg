@@ -7,6 +7,8 @@ from django.utils import timezone
 from countries.models import Country
 from states.models import State
 
+CONDITION_CHOICES = ((1, 'User'), (2, 'Company'))
+
 
 class User(AbstractBaseUser):
     """Model for User object"""
@@ -25,6 +27,8 @@ class User(AbstractBaseUser):
     is_active = models.BooleanField(default=False)
     free_trial_started_at = models.DateTimeField(null=True)
     has_a_plan = models.BooleanField(default=False)
+    tax_receipts_as = models.IntegerField(choices=CONDITION_CHOICES)
+    zip_code = models.CharField(max_length=10)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -58,3 +62,6 @@ class User(AbstractBaseUser):
         """
         self.free_trial_started_at = timezone.now()
         return True
+
+    def get_tax_receipts_as_string(self):
+        return [y for x, y in CONDITION_CHOICES if x == self.tax_receipts_as][0]

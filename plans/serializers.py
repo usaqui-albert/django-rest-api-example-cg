@@ -12,3 +12,7 @@ class PromoCodeSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'used': {'read_only': True}
         }
+
+
+class CheckCodeSerializer(serializers.Serializer):
+    promo_code = serializers.CharField(max_length=100)

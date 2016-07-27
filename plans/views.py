@@ -7,7 +7,7 @@ from rest_framework.generics import get_object_or_404
 from ConnectGood.settings import STRIPE_API_KEY
 from .models import PromoCode
 from miscellaneous.models import CustomerStripe
-from .serializers import SubscriptionSerializer, PromoCodeSerializer
+from .serializers import SubscriptionSerializer, PromoCodeSerializer, CheckCodeSerializer
 from .helpers import get_response_plan_list
 
 
@@ -99,8 +99,10 @@ class CheckingPromoCode(views.APIView):
         :param request:
         :return:
         """
-        promo_code = get_object_or_404(PromoCode, code=request.data['promo_code'])
+        serializer = CheckCodeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        promo_code = get_object_or_404(PromoCode, code=serializer.validated_data['promo_code'])
         if promo_code.used:
             return Response({'promo_code': ['Promo code already used']}, status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
-            return Response(status=status.HTTP_200_OK)
+            return Response({'promo_code': ['Valid Promo code']}, status=status.HTTP_200_OK)
