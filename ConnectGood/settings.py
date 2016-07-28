@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'countries',
-    'cities',
     'states',
     'miscellaneous',
     'events',

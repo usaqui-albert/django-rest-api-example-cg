@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from .models import Event
 from countries.serializers import CountrySerializer
-from miscellaneous.serializers import TaxReceiptSerializer
 from charities.serializers import CharityCategorySerializer
 from charities.models import CharityCategory, CharityCountry
 
@@ -20,7 +19,6 @@ class CreateEventSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
     """Serializer to get or update events handling requests and responses of its attributes"""
     country = serializers.SerializerMethodField()
-    tax_receipt = serializers.SerializerMethodField()
     charities_by_category = serializers.SerializerMethodField()
 
     class Meta:
@@ -36,16 +34,6 @@ class EventSerializer(serializers.ModelSerializer):
         :return: country object serialized
         """
         return CountrySerializer(instance.country).data
-
-    @staticmethod
-    def get_tax_receipt(instance):
-        """Method to specify the value of tax_receipt attribute
-
-        :param instance: event object
-        :return: tax_receipt object serialized
-        """
-        tax = instance.tax_receipt
-        return TaxReceiptSerializer(tax).data if tax else tax
 
     @staticmethod
     def get_charities_by_category(instance):
