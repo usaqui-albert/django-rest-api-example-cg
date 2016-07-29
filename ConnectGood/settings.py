@@ -161,3 +161,6 @@ REST_FRAMEWORK = {
 STRIPE_API_KEY = "sk_test_JutiYwXisOBbK5ORfS1BlqCZ"
 
 CLIENT_URL_SERVER = "http://23.246.237.99:3000"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
