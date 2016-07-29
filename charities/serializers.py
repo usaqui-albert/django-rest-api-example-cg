@@ -32,4 +32,4 @@ class CharityCountrySerializer(serializers.ModelSerializer):
     class Meta:
         """Relating to the CharityCountry model and excluding country and category field"""
         model = CharityCountry
-        fields = ('id', 'name', 'created_at', 'updated_at')
+        fields = ('id', 'name', 'picture', 'created_at', 'updated_at')
