@@ -17,7 +17,7 @@
       "free_trial_started_at": null,
       "tax_receipts_as": 1,
       "zip_code": "123-456",
-      "has_a_plan": false,
+      "has_a_plan": true,
       "updated_at": "2016-07-11T17:43:19.809415",
       "created_at": "2016-07-11T17:43:19.809415"
     }
@@ -40,7 +40,7 @@
       "free_trial_started_at": null,
       "tax_receipts_as": 1,
       "zip_code": "123-456",
-      "has_a_plan": false,
+      "has_a_plan": true,
       "updated_at": "2016-07-11T17:43:19.809415",
       "created_at": "2016-07-11T17:43:19.809415"
     }

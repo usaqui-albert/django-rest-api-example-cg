@@ -24,12 +24,25 @@ class Event(models.Model):
 
 class UserEvent(models.Model):
     """Pivot table to set the relation between User and Events tables"""
+    ACCEPTED = 'A'
+    REJECTED = 'R'
+    WAITING = 'W'
+    STATUS_OF_THE_EVENT = (
+        (ACCEPTED, 'ACCEPTED'),
+        (REJECTED, 'REJECTED'),
+        (WAITING, 'WAITING')
+    )
+
     user = models.ForeignKey(User, related_name='user_event')
     event = models.ForeignKey(Event, related_name='user_event')
     key = models.UUIDField(default=uuid.uuid4, editable=False)
+    status = models.CharField(max_length=1, choices=STATUS_OF_THE_EVENT, default=WAITING)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def has_key_expired(self):
         return self.created_at <= timezone.now() - datetime.timedelta(days=15)
+
+    def get_status_as_string(self):
+        return [y for x, y in self.STATUS_OF_THE_EVENT if x == self.status][0]
