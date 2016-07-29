@@ -5,10 +5,10 @@ from rest_framework.response import Response
 from rest_framework import generics, permissions, status
 from rest_framework.generics import get_object_or_404
 
-from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectEventSerializer, STATUS_OF_THE_EVENT
+from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectEventSerializer
 from .models import Event, UserEvent
 from .tasks import send_email_to_notify
-from .helpers import validate_uuid4
+from .helpers import validate_uuid4, get_event_status
 
 
 class EventView(generics.ListCreateAPIView):
@@ -80,7 +80,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_event = get_object_or_404(UserEvent, key=serializer.validated_data['key'])
-        event_status = [y for x, y in STATUS_OF_THE_EVENT if x == serializer.validated_data['status']][0]
+        event_status = get_event_status(serializer.validated_data['status'])
         if event_status == user_event.REJECTED:
             user_event.status = event_status
             user_event.save()
