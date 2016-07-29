@@ -4,6 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Canadian Cancer Society",
+      "picture": "charities/62ee318db0f74a7a80a7177d558f26ad.jpg",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -15,6 +16,7 @@
     "pk": 2,
     "fields": {
       "name": "Canadian Red Cross",
+      "picture": "charities/fb46c0de5ae64750a20f3e9b126ea487.png",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
