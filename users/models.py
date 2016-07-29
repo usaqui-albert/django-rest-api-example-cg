@@ -64,4 +64,7 @@ class User(AbstractBaseUser):
         return True
 
     def get_tax_receipts_as_string(self):
-        return self.first_name + " " + self.last_name if self.tax_receipts_as == 1 else self.company
+        return self.get_full_name() if self.tax_receipts_as == 1 else self.company
+
+    def get_full_name(self):
+        return self.first_name + " " + self.last_name

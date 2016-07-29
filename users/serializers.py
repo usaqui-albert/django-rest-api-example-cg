@@ -43,6 +43,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
         """
         del validated_data['terms_conditions']
         if 'promo_code' in validated_data:
+            validated_data.pop('plan_id', None)
+            validated_data.pop('card_token', None)
             promo_code = validated_data.pop('promo_code')
             user = create_user_hashing_password(**validated_data)
             if not user:

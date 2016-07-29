@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from .models import Event
-from countries.serializers import CountrySerializer
 from charities.serializers import CharityCategorySerializer
 from charities.models import CharityCategory, CharityCountry
 
@@ -18,22 +17,14 @@ class CreateEventSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     """Serializer to get or update events handling requests and responses of its attributes"""
-    country = serializers.SerializerMethodField()
     charities_by_category = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    sender = serializers.SerializerMethodField()
 
     class Meta:
         """Relating to an Event model and including all fields"""
         model = Event
         fields = '__all__'
-
-    @staticmethod
-    def get_country(instance):
-        """Method to specify the value of country attribute
-
-        :param instance: event object
-        :return: country object serialized
-        """
-        return CountrySerializer(instance.country).data
 
     @staticmethod
     def get_charities_by_category(instance):
@@ -50,3 +41,20 @@ class EventSerializer(serializers.ModelSerializer):
         }
         serializer = CharityCategorySerializer(charities_by_category, many=True, context=context)
         return serializer.data
+
+    @staticmethod
+    def get_status(instance):
+        user_event = instance.user_event.get()
+        return user_event.get_status_as_string()
+
+    @staticmethod
+    def get_sender(instance):
+        user_event = instance.user_event.get()
+        return user_event.user.get_full_name()
+
+
+STATUS_OF_THE_EVENT = (('ACCEPTED', 'A'), ('REJECTED', 'R'))
+
+class AcceptOrRejectEventSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=STATUS_OF_THE_EVENT)
+    key = serializers.CharField(max_length=100)

@@ -1,11 +1,14 @@
 from django.db import transaction
+from django.db.models import Prefetch
 
 from rest_framework.response import Response
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.generics import get_object_or_404
 
-from .serializers import CreateEventSerializer, EventSerializer
+from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectEventSerializer, STATUS_OF_THE_EVENT
 from .models import Event, UserEvent
 from .tasks import send_email_to_notify
+from .helpers import validate_uuid4
 
 
 class EventView(generics.ListCreateAPIView):
@@ -50,10 +53,37 @@ class GetEventByToken(generics.RetrieveAPIView):
     permission_classes = (permissions.AllowAny,)
 
     def retrieve(self, request, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data)
+        if validate_uuid4(kwargs['key']):
+            queryset = self.get_queryset()
+            if queryset.exists():
+                serializer = self.serializer_class(queryset.get())
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
-        queryset = Event.objects.filter(user_event__key=self.kwargs['key'])
+        queryset = Event.objects.filter(user_event__key=self.kwargs['key']).prefetch_related(
+            Prefetch('user_event', queryset=UserEvent.objects.filter(key=self.kwargs['key'])))
         return queryset
+
+
+class AcceptOrRejectEvent(generics.GenericAPIView):
+    """
+
+    :accepted methods:
+        POST
+    """
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = AcceptOrRejectEventSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user_event = get_object_or_404(UserEvent, key=serializer.validated_data['key'])
+        event_status = [y for x, y in STATUS_OF_THE_EVENT if x == serializer.validated_data['status']][0]
+        if event_status == user_event.REJECTED:
+            user_event.status = event_status
+            user_event.save()
+        elif event_status == user_event.ACCEPTED:
+            pass
+        return Response(serializer.data, status=status.HTTP_200_OK)
