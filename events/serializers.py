@@ -56,5 +56,6 @@ class EventSerializer(serializers.ModelSerializer):
 STATUS_OF_THE_EVENT = (('ACCEPTED', 'A'), ('REJECTED', 'R'))
 
 class AcceptOrRejectEventSerializer(serializers.Serializer):
+    charity = serializers.IntegerField(min_value=1)
     status = serializers.ChoiceField(choices=STATUS_OF_THE_EVENT)
     key = serializers.CharField(max_length=100)

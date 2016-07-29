@@ -30,7 +30,9 @@ class EventView(generics.ListCreateAPIView):
         with transaction.atomic():
             event = serializer.save()
             user_event = UserEvent.objects.create(event=event, user=user)
-            transaction.on_commit(lambda: send_email_to_notify.delay(event, user, user_event.key))
+            transaction.on_commit(
+                lambda: send_email_to_notify.delay(event, user, user_event.get_key_as_string())
+            )
         return self.serializer_class(event)
 
     def list(self, request, **kwargs):
@@ -58,7 +60,7 @@ class GetEventByToken(generics.RetrieveAPIView):
             if queryset.exists():
                 serializer = self.serializer_class(queryset.get())
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
@@ -85,5 +87,6 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             user_event.status = event_status
             user_event.save()
         elif event_status == user_event.ACCEPTED:
-            pass
+            user_event.status = user_event.ACCEPTED
+            user_event.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
