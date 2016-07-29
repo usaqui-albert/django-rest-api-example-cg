@@ -42,7 +42,10 @@ class UserEvent(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def has_key_expired(self):
-        return self.created_at <= timezone.now() - datetime.timedelta(days=15)
+        return self.created_at <= timezone.now() - datetime.timedelta(days=30)
 
     def get_status_as_string(self):
         return [y for x, y in self.STATUS_OF_THE_EVENT if x == self.status][0]
+
+    def get_key_as_string(self):
+        return str(self.key).replace('-', '')
