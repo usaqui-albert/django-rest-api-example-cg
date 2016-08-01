@@ -28,6 +28,7 @@
     "pk": 3,
     "fields": {
       "name": "Heart & Stroke Foundation",
+      "picture": "charities/55650cc87ee044a5a3cefe1a7c1b3442.jpg",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -39,6 +40,7 @@
     "pk": 4,
     "fields": {
       "name": "Canadian National Institute for the Blind",
+      "picture": "charities/449dbfd999cd46b59428ad23524630bf.jpg",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -50,6 +52,7 @@
     "pk": 5,
     "fields": {
       "name": "Terry Fox Foundation",
+      "picture": "charities/736f7b6d9e5b4509b06cb2ef4c68dab9.jpg",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -61,6 +64,7 @@
     "pk": 6,
     "fields": {
       "name": "Juvenile Diabetes Research Foundation Canada",
+      "picture": "charities/563c8891bdfa4aafbde193f1677d5a6c.jpg",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -72,6 +76,7 @@
     "pk": 7,
     "fields": {
       "name": "Rick Hansen Institute",
+      "picture": "charities/8cfdd7214c4341efb5ac1f40e438c6f1.png",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -83,6 +88,7 @@
     "pk": 8,
     "fields": {
       "name": "Canadian Wildlife Federation",
+      "picture": "charities/d90ed38c05114a7e961d31dc71a7db9f.jpg",
       "country": 1,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -94,6 +100,7 @@
     "pk": 9,
     "fields": {
       "name": "Ducks Unlimited",
+      "picture": "charities/a47aac0934d247b9bd3ebdbe32c5928a.jpg",
       "country": 1,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -105,6 +112,7 @@
     "pk": 10,
     "fields": {
       "name": "Nature Conservancy of Canada",
+      "picture": "charities/632aedad1c684fb3b461893b9532b084.jpg",
       "country": 1,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -116,6 +124,7 @@
     "pk": 11,
     "fields": {
       "name": "World Wildlife Fund",
+      "picture": "charities/0b2613a5c0a24f0984876991b9852c4b.gif",
       "country": 1,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -127,6 +136,7 @@
     "pk": 12,
     "fields": {
       "name": "Canadian Parks and Wilderness Society",
+      "picture": "charities/9c2a865782fc43789563c162afbeb1fb.jpg",
       "country": 1,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -138,6 +148,7 @@
     "pk": 13,
     "fields": {
       "name": "World Vision Canada",
+      "picture": "charities/2387c5695d13431fac9fc7d06a3fdbed.png",
       "country": 1,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -149,6 +160,7 @@
     "pk": 14,
     "fields": {
       "name": "Habitat for Humanity",
+      "picture": "charities/8e15df4d7fe14a8c932d67aa8c4bce0b.jpg",
       "country": 1,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -160,6 +172,7 @@
     "pk": 15,
     "fields": {
       "name": "Free the Children",
+      "picture": "charities/f4d09352793c4cf5bb7958ed2aa1ea3e.png",
       "country": 1,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -171,6 +184,7 @@
     "pk": 16,
     "fields": {
       "name": "Doctors Without Borders",
+      "picture": "charities/b2c5b04246e14fef857b1c96bea25161.jpg",
       "country": 1,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -182,6 +196,7 @@
     "pk": 17,
     "fields": {
       "name": "Amnesty International",
+      "picture": "charities/0e61703d4e4248238015d7c8cbbb655e.gif",
       "country": 1,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -193,6 +208,7 @@
     "pk": 18,
     "fields": {
       "name": "SickKids Foundation",
+      "picture": "charities/052f20b8bfc340e3969a4b624fd0c45c.png",
       "country": 1,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -204,6 +220,7 @@
     "pk": 19,
     "fields": {
       "name": "Calgary Health Trust",
+      "picture": "charities/80177f6dc0a849c1b599a7e0d00ac964.jpg",
       "country": 1,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -215,6 +232,7 @@
     "pk": 20,
     "fields": {
       "name": "McGill University Health Centre",
+      "picture": "charities/16a2854120794e8ea80c7cb107b7748f.png",
       "country": 1,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -226,6 +244,7 @@
     "pk": 21,
     "fields": {
       "name": "Princess Margaret Cancer Foundation",
+      "picture": "charities/632f4454d3c54d4796ea649faebea8bd.jpg",
       "country": 1,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -237,6 +256,7 @@
     "pk": 22,
     "fields": {
       "name": "VGH & UBC Hospital Foundation",
+      "picture": "charities/682033be63eb4d52a5ca829ea47aa08b.jpg",
       "country": 1,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -248,6 +268,7 @@
     "pk": 23,
     "fields": {
       "name": "Sunnybrook Health Sciences Centre Foundation",
+      "picture": "charities/422e35b8fdf34bb5944cbf117ee628cd.jpg",
       "country": 1,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -259,6 +280,7 @@
     "pk": 24,
     "fields": {
       "name": "Mount Sinai Hospital Foundation of Toronto",
+      "picture": "charities/4dcdac701ff143958283ea1e45dd8290.jpg",
       "country": 1,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -270,6 +292,7 @@
     "pk": 25,
     "fields": {
       "name": "American Cancer Society",
+      "picture": "charities/958d5b40f5e842bbaddb9cb293487d0d.png",
       "country": 2,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -281,6 +304,7 @@
     "pk": 26,
     "fields": {
       "name": "American Heart Association",
+      "picture": "charities/cbaccb45b5b64fc38804d7d61eac76aa.jpg",
       "country": 2,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -292,6 +316,7 @@
     "pk": 27,
     "fields": {
       "name": "Leukemia & Lymphoma Society",
+      "picture": "charities/9ef09f1210964c06b1c400c796fa5e1a.jpg",
       "country": 2,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -303,6 +328,7 @@
     "pk": 28,
     "fields": {
       "name": "Patient Access Network Foundation",
+      "picture": "charities/6ec1be75fead45c88b9b62268270bd36.jpg",
       "country": 2,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -314,6 +340,7 @@
     "pk": 29,
     "fields": {
       "name": "Cancer Research Institute",
+      "picture": "charities/430b6d33d14c4ff5a794746079a7dd83.png",
       "country": 2,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -325,6 +352,7 @@
     "pk": 30,
     "fields": {
       "name": "Nature Conservancy",
+      "picture": "charities/632aedad1c684fb3b461893b9532b084.jpg",
       "country": 2,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -336,6 +364,7 @@
     "pk": 31,
     "fields": {
       "name": "Conservation International",
+      "picture": "charities/f8b16473e8684a7d9d565d86ecdd5a28.png",
       "country": 2,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -347,6 +376,7 @@
     "pk": 32,
     "fields": {
       "name": "Rare",
+      "picture": "charities/49a2200e9bae44e796bbff65445b9157.jpg",
       "country": 2,
       "charity": 2,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -358,6 +388,7 @@
     "pk": 33,
     "fields": {
       "name": "Food for the Poor",
+      "picture": "charities/94b45329774a42ab9da7d7b9539a94ab.jpg",
       "country": 2,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -369,6 +400,7 @@
     "pk": 34,
     "fields": {
       "name": "World Vision",
+      "picture": "charities/2ca92c1bb71a4155acc6963a9daa466d.png",
       "country": 2,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -380,6 +412,7 @@
     "pk": 35,
     "fields": {
       "name": "Habitat for Humanity International",
+      "picture": "charities/8e15df4d7fe14a8c932d67aa8c4bce0b.jpg",
       "country": 2,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -391,6 +424,7 @@
     "pk": 36,
     "fields": {
       "name": "Direct Relief",
+      "picture": "charities/89ca989bf22841c5af4f58859936517e.png",
       "country": 2,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -402,6 +436,7 @@
     "pk": 37,
     "fields": {
       "name": "St. Jude Children’s Research Hospital",
+      "picture": "charities/63e6dd4909594048ae2a84184c641c59.jpg",
       "country": 2,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -413,6 +448,7 @@
     "pk": 38,
     "fields": {
       "name": "Mayo Clinic",
+      "picture": "charities/806af01fdbf44007bd67ac1d868ad048.jpg",
       "country": 2,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -424,6 +460,7 @@
     "pk": 39,
     "fields": {
       "name": "Memorial Sloan Kettering Cancer Center",
+      "picture": "charities/2bcbbe7f8dd14dc883871002006fa004.jpg",
       "country": 2,
       "charity": 4,
       "updated_at": "2016-07-11T17:43:19.809415",
