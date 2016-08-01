@@ -26,8 +26,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = '__all__'
 
-    @staticmethod
-    def get_charities_by_category(instance):
+    def get_charities_by_category(self, instance):
         """Method to specify the value of charities_by_category attribute
 
         :param instance: event object
@@ -37,7 +36,8 @@ class EventSerializer(serializers.ModelSerializer):
         charities_by_country = CharityCountry.objects.all()
         context = {
             'country_id': instance.country.id,
-            'charities': charities_by_country
+            'charities': charities_by_country,
+            'host': self.context['host']
         }
         serializer = CharityCategorySerializer(charities_by_category, many=True, context=context)
         return serializer.data

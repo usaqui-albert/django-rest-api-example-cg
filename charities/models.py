@@ -20,3 +20,6 @@ class CharityCountry(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def get_picture_as_string(self):
+        return str(self.picture)

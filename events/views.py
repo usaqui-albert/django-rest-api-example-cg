@@ -58,7 +58,7 @@ class GetEventByToken(generics.RetrieveAPIView):
         if validate_uuid4(kwargs['key']):
             queryset = self.get_queryset()
             if queryset.exists():
-                serializer = self.serializer_class(queryset.get())
+                serializer = self.serializer_class(queryset.get(), context={'host': request.get_host()})
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_400_BAD_REQUEST)

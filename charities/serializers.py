@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import CharityCategory, CharityCountry
+from ConnectGood.settings import MEDIA_URL
 
 
 class CharityCategorySerializer(serializers.ModelSerializer):
@@ -23,13 +24,23 @@ class CharityCategorySerializer(serializers.ModelSerializer):
             queryset = charities.filter(country=self.context['country_id'], charity=instance.id)
         else:
             queryset = charities
-        serializer = CharityCountrySerializer(queryset, many=True)
+        serializer = CharityCountrySerializer(queryset, many=True, context={'host': self.context['host']})
         return serializer.data
 
 
 class CharityCountrySerializer(serializers.ModelSerializer):
     """Serializer to get the detail of a charity"""
+    picture = serializers.SerializerMethodField()
+
+    def __init__(self, *args, **kwargs):
+        super(CharityCountrySerializer, self).__init__(*args, **kwargs)
+        if 'host' not in self.context:
+            self.fields.pop('picture')
+
     class Meta:
         """Relating to the CharityCountry model and excluding country and category field"""
         model = CharityCountry
         fields = ('id', 'name', 'picture', 'created_at', 'updated_at')
+
+    def get_picture(self, instance):
+        return 'http://' + self.context['host'] + MEDIA_URL + instance.get_picture_as_string()
