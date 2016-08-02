@@ -3,6 +3,7 @@ from rest_framework import serializers
 from .models import Event
 from charities.serializers import CharityCategorySerializer
 from charities.models import CharityCategory, CharityCountry
+from .helpers import validate_uuid4, STATUS_OF_THE_EVENT
 
 
 class CreateEventSerializer(serializers.ModelSerializer):
@@ -53,9 +54,12 @@ class EventSerializer(serializers.ModelSerializer):
         return user_event.user.get_full_name()
 
 
-STATUS_OF_THE_EVENT = (('ACCEPTED', 'A'), ('REJECTED', 'R'))
-
 class AcceptOrRejectEventSerializer(serializers.Serializer):
     charity = serializers.IntegerField(min_value=1)
     status = serializers.ChoiceField(choices=STATUS_OF_THE_EVENT)
     key = serializers.CharField(max_length=100)
+
+    def validate_key(self, value):
+        if not validate_uuid4(value):
+            raise serializers.ValidationError('Invalid key')
+        return value
