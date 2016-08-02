@@ -1,14 +1,17 @@
+import stripe
+from stripe.error import APIConnectionError, InvalidRequestError, CardError
+
 from django.db import transaction
 from django.db.models import Prefetch
 
 from rest_framework.response import Response
 from rest_framework import generics, permissions, status
-from rest_framework.generics import get_object_or_404
 
 from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectEventSerializer
 from .models import Event, UserEvent
 from .tasks import send_email_to_notify
-from .helpers import validate_uuid4, get_event_status
+from .helpers import validate_uuid4, get_event_status, update_event_status
+from ConnectGood.settings import STRIPE_API_KEY
 
 
 class EventView(generics.ListCreateAPIView):
@@ -75,18 +78,54 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
     :accepted methods:
         POST
     """
+    def __init__(self, *args, **kwargs):
+        super(AcceptOrRejectEvent, self).__init__(*args, **kwargs)
+        stripe.api_key = STRIPE_API_KEY
+
     permission_classes = (permissions.AllowAny,)
     serializer_class = AcceptOrRejectEventSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user_event = get_object_or_404(UserEvent, key=serializer.validated_data['key'])
-        event_status = get_event_status(serializer.validated_data['status'])
+        user_event = UserEvent.objects.filter(key=serializer.validated_data['key']).\
+            select_related('event__country', 'user')
+        if user_event.exists():
+            event_status = get_event_status(serializer.validated_data['status'])
+            response = self.handle_accept_or_reject(user_event.get(), event_status)
+            if isinstance(response, str):
+                response = Response({'stripe_error': [response]}, status=status.HTTP_400_BAD_REQUEST)
+            elif response:
+                response = Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                response = Response({"database_error": ['There was a conflict updating the database']},
+                                    status=status.HTTP_409_CONFLICT)
+            return response
+        return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    @staticmethod
+    def handle_accept_or_reject(user_event, event_status):
         if event_status == user_event.REJECTED:
-            user_event.status = event_status
-            user_event.save()
+            pass  # TODO: send an email to the sender notifying that the connect good was rejected
         elif event_status == user_event.ACCEPTED:
-            user_event.status = user_event.ACCEPTED
-            user_event.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            event = user_event.event
+            country = event.country
+            user = user_event.user
+            try:
+                stripe.Charge.create(
+                    amount=int(event.donation_amount * 100),
+                    currency=country.currency,
+                    customer=user.user_customer.get(),
+                    description="Charge for " + user.__str__()
+                )
+            except (APIConnectionError, InvalidRequestError, CardError) as e:
+                response = ''
+                if isinstance(e, APIConnectionError):
+                    response = str(e).split('.')[0]
+                if isinstance(e, InvalidRequestError) or isinstance(e, CardError):
+                    body = e.json_body
+                    response = str(body['error']['message'])
+                return response
+            else:
+                pass  # TODO: send an email to the sender notifying that the connect good was accepted
+        return update_event_status(user_event, event_status)
