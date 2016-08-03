@@ -22,6 +22,13 @@ class EventSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     sender = serializers.SerializerMethodField()
 
+    def __init__(self, *args, **kwargs):
+        super(EventSerializer, self).__init__(*args, **kwargs)
+        if 'host' not in self.context:
+            self.fields.pop('charities_by_category')
+        if 'no_sender' in self.context:
+            self.fields.pop('sender')
+
     class Meta:
         """Relating to an Event model and including all fields"""
         model = Event
@@ -45,12 +52,12 @@ class EventSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_status(instance):
-        user_event = instance.user_event.get()
+        user_event = instance.user_event.first()
         return user_event.get_status_as_string()
 
     @staticmethod
     def get_sender(instance):
-        user_event = instance.user_event.get()
+        user_event = instance.user_event.first()
         return user_event.user.get_full_name()
 
 

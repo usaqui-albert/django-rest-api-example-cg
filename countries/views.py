@@ -17,6 +17,7 @@ class CountryView(generics.ListCreateAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = None
 
 
 class CountryDetail(generics.RetrieveAPIView):

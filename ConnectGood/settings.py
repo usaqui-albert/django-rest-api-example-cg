@@ -154,7 +154,9 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-    )
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }
 
 # This is the key to connect to the stripe api
