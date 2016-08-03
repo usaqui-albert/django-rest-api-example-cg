@@ -4,8 +4,10 @@
 
 Run the following commands to install some dependencies and virtualenv:
 
-     sudo apt-get install python-pip python-dev build-essential
-     sudo pip install virtualenv
+    sudo apt-get install python-lxml
+    sudo apt-get install libxml2-dev libxslt-dev
+    sudo apt-get install python-pip build-essential python-dev
+    sudo pip install virtualenv
 
 Clonning the project by ssh:
 
