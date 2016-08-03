@@ -40,11 +40,23 @@ class EventView(generics.ListCreateAPIView):
 
     def list(self, request, **kwargs):
         queryset = self.get_queryset()
-        serializer = self.serializer_class(queryset, many=True)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = EventSerializer(page, many=True, context={'no_sender': True})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = EventSerializer(queryset, many=True, context={'no_sender': True})
         return Response(serializer.data)
 
     def get_queryset(self):
-        queryset = Event.objects.filter(user_event__user=self.request.user.id)
+        user_id = self.request.user.id
+        queryset = Event.objects.filter(user_event__user=user_id).prefetch_related(
+            Prefetch(
+                'user_event',
+                queryset=UserEvent.objects.filter(user=user_id)
+            )
+        )
         return queryset
 
 
@@ -61,14 +73,19 @@ class GetEventByToken(generics.RetrieveAPIView):
         if validate_uuid4(kwargs['key']):
             queryset = self.get_queryset()
             if queryset.exists():
-                serializer = self.serializer_class(queryset.get(), context={'host': request.get_host()})
+                serializer = self.serializer_class(queryset.first(),
+                                                   context={'host': request.get_host()})
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         queryset = Event.objects.filter(user_event__key=self.kwargs['key']).prefetch_related(
-            Prefetch('user_event', queryset=UserEvent.objects.filter(key=self.kwargs['key'])))
+            Prefetch(
+                'user_event',
+                queryset=UserEvent.objects.filter(key=self.kwargs['key']).select_related('user')
+            )
+        )
         return queryset
 
 
@@ -86,27 +103,40 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
     serializer_class = AcceptOrRejectEventSerializer
 
     def post(self, request):
+        """
+
+        :param request:
+        :return:
+        """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user_event = UserEvent.objects.filter(key=serializer.validated_data['key']).\
             select_related('event__country', 'user')
         if user_event.exists():
             event_status = get_event_status(serializer.validated_data['status'])
-            response = self.handle_accept_or_reject(user_event.get(), event_status)
+            response = self.handle_accept_or_reject(user_event.first(), event_status)
             if isinstance(response, str):
-                response = Response({'stripe_error': [response]}, status=status.HTTP_400_BAD_REQUEST)
+                response = Response({'stripe_error': [response]},
+                                    status=status.HTTP_400_BAD_REQUEST)
             elif response:
                 response = Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                response = Response({"database_error": ['There was a conflict updating the database']},
+                database_error = 'There was a conflict updating the database'
+                response = Response({'database_error': [database_error]},
                                     status=status.HTTP_409_CONFLICT)
             return response
         return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
     def handle_accept_or_reject(user_event, event_status):
+        """
+
+        :param user_event:
+        :param event_status:
+        :return:
+        """
         if event_status == user_event.REJECTED:
-            pass  # TODO: send an email to the sender notifying that the connect good was rejected
+            pass  # TODO: send an email to the sender that the connect good was rejected
         elif event_status == user_event.ACCEPTED:
             event = user_event.event
             country = event.country
@@ -115,7 +145,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 stripe.Charge.create(
                     amount=int(event.donation_amount * 100),
                     currency=country.currency,
-                    customer=user.user_customer.get(),
+                    customer=user.user_customer.first(),
                     description="Charge for " + user.__str__()
                 )
             except (APIConnectionError, InvalidRequestError, CardError) as e:
@@ -127,5 +157,5 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                     response = str(body['error']['message'])
                 return response
             else:
-                pass  # TODO: send an email to the sender notifying that the connect good was accepted
+                pass  # TODO: send an email to the sender that the connect good was accepted
         return update_event_status(user_event, event_status)

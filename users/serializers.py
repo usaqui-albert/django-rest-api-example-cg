@@ -134,7 +134,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         promo_code_stored = PromoCode.objects.filter(code=value)
         if not promo_code_stored.exists():
             raise serializers.ValidationError("This promo code does not exists")
-        if promo_code_stored.get().used:
+        if promo_code_stored.first().used:
             raise serializers.ValidationError("This promo code is already used")
         return promo_code_stored
 
@@ -172,7 +172,7 @@ class UserSerializer(serializers.ModelSerializer):
             customer_stripe = CustomerStripe.objects.filter(user=instance.id)
             if not customer_stripe.exists():
                 raise serializers.ValidationError("There is no stripe customer available for this user")
-            customer = stripe.Customer.retrieve(customer_stripe.get().customer_id)
+            customer = stripe.Customer.retrieve(customer_stripe.first().customer_id)
             cards_response = customer.sources.all(limit=3, object='card')
             return card_list(cards_response.data)[0]
         else:
