@@ -43,6 +43,7 @@ class StatesList(generics.ListAPIView):
     """
     serializer_class = StateSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = None
 
     def get_queryset(self):
         queryset = State.objects.filter(country=self.kwargs['pk'])

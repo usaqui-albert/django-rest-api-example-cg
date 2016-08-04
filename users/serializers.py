@@ -1,4 +1,5 @@
 import stripe
+from stripe.error import InvalidRequestError, APIConnectionError, CardError
 
 from rest_framework import serializers
 from django.db import IntegrityError
@@ -172,9 +173,19 @@ class UserSerializer(serializers.ModelSerializer):
             customer_stripe = CustomerStripe.objects.filter(user=instance.id)
             if not customer_stripe.exists():
                 raise serializers.ValidationError("There is no stripe customer available for this user")
-            customer = stripe.Customer.retrieve(customer_stripe.first().customer_id)
-            cards_response = customer.sources.all(limit=3, object='card')
-            return card_list(cards_response.data)[0]
+            try:
+                customer = stripe.Customer.retrieve(customer_stripe.first().customer_id)
+            except (APIConnectionError, InvalidRequestError, CardError) as e:
+                response = ''
+                if isinstance(e, APIConnectionError):
+                    response = str(e).split('.')[0]
+                if isinstance(e, InvalidRequestError) or isinstance(e, CardError):
+                    body = e.json_body
+                    response = str(body['error']['message'])
+                raise serializers.ValidationError(response)
+            else:
+                cards_response = customer.sources.all(limit=3, object='card')
+                return card_list(cards_response.data)[0]
         else:
             return None
 
