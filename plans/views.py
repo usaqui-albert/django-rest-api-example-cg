@@ -1,14 +1,15 @@
 import stripe
+from stripe.error import APIConnectionError, InvalidRequestError, CardError
 
 from rest_framework import generics, permissions, status, views
 from rest_framework.response import Response
 from rest_framework.generics import get_object_or_404
 
 from ConnectGood.settings import STRIPE_API_KEY
-from .models import PromoCode
 from miscellaneous.models import CustomerStripe
-from .serializers import SubscriptionSerializer, PromoCodeSerializer, CheckCodeSerializer
+from .serializers import SubscriptionSerializer
 from .helpers import get_response_plan_list
+from miscellaneous.helpers import stripe_errors_handler
 
 
 class PlanView(views.APIView):
@@ -67,42 +68,7 @@ class SubscriptionView(generics.GenericAPIView):
                 customer=customer_stripe.customer_id,
                 plan=serializer.validated_data['plan_id']
             )
-        except stripe.error.InvalidRequestError as e:
-            body = e.json_body
-            return Response(body, status=status.HTTP_400_BAD_REQUEST)
+        except (APIConnectionError, InvalidRequestError, CardError) as e:
+            return Response(stripe_errors_handler(e), status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_201_CREATED)
-
-
-class PromoCodeView(generics.CreateAPIView):
-    """Service for an admin to create a new promo code
-
-    :accepted methods:
-        POST
-    """
-    serializer_class = PromoCodeSerializer
-    permission_classes = (permissions.IsAdminUser,)
-
-
-class CheckingPromoCode(views.APIView):
-    """Service to check if a promo code is valid or not
-
-    :accepted methods:
-        POST
-    """
-    permission_classes = (permissions.AllowAny,)
-
-    @staticmethod
-    def post(request):
-        """
-
-        :param request:
-        :return:
-        """
-        serializer = CheckCodeSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        promo_code = get_object_or_404(PromoCode, code=serializer.validated_data['promo_code'])
-        if promo_code.used:
-            return Response({'promo_code': ['Promo code already used']}, status=status.HTTP_406_NOT_ACCEPTABLE)
-        else:
-            return Response({'promo_code': ['Valid Promo code']}, status=status.HTTP_200_OK)
