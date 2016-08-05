@@ -12,6 +12,7 @@ from .models import Event, UserEvent
 from .tasks import send_email_to_notify
 from .helpers import validate_uuid4, get_event_status, update_event_status
 from ConnectGood.settings import STRIPE_API_KEY
+from miscellaneous.helpers import stripe_errors_handler
 
 
 class EventView(generics.ListCreateAPIView):
@@ -145,17 +146,11 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 stripe.Charge.create(
                     amount=int(event.donation_amount * 100),
                     currency=country.currency,
-                    customer=user.user_customer.first(),
+                    customer=user.user_customer.first().customer_id,
                     description="Charge for " + user.__str__()
                 )
             except (APIConnectionError, InvalidRequestError, CardError) as e:
-                response = ''
-                if isinstance(e, APIConnectionError):
-                    response = str(e).split('.')[0]
-                if isinstance(e, InvalidRequestError) or isinstance(e, CardError):
-                    body = e.json_body
-                    response = str(body['error']['message'])
-                return response
+                return stripe_errors_handler(e)
             else:
                 pass  # TODO: send an email to the sender that the connect good was accepted
         return update_event_status(user_event, event_status)

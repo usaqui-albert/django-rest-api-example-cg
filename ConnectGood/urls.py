@@ -18,7 +18,7 @@ from django.contrib import admin
 
 from users.views import LoginView
 from miscellaneous.views import PaymentMethodView
-from plans.views import PlanView, PromoCodeView, CheckingPromoCode
+from plans.views import PlanView
 from charities.views import CharityDetail
 from ConnectGood.settings import MEDIA_ROOT
 
@@ -27,8 +27,6 @@ urlpatterns = [
     url(r'^api/v1/payments/$', PaymentMethodView.as_view()),
     url(r'^api/v1/charities/(?P<pk>[0-9]+)/$', CharityDetail.as_view()),
     url(r'^api/v1/plans/$', PlanView.as_view()),
-    url(r'^api/v1/verify-code/$', CheckingPromoCode.as_view()),
-    url(r'^api/v1/promo-codes/$', PromoCodeView.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': MEDIA_ROOT}),
     url(r'^docs/', include('rest_framework_docs.urls')),

@@ -167,4 +167,7 @@ CLIENT_URL_SERVER = "http://23.246.237.99:3000"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-BENEVITY_BASE_URL = 'https://sandbox.benevity.org/Adapter.General/'
+BENEVITY_COMPANY_ID = '1Z66WX7C28'
+BENEVITY_API_KEY = 'lah0aegeephaeCei'
+CANADA_ISO_CODE = '124'
+US_ISO_CODE = '840'

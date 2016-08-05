@@ -5,18 +5,17 @@ from rest_framework import serializers
 from django.db import IntegrityError
 
 from .models import User
-from plans.models import PromoCode
 from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
-from miscellaneous.helpers import card_list
+from miscellaneous.helpers import card_list, stripe_errors_handler
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
     """Serializer to create a new user"""
     terms_conditions = serializers.BooleanField(write_only=True)
-    card_token = serializers.CharField(max_length=100, allow_null=True, required=False)
-    plan_id = serializers.CharField(max_length=100, allow_null=True, required=False)
-    promo_code = serializers.CharField(max_length=100, required=False, allow_null=True)
+    card_token = serializers.CharField(max_length=100)
+    plan_id = serializers.CharField(max_length=100)
+    is_corporate_account = serializers.BooleanField(default=False)
 
     def __init__(self, *args, **kwargs):
         super(CreateUserSerializer, self).__init__(*args, **kwargs)
@@ -28,7 +27,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'password', 'first_name', 'last_name', 'company', 'street_address',
             'country', 'city', 'phone_number', 'terms_conditions', 'card_token', 'plan_id',
-            'promo_code', 'province', 'tax_receipts_as', 'zip_code', 'pk'
+            'province', 'is_corporate_account', 'zip_code', 'pk'
         )
         extra_kwargs = {
             'password': {'write_only': True},
@@ -43,42 +42,26 @@ class CreateUserSerializer(serializers.ModelSerializer):
         :return: user object created
         """
         del validated_data['terms_conditions']
-        if 'promo_code' in validated_data:
-            validated_data.pop('plan_id', None)
-            validated_data.pop('card_token', None)
-            promo_code = validated_data.pop('promo_code')
+        plan_id = validated_data.pop('plan_id')
+        card_token = validated_data.pop('card_token')
+        tax_receipts_as = validated_data.pop('is_corporate_account')
+
+        try:
+            customer = stripe.Customer.create(
+                description='Customer for ' + validated_data['email'],
+                source=card_token,
+                email=validated_data['email'],
+                plan=plan_id
+            )
+        except (APIConnectionError, InvalidRequestError, CardError) as e:
+            raise serializers.ValidationError(stripe_errors_handler(e))
+        else:
+            validated_data['tax_receipts_as'] = tax_receipts_as
             user = create_user_hashing_password(**validated_data)
             if not user:
                 raise serializers.ValidationError('There was an Integrity Error creating a user')
-            promo_code.update(used=True)
-            user.start_free_trial()
-            user.save()
+            CustomerStripe.objects.create(user=user, customer_id=customer.id)
             return user
-        elif 'plan_id' in validated_data and 'card_token' in validated_data:
-            plan_id = validated_data.pop('plan_id')
-            card_token = validated_data.pop('card_token')
-            try:
-                customer = stripe.Customer.create(
-                    description='Customer for ' + validated_data['email'],
-                    source=card_token,
-                    email=validated_data['email'],
-                    plan=plan_id
-                )
-            except stripe.error.InvalidRequestError as e:
-                body = e.json_body
-                return body['error']['message']
-            else:
-                user = create_user_hashing_password(**validated_data)
-                user.has_a_plan = True
-                user.save()
-                if not user:
-                    raise serializers.ValidationError('There was an Integrity Error creating a user')
-                CustomerStripe.objects.create(user=user, customer_id=customer.id)
-                return user
-        else:
-            raise serializers.ValidationError(
-                'If there is no promo code you have to send Plan and Card fields'
-            )
 
     @staticmethod
     def validate_terms_conditions(value):
@@ -92,52 +75,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("You must accept terms and conditions")
         return value
-
-    def validate_card_token(self, value):
-        """Method to validate card_token field, if there is an error raises a validation error
-        message
-
-        :param value: value of card_token field
-        :raise: message of validation error if there is no plan_id key
-        :return: validated value
-        """
-        if 'plan_id' not in self.get_initial():
-            raise serializers.ValidationError("This field is allowed only if exists a Plan field")
-        if not value and 'promo_code' not in self.get_initial():
-            raise serializers.ValidationError("This field can not be blank")
-        return value
-
-    def validate_plan_id(self, value):
-        """Method to validate plan_id field, if there is an error raises a validation error
-        message
-
-        :param value: value of the plan_id field
-        :raise: message of validation error if there is no card_token key
-        :return: validated value
-        """
-        if 'card_token' not in self.get_initial():
-            raise serializers.ValidationError("This field is allowed only if exists a Card field")
-        if not value and 'promo_code' not in self.get_initial():
-            raise serializers.ValidationError("This field can not be blank")
-        return value
-
-    @staticmethod
-    def validate_promo_code(value):
-        """Method to validate promo_code field, if there is an error raises a validation error
-        message
-
-        :param value: value of the promo_code field
-        :raise: message of validation error if promo_code key exists and it is empty
-        :return: django filter object with promo code object in it
-        """
-        if not value:
-            raise serializers.ValidationError("This field can not be blank")
-        promo_code_stored = PromoCode.objects.filter(code=value)
-        if not promo_code_stored.exists():
-            raise serializers.ValidationError("This promo code does not exists")
-        if promo_code_stored.first().used:
-            raise serializers.ValidationError("This promo code is already used")
-        return promo_code_stored
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -176,13 +113,7 @@ class UserSerializer(serializers.ModelSerializer):
             try:
                 customer = stripe.Customer.retrieve(customer_stripe.first().customer_id)
             except (APIConnectionError, InvalidRequestError, CardError) as e:
-                response = ''
-                if isinstance(e, APIConnectionError):
-                    response = str(e).split('.')[0]
-                if isinstance(e, InvalidRequestError) or isinstance(e, CardError):
-                    body = e.json_body
-                    response = str(body['error']['message'])
-                raise serializers.ValidationError(response)
+                raise serializers.ValidationError(stripe_errors_handler(e))
             else:
                 cards_response = customer.sources.all(limit=3, object='card')
                 return card_list(cards_response.data)[0]
@@ -205,6 +136,7 @@ def create_user_hashing_password(**validated_data):
         user = User.objects.create(**validated_data)
         user.set_password(user.password)
         user.is_active = True
+        user.has_a_plan = True
         user.save()
     except IntegrityError:
         return False
