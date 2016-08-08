@@ -23,8 +23,7 @@ def do_request(function):
             root = etree.XML(u)
             xml_string = etree.tostring(root)
             print xml_string
-            xml_object = objectify.fromstring(xml_string)
-            return xml_object
+            return objectify.fromstring(xml_string)
     return decorated_function
 
 class Benevity(object):
