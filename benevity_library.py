@@ -15,7 +15,7 @@ def do_request(function):
         url = function(instance, **kwargs)
         print url
         try:
-            u = urllib2.urlopen(url).read()
+            u = urllib2.urlopen(url, data="").read()
         except (urllib2.URLError, urllib2.HTTPError) as e:
             if isinstance(e, urllib2.HTTPError):
                 return 'HTTP %s %s' % (e.code, e.reason)
