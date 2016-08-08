@@ -19,6 +19,6 @@ query_params = {
 }
 
 response = benevity.activate_user(**query_params)
+
 if not isinstance(response, str):
-    for i in response.request.param:
-        print i.get('name'), i.get('value')
+    pass
