@@ -17,18 +17,10 @@ query_params = {
     'address-country': '124',
     'active': 'yes'
 }
-
-response = benevity.add_user(**query_params)
 causes = benevity.search_causes(country='124', term='Canada')
 
-if not isinstance(response, str):
-    if response.attrib['status'] == 'SUCCESS':
-        print 'Add fue success'
-    else:
-        print 'Add fue error'
-
 if not isinstance(causes, str):
-    if response.attrib['status'] == 'SUCCESS':
+    if causes.attrib['status'] == 'SUCCESS':
         print 'Causes fue success'
     else:
         print 'Causes fue error'
