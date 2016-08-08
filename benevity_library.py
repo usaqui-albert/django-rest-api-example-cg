@@ -12,6 +12,7 @@ BENEVITY_BASE_URL = 'https://sandbox.benevity.org'
 def do_request(function):
     def decorated_function(instance, **kwargs):
         url = function(instance, **kwargs)
+        print url
         try:
             u = urllib2.urlopen(url).read()
         except (urllib2.URLError, urllib2.HTTPError) as e:
