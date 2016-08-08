@@ -37,9 +37,17 @@ class UserView(generics.ListCreateAPIView):
             return Response({'stripe_error': [str(obj)]}, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if request.user.is_staff:
+            queryset = self.get_queryset()
+
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = UserSerializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = UserSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response('Permission denied, you are not an administrator', status=status.HTTP_403_FORBIDDEN)
 
     def get_queryset(self):
         queryset = User.objects.all()
