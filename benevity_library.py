@@ -23,8 +23,7 @@ def do_request(function):
             root = etree.XML(u)
             xml_string = etree.tostring(root)
             print xml_string
-            xml_object = objectify.fromstring(xml_string)
-            return xml_object
+            return objectify.fromstring(xml_string)
     return decorated_function
 
 class Benevity(object):
@@ -71,7 +70,7 @@ class Benevity(object):
 
     def get_url_request(self, operation, **kwargs):
         url_hmac = self.get_url_hmac(operation, **kwargs)
-        return BENEVITY_BASE_URL + url_hmac + 'hmac=%s' % self.get_hmac_code(url_hmac)
+        return BENEVITY_BASE_URL + url_hmac + '&hmac=%s' % self.get_hmac_code(url_hmac)
 
     def get_url_hmac(self, operation, **kwargs):
         url_request = '/Adapter.General/' + self.company_id + '/' + operation
