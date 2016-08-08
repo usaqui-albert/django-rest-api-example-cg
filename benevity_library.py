@@ -1,4 +1,5 @@
 """This a library to handle request to the benevity api"""
+import urllib
 import urllib2
 import hmac
 import base64
@@ -71,7 +72,7 @@ class Benevity(object):
 
     def get_url_request(self, operation, **kwargs):
         url_hmac = self.get_url_hmac(operation, **kwargs)
-        return BENEVITY_BASE_URL + url_hmac + '&hmac=%s' % self.get_hmac_code(url_hmac)
+        return BENEVITY_BASE_URL + url_hmac + '&' + self.get_hmac_code(url_hmac)
 
     def get_url_hmac(self, operation, **kwargs):
         url_request = '/Adapter.General/' + self.company_id + '/' + operation
@@ -79,7 +80,7 @@ class Benevity(object):
 
     def get_hmac_code(self, url_hmac):
         digest = hmac.new(self.api_key, url_hmac, sha1).digest()
-        return base64.encodestring(digest)
+        return urllib.urlencode({'hmac': base64.encodestring(digest).strip()})
 
     @staticmethod
     def query_params_handler(dic):
