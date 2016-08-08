@@ -11,16 +11,18 @@ query_params = {
     'firstname': 'Kimberly',
     'email': 'KimberlyJTremaine@example.example',
     'country': '124',
-    'address-street': '504SilverSpringsBlvd',
-    'address-state': 'AB',
-    'address-postcode': 'T3B2C3',
-    'address-country': '124',
     'active': 'yes'
 }
-causes = benevity.search_causes(country='124', term='Canada')
+# causes = benevity.search_causes(country='124', term='Canada')
+# if not isinstance(causes, str):
+#     if causes.attrib['status'] == 'SUCCESS':
+#         print 'Causes fue success'
+#     else:
+#         print 'Causes fue error'
 
-if not isinstance(causes, str):
-    if causes.attrib['status'] == 'SUCCESS':
-        print 'Causes fue success'
+response = benevity.add_user(**query_params)
+if not isinstance(response, str):
+    if response.attrib['status'] == 'SUCCESS':
+        print 'Add fue success'
     else:
-        print 'Causes fue error'
+        print 'Add fue error'
