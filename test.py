@@ -5,7 +5,6 @@ benevity.api_key = BENEVITY_API_KEY
 benevity.company_id = BENEVITY_COMPANY_ID
 
 query_params = {
-    'user': 'User01120160331210259006',
     'lastname': 'Tremaine',
     'initials': 'J',
     'firstname': 'Kimberly',
@@ -13,6 +12,7 @@ query_params = {
     'country': '124',
     'active': 'yes'
 }
+
 causes = benevity.search_causes(country='124', term='Canada', page=1, pagesize=10)
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
