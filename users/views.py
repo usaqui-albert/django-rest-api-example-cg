@@ -42,12 +42,13 @@ class UserView(generics.ListCreateAPIView):
 
             page = self.paginate_queryset(queryset)
             if page is not None:
-                serializer = UserSerializer(page, many=True)
+                serializer = UserSerializer(page, many=True, context={'without_payment': True})
                 return self.get_paginated_response(serializer.data)
 
-            serializer = UserSerializer(queryset, many=True)
+            serializer = UserSerializer(queryset, many=True, context={'without_payment': True})
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response('Permission denied, you are not an administrator', status=status.HTTP_403_FORBIDDEN)
+        return Response('Permission denied, you are not an administrator',
+                        status=status.HTTP_403_FORBIDDEN)
 
     def get_queryset(self):
         queryset = User.objects.all()
@@ -73,15 +74,24 @@ class LoginView(generics.GenericAPIView):
         :return: authentication token
         :except: validation error message if the username and password don't match
         """
+        if 'admin_mode' in request.data:
+            admin_mode = False if str(request.data['admin_mode']) == 'False' else True
+        else:
+            admin_mode = False
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        user.last_login = timezone.now()
-        user.save()
 
-        Token.objects.filter(user=user).delete()
-        token = Token.objects.create(user=user)
+        if admin_mode and not user.is_staff:
+            return Response('Permission denied, you are not an administrator',
+                            status=status.HTTP_403_FORBIDDEN)
+        else:
+            user.last_login = timezone.now()
+            user.save()
+            Token.objects.filter(user=user).delete()
+            token = Token.objects.create(user=user)
 
-        data = {'token': str(token),
-                'user': UserSerializer(user).data}
-        return Response(data, status=status.HTTP_200_OK)
+            data = {'token': str(token),
+                    'user': UserSerializer(user).data}
+            return Response(data, status=status.HTTP_200_OK)

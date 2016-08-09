@@ -84,6 +84,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(UserSerializer, self).__init__(*args, **kwargs)
+        if 'without_payment' in self.context:
+            self.fields.pop('payment_method')
         stripe.api_key = STRIPE_API_KEY
 
     class Meta:
