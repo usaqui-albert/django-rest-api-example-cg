@@ -13,7 +13,7 @@ query_params = {
     'active': 'yes'
 }
 
-causes = benevity.search_causes(country='124', term='Canada', page=1, pagesize=10)
+causes = benevity.search_causes(country='124', term='Canada', page=2, pagesize=9)
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
         print 'Causes fue success'
