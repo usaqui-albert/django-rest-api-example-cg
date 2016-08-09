@@ -13,6 +13,7 @@ from .tasks import send_email_to_notify
 from .helpers import validate_uuid4, get_event_status, update_event_status
 from ConnectGood.settings import STRIPE_API_KEY
 from miscellaneous.helpers import stripe_errors_handler
+from benevity_library import benevity
 
 
 class EventView(generics.ListCreateAPIView):
@@ -149,8 +150,35 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                     customer=user.user_customer.first().customer_id,
                     description="Charge for " + user.__str__()
                 )
-            except (APIConnectionError, InvalidRequestError, CardError) as e:
-                return stripe_errors_handler(e)
+            except (APIConnectionError, InvalidRequestError, CardError) as err:
+                return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
             else:
-                pass  # TODO: send an email to the sender that the connect good was accepted
+                if not user.added_to_benevity:
+                    response = benevity.add_user(**get_user_params(user))
+                    if isinstance(response, str):
+                        return Response(response, status=status.HTTP_409_CONFLICT)
+                transfer_params = {
+                    'cashable': 'no',
+                    'user': str(user.benevity_id),
+                    'credits': str(int(event.donation_amount * 100)),
+                    'refno': 'CG%s' % str(event.id)
+                }
+                res = benevity.company_transfer_credits_to_user(**transfer_params)
+                if isinstance(res, str):
+                    return Response(res, status=status.HTTP_409_CONFLICT)
+                # TODO: send an email to the sender that the connect good was accepted
         return update_event_status(user_event, event_status)
+
+def get_user_params(user):
+    """
+
+    :param user: user object
+    :return: dictionary with the necessary fields to do the benevity request
+    """
+    return {
+        'email': user.email,
+        'firstname': user.first_name,
+        'lastname': user.last_name,
+        'active': 'yes',
+        'user': str(user.benevity_id)
+    }

@@ -17,6 +17,7 @@ class CharityCountry(models.Model):
     country = models.ForeignKey(Country, related_name='country_charity')
     charity = models.ForeignKey(CharityCategory, related_name='country_charity')
     picture = models.ImageField(upload_to=PathAndRename('charities'))
+    benevity_id = models.CharField(max_length=100)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
