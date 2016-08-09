@@ -8,6 +8,7 @@ from .models import User
 from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
 from miscellaneous.helpers import card_list, stripe_errors_handler
+from countries.serializers import CountrySerializer
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -81,6 +82,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer to update or get a user information"""
     payment_method = serializers.SerializerMethodField()
     tax_receipts_as = serializers.SerializerMethodField()
+    country = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(UserSerializer, self).__init__(*args, **kwargs)
@@ -93,13 +95,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',
-            'city', 'phone_number', 'has_a_plan', 'free_trial_started_at', 'created_at',
-            'updated_at', 'province', 'tax_receipts_as', 'payment_method', 'pk'
+            'city', 'phone_number', 'has_a_plan', 'created_at', 'updated_at', 'province',
+            'tax_receipts_as', 'payment_method', 'pk'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
             'has_a_plan': {'read_only': True},
-            'free_trial_started_at': {'read_only': True},
             'payment_method': {'read_only': True},
             'tax_receipts_as': {'read_only': True},
             'created_at': {'read_only': True},
@@ -126,6 +127,9 @@ class UserSerializer(serializers.ModelSerializer):
     def get_tax_receipts_as(instance):
         return instance.get_tax_receipts_as_string()
 
+    @staticmethod
+    def get_country(instance):
+        return CountrySerializer(instance.country).data
 
 def create_user_hashing_password(**validated_data):
     """Helper method function to create a new user, hash its password and store it in the database

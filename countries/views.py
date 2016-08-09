@@ -20,21 +20,6 @@ class CountryView(generics.ListCreateAPIView):
     pagination_class = None
 
 
-class CountryDetail(generics.RetrieveAPIView):
-    """Service to get the detail(states) from an specific country
-
-    :accepted methods:
-        GET
-    """
-    serializer_class = CountrySerializer
-    permission_classes = (permissions.AllowAny,)
-
-    def get_queryset(self):
-        queryset = Country.objects.filter(id=self.kwargs['pk']).prefetch_related(
-            Prefetch('states', queryset=State.objects.filter(country=self.kwargs['pk'])))
-        return queryset
-
-
 class StatesList(generics.ListAPIView):
     """
 

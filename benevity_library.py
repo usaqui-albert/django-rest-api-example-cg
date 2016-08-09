@@ -10,22 +10,37 @@ from hashlib import sha1
 
 BENEVITY_BASE_URL = 'https://sandbox.benevity.org'
 
-def do_request(function):
+
+def error_handler(error):
+    if isinstance(error, urllib2.HTTPError):
+        return 'HTTP %s %s' % (error.code, error.reason)
+    if isinstance(error, urllib2.URLError):
+        return str(error.reason)
+
+def objectifying_response(response):
+    root = etree.XML(response)
+    xml_string = etree.tostring(root)
+    print xml_string
+    return objectify.fromstring(xml_string)
+
+def post(function):
     def decorated_function(instance, **kwargs):
-        url = function(instance, **kwargs)
-        print url
         try:
-            u = urllib2.urlopen(url, data="").read()
+            u = urllib2.urlopen(function(instance, **kwargs), data="").read()
         except (urllib2.URLError, urllib2.HTTPError) as e:
-            if isinstance(e, urllib2.HTTPError):
-                return 'HTTP %s %s' % (e.code, e.reason)
-            if isinstance(e, urllib2.URLError):
-                return str(e.reason)
+            return error_handler(e)
         else:
-            root = etree.XML(u)
-            xml_string = etree.tostring(root)
-            print xml_string
-            return objectify.fromstring(xml_string)
+            return objectifying_response(u)
+    return decorated_function
+
+def get(function):
+    def decorated_function(instance, **kwargs):
+        try:
+            u = urllib2.urlopen(function(instance, **kwargs)).read()
+        except (urllib2.URLError, urllib2.HTTPError) as e:
+            return error_handler(e)
+        else:
+            return objectifying_response(u)
     return decorated_function
 
 class Benevity(object):
@@ -34,39 +49,39 @@ class Benevity(object):
         self.company_id = str()
         self.api_key = str()
 
-    @do_request
+    @get
     def get_company_user_list(self, **kwargs):
         return self.get_url_request('GetCompanyUserList', **kwargs)
 
-    @do_request
+    @post
     def add_user(self, **kwargs):
         return self.get_url_request('AddUser', **kwargs)
 
-    @do_request
+    @post
     def activate_user(self, **kwargs):
         return self.get_url_request('ActivateUser', **kwargs)
 
-    @do_request
+    @get
     def get_company_cause_list(self, **kwargs):
         return self.get_url_request('GetCompanyCauseList', **kwargs)
 
-    @do_request
+    @get
     def search_causes(self, **kwargs):
         return self.get_url_request('SearchCauses', **kwargs)
 
-    @do_request
+    @post
     def company_transfer_credits_to_cause(self, **kwargs):
         return self.get_url_request('CompanyTransferCreditsToCause', **kwargs)
 
-    @do_request
+    @post
     def company_transfer_credits_to_cause_for_user(self, **kwargs):
         return self.get_url_request('CompanyTransferCreditsToCauseForUser', **kwargs)
 
-    @do_request
+    @post
     def company_transfer_credits_to_user(self, **kwargs):
         return self.get_url_request('CompanyTransferCreditsToUser', **kwargs)
 
-    @do_request
+    @post
     def user_transfer_credits_to_causes(self, **kwargs):
         return self.get_url_request('UserTransferCreditsToCauses', **kwargs)
 

@@ -51,7 +51,7 @@ class UserView(generics.ListCreateAPIView):
                         status=status.HTTP_403_FORBIDDEN)
 
     def get_queryset(self):
-        queryset = User.objects.all()
+        queryset = User.objects.all().select_related('country')
         return queryset
 
 

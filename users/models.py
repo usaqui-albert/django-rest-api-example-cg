@@ -20,15 +20,20 @@ class User(AbstractBaseUser):
     country = models.ForeignKey(Country, related_name='country')
     city = models.CharField(max_length=100)
     province = models.ForeignKey(State, related_name='state')
+    phone_number = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=10)
+
+    tax_receipts_as = models.IntegerField(choices=CONDITION_CHOICES)
+    added_to_benevity = models.BooleanField(default=False)
+
+    free_trial_started_at = models.DateTimeField(null=True)
+    has_a_plan = models.BooleanField(default=False)
+
     facebook = models.CharField(max_length=100, null=True)
     twitter = models.CharField(max_length=100, null=True)
     linkedin = models.CharField(max_length=100, null=True)
-    phone_number = models.CharField(max_length=100)
+
     is_active = models.BooleanField(default=False)
-    free_trial_started_at = models.DateTimeField(null=True)
-    has_a_plan = models.BooleanField(default=False)
-    tax_receipts_as = models.IntegerField(choices=CONDITION_CHOICES)
-    zip_code = models.CharField(max_length=10)
     is_staff = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
