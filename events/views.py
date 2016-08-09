@@ -165,7 +165,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 }
                 res = benevity.company_transfer_credits_to_user(**transfer_params)
                 if isinstance(res, str):
-                    return Response({'benevity_error': [res]}, status=status.HTTP_409_CONFLICT)
+                    return Response(res, status=status.HTTP_409_CONFLICT)
                 # TODO: send an email to the sender that the connect good was accepted
         return update_event_status(user_event, event_status)
 
