@@ -8,6 +8,7 @@ from .models import User
 from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
 from miscellaneous.helpers import card_list, stripe_errors_handler
+from countries.serializers import CountrySerializer
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -81,6 +82,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer to update or get a user information"""
     payment_method = serializers.SerializerMethodField()
     tax_receipts_as = serializers.SerializerMethodField()
+    country = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(UserSerializer, self).__init__(*args, **kwargs)
@@ -126,6 +128,9 @@ class UserSerializer(serializers.ModelSerializer):
     def get_tax_receipts_as(instance):
         return instance.get_tax_receipts_as_string()
 
+    @staticmethod
+    def get_country(instance):
+        return CountrySerializer(instance.country).data
 
 def create_user_hashing_password(**validated_data):
     """Helper method function to create a new user, hash its password and store it in the database
