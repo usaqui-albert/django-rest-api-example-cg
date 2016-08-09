@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager
 from django.db import models
@@ -24,7 +25,9 @@ class User(AbstractBaseUser):
     zip_code = models.CharField(max_length=10)
 
     tax_receipts_as = models.IntegerField(choices=CONDITION_CHOICES)
+
     added_to_benevity = models.BooleanField(default=False)
+    benevity_id = models.UUIDField(default=uuid.uuid4, editable=False)
 
     free_trial_started_at = models.DateTimeField(null=True)
     has_a_plan = models.BooleanField(default=False)

@@ -29,6 +29,7 @@
     "fields": {
       "name": "Heart & Stroke Foundation",
       "picture": "charities/55650cc87ee044a5a3cefe1a7c1b3442.jpg",
+      "benevity_id": "124-106846942RR0001",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -65,6 +66,7 @@
     "fields": {
       "name": "Juvenile Diabetes Research Foundation Canada",
       "picture": "charities/563c8891bdfa4aafbde193f1677d5a6c.jpg",
+      "benevity_id": "124-118976604RR0001",
       "country": 1,
       "charity": 1,
       "updated_at": "2016-07-11T17:43:19.809415",
@@ -185,6 +187,7 @@
     "fields": {
       "name": "Doctors Without Borders",
       "picture": "charities/b2c5b04246e14fef857b1c96bea25161.jpg",
+      "benevity_id": "124-135275857RR0001",
       "country": 1,
       "charity": 3,
       "updated_at": "2016-07-11T17:43:19.809415",
