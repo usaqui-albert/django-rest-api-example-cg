@@ -95,13 +95,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',
-            'city', 'phone_number', 'has_a_plan', 'free_trial_started_at', 'created_at',
-            'updated_at', 'province', 'tax_receipts_as', 'payment_method', 'pk'
+            'city', 'phone_number', 'has_a_plan', 'created_at', 'updated_at', 'province',
+            'tax_receipts_as', 'payment_method', 'pk'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
             'has_a_plan': {'read_only': True},
-            'free_trial_started_at': {'read_only': True},
             'payment_method': {'read_only': True},
             'tax_receipts_as': {'read_only': True},
             'created_at': {'read_only': True},
