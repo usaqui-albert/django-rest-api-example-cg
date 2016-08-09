@@ -29,6 +29,7 @@ class User(AbstractBaseUser):
     has_a_plan = models.BooleanField(default=False)
     tax_receipts_as = models.IntegerField(choices=CONDITION_CHOICES)
     zip_code = models.CharField(max_length=10)
+    is_staff = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
