@@ -8,7 +8,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 
 from .models import User
-from .serializers import CreateUserSerializer, UserSerializer
+from .serializers import CreateUserSerializer, UserSerializer, UpdateUserSerializer
 from .tasks import post_create_user
 
 class UserView(generics.ListCreateAPIView):
@@ -51,8 +51,81 @@ class UserView(generics.ListCreateAPIView):
                         status=status.HTTP_403_FORBIDDEN)
 
     def get_queryset(self):
-        queryset = User.objects.all().select_related('country')
+        queryset = User.objects.all().select_related('country', 'province')
         return queryset
+
+
+class UserDetail(generics.RetrieveUpdateAPIView):
+    """Service to get the detail of a user or update if the user requesting is the owner
+    or is an admin
+
+    :accepted methods:
+        PATH
+        PUT
+        GET
+    """
+    serializer_class = UpdateUserSerializer
+    permission_classes = (permissions.AllowAny,)
+
+    def update(self, request, **kwargs):
+        """Method to get the data of a user if the user requesting is the owner or is an admin
+
+        :param request: data to update, user instance and request method PUT or PATCH
+        :param kwargs: pk of the user and the partial boolean value
+        :return: Http 200 with the updated data if it was successfully updated
+        :except: Http 404 if the user does not exists, Http 403 if the user requesting is
+        not the owner or is not an admin
+        """
+        if self.is_admin_or_own_user():
+            instance = self.get_object()
+            if instance.exists():
+                if not request.user.is_staff and 'is_active' in request.data:
+                    del request.data['is_active']
+                partial = kwargs.pop('partial', True)
+                serializer = self.get_serializer(instance.get(),
+                                                 data=request.data,
+                                                 partial=partial)
+                serializer.is_valid(raise_exception=True)
+                self.perform_update(serializer)
+                return Response(serializer.data)
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response("You are not the owner or an administrator",
+                        status=status.HTTP_403_FORBIDDEN)
+
+    def retrieve(self, request, **kwargs):
+        """Method to get the data of a user if the user requesting is the owner or is an admin
+
+        :param request: user instance and request method GET
+        :param kwargs: pk of the user
+        :return: Http 200 if the getting data was success
+        :except: Http 404 if the user does not exists, Http 403 if the user requesting is
+        not the owner or is not an admin
+        """
+        if self.is_admin_or_own_user():
+            instance = self.get_object()
+            if instance.exists():
+                serializer = UserSerializer(instance.get(), context={'without_payment': True})
+                return Response(serializer.data)
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response("You are not the owner or an administrator",
+                        status=status.HTTP_403_FORBIDDEN)
+
+    def get_object(self):
+        """Method to filter user by pk and prefetch the country instance related to
+        the user
+
+        :return: queryset with the user in it
+        """
+        obj = User.objects.filter(pk=self.kwargs['pk']).select_related('country', 'province')
+        return obj
+
+    def is_admin_or_own_user(self):
+        """Method to verify if the user that is requesting is the owner or is an admin
+
+        :return: True if is the own user or an admin, otherwise False
+        """
+        user, pk = (self.request.user, self.kwargs['pk'])
+        return True if user.is_staff or user.pk == int(pk) else False
 
 
 class LoginView(generics.GenericAPIView):

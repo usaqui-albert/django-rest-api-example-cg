@@ -9,6 +9,7 @@ from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
 from miscellaneous.helpers import card_list, stripe_errors_handler
 from countries.serializers import CountrySerializer
+from states.serializers import StateSerializer
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -83,6 +84,7 @@ class UserSerializer(serializers.ModelSerializer):
     payment_method = serializers.SerializerMethodField()
     tax_receipts_as = serializers.SerializerMethodField()
     country = serializers.SerializerMethodField()
+    province = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(UserSerializer, self).__init__(*args, **kwargs)
@@ -96,7 +98,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',
             'city', 'phone_number', 'has_a_plan', 'created_at', 'updated_at', 'province',
-            'tax_receipts_as', 'payment_method', 'pk'
+            'tax_receipts_as', 'payment_method', 'zip_code', 'pk'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
@@ -131,6 +133,10 @@ class UserSerializer(serializers.ModelSerializer):
     def get_country(instance):
         return CountrySerializer(instance.country).data
 
+    @staticmethod
+    def get_province(instance):
+        return StateSerializer(instance.province).data
+
 def create_user_hashing_password(**validated_data):
     """Helper method function to create a new user, hash its password and store it in the database
 
@@ -147,3 +153,15 @@ def create_user_hashing_password(**validated_data):
     except IntegrityError:
         return False
     return user
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'pk', 'email', 'first_name', 'last_name', 'company', 'country', 'city', 'province',
+            'phone_number', 'zip_code', 'is_active'
+        )
+        extra_kwargs = {
+            'pk': {'read_only': True}
+        }
