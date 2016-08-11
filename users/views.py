@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.db import transaction
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password
 
 from rest_framework import parsers, renderers, status, generics, permissions
 from rest_framework.authtoken.models import Token
@@ -55,7 +56,7 @@ class UserView(generics.ListCreateAPIView):
         return queryset
 
 
-class UserDetail(generics.RetrieveUpdateAPIView):
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     """Service to get the detail of a user or update if the user requesting is the owner
     or is an admin
 
@@ -63,14 +64,15 @@ class UserDetail(generics.RetrieveUpdateAPIView):
         PATH
         PUT
         GET
+        DELETE
     """
     serializer_class = UpdateUserSerializer
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def update(self, request, **kwargs):
         """Method to get the data of a user if the user requesting is the owner or is an admin
 
-        :param request: data to update, user instance and request method PUT or PATCH
+        :param request: data to update, user requesting instance and request method PUT or PATCH
         :param kwargs: pk of the user and the partial boolean value
         :return: Http 200 with the updated data if it was successfully updated
         :except: Http 404 if the user does not exists, Http 403 if the user requesting is
@@ -95,7 +97,7 @@ class UserDetail(generics.RetrieveUpdateAPIView):
     def retrieve(self, request, **kwargs):
         """Method to get the data of a user if the user requesting is the owner or is an admin
 
-        :param request: user instance and request method GET
+        :param request: user requesting instance and request method GET
         :param kwargs: pk of the user
         :return: Http 200 if the getting data was success
         :except: Http 404 if the user does not exists, Http 403 if the user requesting is
@@ -108,6 +110,31 @@ class UserDetail(generics.RetrieveUpdateAPIView):
                 return Response(serializer.data)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response("You are not the owner or an administrator",
+                        status=status.HTTP_403_FORBIDDEN)
+
+    def perform_update(self, serializer):
+        if 'password' in serializer.validated_data:
+            raw_password = serializer.validated_data['password']
+            serializer.validated_data['password'] = make_password(raw_password)
+        serializer.save()
+
+    def destroy(self, request, **kwargs):
+        """Method to delete a user only if the user requesting is an admin
+
+        :param request: user requesting instance and request method DELETE
+        :param kwargs: pk of the user
+        :return: Http 200 if the user was successfully deleted
+        :except: Http 404 if the user does not exists, Http 403 if the user requesting is
+        not an admin
+        """
+        if request.user.is_staff:
+            instance = self.get_object()
+            if instance.exists():
+                self.perform_destroy(instance.get())
+                return Response("The user was successfully deleted",
+                                status=status.HTTP_200_OK)
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response('Permission denied, you are not an administrator',
                         status=status.HTTP_403_FORBIDDEN)
 
     def get_object(self):
