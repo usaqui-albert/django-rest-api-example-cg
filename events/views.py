@@ -9,7 +9,8 @@ from rest_framework import generics, permissions, status
 
 from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectEventSerializer
 from .models import Event, UserEvent
-from .tasks import send_email_to_notify
+from .tasks import notify_event_invitation,\
+                    notify_event_accepted, notify_event_rejected
 from .helpers import validate_uuid4, get_event_status, update_event_status
 from ConnectGood.settings import STRIPE_API_KEY
 from miscellaneous.helpers import stripe_errors_handler
@@ -36,7 +37,9 @@ class EventView(generics.ListCreateAPIView):
             event = serializer.save()
             user_event = UserEvent.objects.create(event=event, user=user)
             transaction.on_commit(
-                lambda: send_email_to_notify.delay(event, user, user_event.get_key_as_string())
+                lambda: notify_event_invitation.delay(
+                    event, user, user_event.get_key_as_string()
+                )
             )
         return self.serializer_class(event)
 
@@ -118,14 +121,12 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             event_status = get_event_status(serializer.validated_data['status'])
             response = self.handle_accept_or_reject(user_event.first(), event_status)
             if isinstance(response, str):
-                response = Response({'stripe_error': [response]},
-                                    status=status.HTTP_400_BAD_REQUEST)
+                response = Response(response, status=status.HTTP_400_BAD_REQUEST)
             elif response:
                 response = Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 database_error = 'There was a conflict updating the database'
-                response = Response({'database_error': [database_error]},
-                                    status=status.HTTP_409_CONFLICT)
+                response = Response(database_error, status=status.HTTP_409_CONFLICT)
             return response
         return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -137,12 +138,12 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         :param event_status:
         :return:
         """
+        event = user_event.event
+        user = user_event.user
         if event_status == user_event.REJECTED:
-            pass  # TODO: send an email to the sender that the connect good was rejected
-        elif event_status == user_event.ACCEPTED:
-            event = user_event.event
+            notify_event_rejected.delay(event, user)
+        else:
             country = event.country
-            user = user_event.user
             try:
                 stripe.Charge.create(
                     amount=int(event.donation_amount * 100),
@@ -151,12 +152,13 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                     description="Charge for " + user.__str__()
                 )
             except (APIConnectionError, InvalidRequestError, CardError) as err:
-                return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
+                return stripe_errors_handler(err)
             else:
                 if not user.added_to_benevity:
                     response = benevity.add_user(**get_user_params(user))
                     if isinstance(response, str):
-                        return Response(response, status=status.HTTP_409_CONFLICT)
+                        return response
+                    # TODO: set the added_to_benevity attribute of user as True
                 transfer_params = {
                     'cashable': 'no',
                     'user': str(user.benevity_id),
@@ -165,8 +167,8 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 }
                 res = benevity.company_transfer_credits_to_user(**transfer_params)
                 if isinstance(res, str):
-                    return Response(res, status=status.HTTP_409_CONFLICT)
-                # TODO: send an email to the sender that the connect good was accepted
+                    return res
+                notify_event_accepted.delay(event, user)
         return update_event_status(user_event, event_status)
 
 def get_user_params(user):

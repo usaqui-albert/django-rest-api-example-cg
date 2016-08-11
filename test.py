@@ -5,6 +5,7 @@ benevity.api_key = BENEVITY_API_KEY
 benevity.company_id = BENEVITY_COMPANY_ID
 
 query_params = {
+    'user': 'user2',
     'lastname': 'Tremaine',
     'initials': 'J',
     'firstname': 'Kimberly',
