@@ -12,7 +12,7 @@ from .models import Event, UserEvent
 from .tasks import notify_event_invitation,\
                     notify_event_accepted, notify_event_rejected
 from .helpers import validate_uuid4, get_event_status, update_event_status
-from ConnectGood.settings import STRIPE_API_KEY
+from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler
 from benevity_library import benevity
 
@@ -78,7 +78,9 @@ class GetEventByToken(generics.RetrieveAPIView):
         if validate_uuid4(kwargs['key']):
             queryset = self.get_queryset()
             if queryset.exists():
-                serializer = self.serializer_class(queryset.first(),
+                event = queryset.first()
+                self.update_event_status_as_viewed(event)
+                serializer = self.serializer_class(event,
                                                    context={'host': request.get_host()})
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -93,9 +95,20 @@ class GetEventByToken(generics.RetrieveAPIView):
         )
         return queryset
 
+    def update_event_status_as_viewed(self, event):
+        """Method to update the event status as viewed
+
+        :param event: event instance
+        :return: user event instance updated as viewed
+        """
+        user_event = event.user_event.filter(key=self.kwargs['key']).first()
+        user_event.status = user_event.VIEWED
+        user_event.save()
+        return user_event
+
 
 class AcceptOrRejectEvent(generics.GenericAPIView):
-    """
+    """Service to handle when a recipient accept or reject a CG invitation
 
     :accepted methods:
         POST
@@ -103,6 +116,8 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
     def __init__(self, *args, **kwargs):
         super(AcceptOrRejectEvent, self).__init__(*args, **kwargs)
         stripe.api_key = STRIPE_API_KEY
+        benevity.api_key = BENEVITY_API_KEY
+        benevity.company_id = BENEVITY_COMPANY_ID
 
     permission_classes = (permissions.AllowAny,)
     serializer_class = AcceptOrRejectEventSerializer
@@ -132,10 +147,10 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
 
     @staticmethod
     def handle_accept_or_reject(user_event, event_status):
-        """
+        """Method to handle when a user reject or accept a CG invitation
 
-        :param user_event:
-        :param event_status:
+        :param user_event: user_event instance
+        :param event_status: status of the event, example: 'ACCEPTED'
         :return:
         """
         event = user_event.event
