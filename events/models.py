@@ -27,10 +27,12 @@ class UserEvent(models.Model):
     ACCEPTED = 'A'
     REJECTED = 'R'
     WAITING = 'W'
+    VIEWED = 'V'
     STATUS_OF_THE_EVENT = (
         (ACCEPTED, 'ACCEPTED'),
         (REJECTED, 'REJECTED'),
-        (WAITING, 'WAITING')
+        (WAITING, 'WAITING'),
+        (VIEWED, 'VIEWED')
     )
 
     user = models.ForeignKey(User, related_name='user_event')
