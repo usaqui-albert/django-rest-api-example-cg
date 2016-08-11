@@ -98,7 +98,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',
             'city', 'phone_number', 'has_a_plan', 'created_at', 'updated_at', 'province',
-            'tax_receipts_as', 'payment_method', 'zip_code', 'pk'
+            'tax_receipts_as', 'payment_method', 'zip_code', 'is_active', 'pk'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
@@ -106,7 +106,8 @@ class UserSerializer(serializers.ModelSerializer):
             'payment_method': {'read_only': True},
             'tax_receipts_as': {'read_only': True},
             'created_at': {'read_only': True},
-            'updated_at': {'read_only': True}
+            'updated_at': {'read_only': True},
+            'is_active': {'read_only': True}
         }
 
     @staticmethod
@@ -160,8 +161,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'pk', 'email', 'first_name', 'last_name', 'company', 'country', 'city', 'province',
-            'phone_number', 'zip_code', 'is_active'
+            'phone_number', 'zip_code', 'is_active', 'street_address', 'password'
         )
         extra_kwargs = {
-            'pk': {'read_only': True}
+            'pk': {'read_only': True},
+            'password': {'write_only': True}
         }
