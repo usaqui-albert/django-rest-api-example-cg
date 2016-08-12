@@ -8,6 +8,7 @@ from .models import User
 from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
 from miscellaneous.helpers import card_list, stripe_errors_handler
+from plans.helpers import get_response_plan_list
 from countries.serializers import CountrySerializer
 from states.serializers import StateSerializer
 
@@ -85,12 +86,17 @@ class UserSerializer(serializers.ModelSerializer):
     tax_receipts_as = serializers.SerializerMethodField()
     country = serializers.SerializerMethodField()
     province = serializers.SerializerMethodField()
+    is_corporate_account = serializers.SerializerMethodField()
+    plan = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(UserSerializer, self).__init__(*args, **kwargs)
         if 'without_payment' in self.context:
             self.fields.pop('payment_method')
+        if 'without_plan' in self.context:
+            self.fields.pop('plan')
         stripe.api_key = STRIPE_API_KEY
+        self.customer = None
 
     class Meta:
         """Relating to a User model and excluding password field"""
@@ -98,31 +104,41 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'first_name', 'last_name', 'company', 'street_address', 'country',
             'city', 'phone_number', 'has_a_plan', 'created_at', 'updated_at', 'province',
-            'tax_receipts_as', 'payment_method', 'zip_code', 'is_active', 'pk'
+            'tax_receipts_as', 'payment_method', 'zip_code', 'is_corporate_account', 'pk',
+            'is_active', 'plan'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
             'has_a_plan': {'read_only': True},
             'payment_method': {'read_only': True},
+            'plan': {'read_only': True},
             'tax_receipts_as': {'read_only': True},
             'created_at': {'read_only': True},
             'updated_at': {'read_only': True},
             'is_active': {'read_only': True}
         }
 
-    @staticmethod
-    def get_payment_method(instance):
+    def get_payment_method(self, instance):
         if instance.has_a_plan:
-            customer_stripe = CustomerStripe.objects.filter(user=instance.id)
-            if not customer_stripe.exists():
-                raise serializers.ValidationError("There is no stripe customer available for this user")
-            try:
-                customer = stripe.Customer.retrieve(customer_stripe.first().customer_id)
-            except (APIConnectionError, InvalidRequestError, CardError) as e:
-                raise serializers.ValidationError(stripe_errors_handler(e))
-            else:
-                cards_response = customer.sources.all(limit=3, object='card')
-                return card_list(cards_response.data)[0]
+            if self.customer is None:
+                customer = get_customer_in_stripe(instance)
+                if isinstance(customer, str):
+                    raise serializers.ValidationError(customer)
+                self.customer = customer
+            cards_response = self.customer.sources.data
+            return card_list(cards_response)[0]
+        else:
+            return None
+
+    def get_plan(self, instance):
+        if instance.has_a_plan:
+            if self.customer is None:
+                customer = get_customer_in_stripe(instance)
+                if isinstance(customer, str):
+                    raise serializers.ValidationError(customer)
+                self.customer = customer
+            plan = self.customer.subscriptions.data[0]['plan']
+            return get_response_plan_list([plan])[0]
         else:
             return None
 
@@ -137,6 +153,11 @@ class UserSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_province(instance):
         return StateSerializer(instance.province).data
+
+    @staticmethod
+    def get_is_corporate_account(instance):
+        return instance.is_corporate_account()
+
 
 def create_user_hashing_password(**validated_data):
     """Helper method function to create a new user, hash its password and store it in the database
@@ -155,15 +176,101 @@ def create_user_hashing_password(**validated_data):
         return False
     return user
 
+def get_customer_in_stripe(instance):
+    customer_stripe = CustomerStripe.objects.filter(user=instance.id)
+    if customer_stripe.exists():
+        try:
+            customer = stripe.Customer.retrieve(customer_stripe.first().customer_id)
+        except (APIConnectionError, InvalidRequestError, CardError) as err:
+            error = stripe_errors_handler(err)
+        else:
+            return customer
+    else:
+        error = "There is no stripe customer available for this user"
+    return error
+
 
 class UpdateUserSerializer(serializers.ModelSerializer):
+    card_token = serializers.CharField(max_length=100, allow_null=True)
+    plan_id = serializers.CharField(max_length=100, allow_null=True)
+
     class Meta:
         model = User
         fields = (
             'pk', 'email', 'first_name', 'last_name', 'company', 'country', 'city', 'province',
-            'phone_number', 'zip_code', 'is_active', 'street_address', 'password'
+            'phone_number', 'zip_code', 'is_active', 'street_address', 'password', 'plan_id',
+            'card_token'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
             'password': {'write_only': True}
         }
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateUserSerializer, self).__init__(*args, **kwargs)
+        if 'without_card' in self.context:
+            self.fields.pop('card_token')
+        if 'without_plan' in self.context:
+            self.fields.pop('plan_id')
+        stripe.api_key = STRIPE_API_KEY
+
+    def update(self, instance, validated_data):
+        """
+
+        :param instance:
+        :param validated_data:
+        :return:
+        """
+        if 'card_token' in validated_data or 'plan_id' in validated_data:
+            customer = get_customer_in_stripe(instance)
+            if isinstance(customer, str):
+                raise serializers.ValidationError(customer)
+            print customer
+            if 'card_token' in validated_data and 'plan_id' not in validated_data:
+                card_token = validated_data.pop('card_token')
+                res = self.update_payment_method(customer, card_token)
+                if isinstance(res, str):
+                    raise serializers.ValidationError(res)
+            elif 'plan_id' in validated_data and 'card_token' not in validated_data:
+                plan_id = validated_data.pop('plan_id')
+                res = self.update_subscription_plan(customer, plan_id)
+                if isinstance(res, str):
+                    raise serializers.ValidationError(res)
+            elif 'card_token' in validated_data and 'plan_id' in validated_data:
+                card_token = validated_data.pop('card_token')
+                plan_id = validated_data.pop('plan_id')
+                card_res = self.update_payment_method(customer, card_token)
+                if isinstance(card_res, str):
+                    raise serializers.ValidationError(card_res)
+                plan_res = self.update_subscription_plan(customer, plan_id)
+                if isinstance(plan_res, str):
+                    raise serializers.ValidationError(card_res)
+        self.fields.pop('plan_id', None)
+        self.fields.pop('card_token', None)
+        return super(UpdateUserSerializer, self).update(instance, validated_data)
+
+    @staticmethod
+    def update_payment_method(customer, card_token):
+        customer.source = card_token
+        try:
+            customer.save()
+        except (APIConnectionError, InvalidRequestError, CardError) as err:
+            return stripe_errors_handler(err)
+        else:
+            return customer
+
+    @staticmethod
+    def update_subscription_plan(customer, plan_id):
+        subscription_id = str(customer.subscriptions.data[0].id)
+        try:
+            subscription = stripe.Subscription.retrieve(subscription_id)
+        except (APIConnectionError, InvalidRequestError, CardError) as err:
+            return stripe_errors_handler(err)
+        else:
+            subscription.plan = plan_id
+            try:
+                subscription.save()
+            except (APIConnectionError, InvalidRequestError, CardError) as err:
+                return stripe_errors_handler(err)
+            else:
+                return subscription

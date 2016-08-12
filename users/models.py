@@ -77,3 +77,6 @@ class User(AbstractBaseUser):
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
+
+    def is_corporate_account(self):
+        return self.tax_receipts_as == 2

@@ -39,14 +39,15 @@ class UserView(generics.ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         if request.user.is_staff:
+            context = {'without_payment': True, 'without_plan': True}
             queryset = self.get_queryset()
 
             page = self.paginate_queryset(queryset)
             if page is not None:
-                serializer = UserSerializer(page, many=True, context={'without_payment': True})
+                serializer = UserSerializer(page, many=True, context=context)
                 return self.get_paginated_response(serializer.data)
 
-            serializer = UserSerializer(queryset, many=True, context={'without_payment': True})
+            serializer = UserSerializer(queryset, many=True, context=context)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response('Permission denied, you are not an administrator',
                         status=status.HTTP_403_FORBIDDEN)
@@ -88,8 +89,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
                                                  data=request.data,
                                                  partial=partial)
                 serializer.is_valid(raise_exception=True)
-                self.perform_update(serializer)
-                return Response(serializer.data)
+                obj = self.perform_update(serializer)
+                return Response(UserSerializer(obj).data)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response("You are not the owner or an administrator",
                         status=status.HTTP_403_FORBIDDEN)
@@ -106,7 +107,11 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         if self.is_admin_or_own_user():
             instance = self.get_object()
             if instance.exists():
-                serializer = UserSerializer(instance.get(), context={'without_payment': True})
+                context = dict()
+                if request.user.is_staff:
+                    context['without_payment'] = True
+                    context['without_plan'] = True
+                serializer = UserSerializer(instance.get(), context=context)
                 return Response(serializer.data)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response("You are not the owner or an administrator",
@@ -116,7 +121,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         if 'password' in serializer.validated_data:
             raw_password = serializer.validated_data['password']
             serializer.validated_data['password'] = make_password(raw_password)
-        serializer.save()
+        obj = serializer.save()
+        return obj
 
     def destroy(self, request, **kwargs):
         """Method to delete a user only if the user requesting is an admin
