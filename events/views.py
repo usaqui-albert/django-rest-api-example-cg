@@ -9,8 +9,7 @@ from rest_framework import generics, permissions, status
 
 from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectEventSerializer
 from .models import Event, UserEvent
-from .tasks import notify_event_invitation,\
-                    notify_event_accepted, notify_event_rejected
+from .tasks import notify_event_invitation, notify_event_accepted, notify_event_rejected
 from .helpers import validate_uuid4, get_event_status, update_event_status
 from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler

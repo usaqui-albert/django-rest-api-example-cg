@@ -34,8 +34,8 @@ class PlanView(views.APIView):
         """
         try:
             plans = stripe.Plan.list()
-        except stripe.error.APIConnectionError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except (APIConnectionError, InvalidRequestError, CardError) as err:
+            return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(get_response_plan_list(plans), status=status.HTTP_200_OK)
 
@@ -68,7 +68,7 @@ class SubscriptionView(generics.GenericAPIView):
                 customer=customer_stripe.customer_id,
                 plan=serializer.validated_data['plan_id']
             )
-        except (APIConnectionError, InvalidRequestError, CardError) as e:
-            return Response(stripe_errors_handler(e), status=status.HTTP_400_BAD_REQUEST)
+        except (APIConnectionError, InvalidRequestError, CardError) as err:
+            return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_201_CREATED)
