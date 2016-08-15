@@ -16,9 +16,7 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'name': 'red cross',
-    'facet.field': 'name.f',
-    'tag': 'context:cross'
+    'term': 'state.f:Alberta'
 }
 
 print search_params
