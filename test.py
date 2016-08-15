@@ -14,7 +14,13 @@ query_params = {
     'active': 'yes'
 }
 
-causes = benevity.search_causes(country='124', term='Red Cross')
+search_params = {
+    'country': '124',
+    'name': 'red cross',
+    'facet.field': 'name.f'
+}
+
+causes = benevity.search_causes(**search_params)
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
         print 'Causes fue success'
