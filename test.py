@@ -16,7 +16,7 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'name.f:red'
+    'term': 'name.f:stroke'
 }
 
 print search_params
