@@ -17,8 +17,11 @@ query_params = {
 search_params = {
     'country': '124',
     'name': 'red cross',
-    'facet.field': 'name.f'
+    'facet.field': 'name.f',
+    'tag': 'context:cross'
 }
+
+print search_params
 
 causes = benevity.search_causes(**search_params)
 if not isinstance(causes, str):
