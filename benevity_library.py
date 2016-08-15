@@ -127,7 +127,7 @@ class Benevity(object):
         :return: complete url to hit benevity api
         """
         url_hmac = self.get_url_hmac(operation, **kwargs)
-        return BENEVITY_BASE_URL + url_hmac + '&' + self.get_hmac_code(url_hmac)
+        return BENEVITY_BASE_URL + url_hmac.replace(' ', '+') + '&' + self.get_hmac_code(url_hmac)
 
     def get_url_hmac(self, operation, **kwargs):
         """Method to get url path that will be used to build the hmac code
