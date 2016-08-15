@@ -16,7 +16,7 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'state.f:Alberta'
+    'term': 'name.f:"red cross"'
 }
 
 print search_params
