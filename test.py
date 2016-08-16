@@ -20,19 +20,11 @@ search_params = {
 }
 search_params_2 = {
     'country': '124',
-    'term': 'MCGILL UNIVERSITY HEALTH CENTRE'
+    'term': 'UBC HOSPITAL FOUNDATION'
 }
 search_params_3 = {
     'country': '124',
-    'term': 'PRINCESS MARGARET CANCER FOUNDATION'
-}
-search_params_4 = {
-    'country': '124',
-    'term': 'VGH & UBC HOSPITAL FOUNDATION'
-}
-search_params_5 = {
-    'country': '124',
-    'term': 'SUNNYBROOK HEALTH SCIENCES CENTRE FOUNDATION'
+    'term': 'VGH HOSPITAL FOUNDATION'
 }
 
 causes = benevity.search_causes(**search_params)
@@ -42,12 +34,7 @@ causes_2 = benevity.search_causes(**search_params_2)
 for j in range(40):
     print ''
 causes_3 = benevity.search_causes(**search_params_3)
-for k in range(40):
-    print ''
-causes_4 = benevity.search_causes(**search_params_4)
-for l in range(40):
-    print ''
-causes_5 = benevity.search_causes(**search_params_5)
+
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
         print 'Causes fue success'
