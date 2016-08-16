@@ -16,23 +16,23 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'HABITAT FOR HUMANITY'
+    'term': 'CALGARY HEALTH TRUST'
 }
 search_params_2 = {
     'country': '124',
-    'term': 'FREE THE CHILDREN'
+    'term': 'MCGILL UNIVERSITY HEALTH CENTRE'
 }
 search_params_3 = {
     'country': '124',
-    'term': 'DOCTORS WITHOUT BORDERS'
+    'term': 'PRINCESS MARGARET CANCER FOUNDATION'
 }
 search_params_4 = {
     'country': '124',
-    'term': 'AMNESTY INTERNATIONAL'
+    'term': 'VGH & UBC HOSPITAL FOUNDATION'
 }
 search_params_5 = {
     'country': '124',
-    'term': 'SICKKIDS FOUNDATION'
+    'term': 'SUNNYBROOK HEALTH SCIENCES CENTRE FOUNDATION'
 }
 
 causes = benevity.search_causes(**search_params)
