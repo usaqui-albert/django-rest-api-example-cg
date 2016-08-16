@@ -16,10 +16,17 @@ query_params = {
 
 search_params = {
     'country': '840',
-    'term': 'MEMORIAL SLOAN KETTERING CANCER CENTER'
+    'term': 'RARE'
+}
+search_params_2 = {
+    'country': '840',
+    'term': 'WORLD VISION'
 }
 
 causes = benevity.search_causes(**search_params)
+for i in range(50):
+    print ''
+causes_2 = benevity.search_causes(**search_params_2)
 
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
