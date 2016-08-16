@@ -16,16 +16,16 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'CANADIAN WILDLIFE FEDERATION'
+    'term': 'WORLD WILDLIFE FUND'
 }
 search_params_2 = {
     'country': '124',
-    'term': 'DUCKS UNLIMITED'
+    'term': 'CANADIAN PARKS AND WILDERNESS SOCIETY'
 }
 
 search_params_3 = {
     'country': '124',
-    'term': 'NATURE CONSERVANCY OF CANADA'
+    'term': 'WORLD VISION CANADA'
 }
 
 causes = benevity.search_causes(**search_params)
