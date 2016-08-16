@@ -18,10 +18,23 @@ search_params = {
     'country': '124',
     'term': 'TERRY FOX FOUNDATION'
 }
+search_params_2 = {
+    'country': '124',
+    'term': 'JUVENILE DIABETES RESEARCH FOUNDATION CANADA'
+}
 
-print search_params
+search_params_3 = {
+    'country': '124',
+    'term': 'RICK HANSEN INSTITUTE'
+}
 
 causes = benevity.search_causes(**search_params)
+for i in range(20):
+    print ''
+causes_2 = benevity.search_causes(**search_params_2)
+for j in range(20):
+    print ''
+causes_3 = benevity.search_causes(**search_params_3)
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
         print 'Causes fue success'
