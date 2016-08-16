@@ -16,7 +16,7 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'CANCER SOCIETY'
+    'term': 'CANADIAN RED CROSS'
 }
 
 print search_params
