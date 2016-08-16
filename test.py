@@ -16,15 +16,15 @@ query_params = {
 
 search_params = {
     'country': '840',
-    'term': 'LEUKEMIA SOCIETY'
+    'term': 'NATURE CONSERVANCY'
 }
 search_params_2 = {
     'country': '840',
-    'term': 'PATIENT ACCESS NETWORK FOUNDATION'
+    'term': 'CONSERVATION INTERNATIONAL'
 }
 search_params_3 = {
     'country': '840',
-    'term': 'CANCER RESEARCH INSTITUTE'
+    'term': 'RARE'
 }
 
 causes = benevity.search_causes(**search_params)
