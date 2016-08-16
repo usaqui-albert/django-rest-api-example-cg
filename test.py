@@ -16,16 +16,23 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'WORLD WILDLIFE FUND'
+    'term': 'HABITAT FOR HUMANITY'
 }
 search_params_2 = {
     'country': '124',
-    'term': 'CANADIAN PARKS AND WILDERNESS SOCIETY'
+    'term': 'FREE THE CHILDREN'
 }
-
 search_params_3 = {
     'country': '124',
-    'term': 'WORLD VISION CANADA'
+    'term': 'DOCTORS WITHOUT BORDERS'
+}
+search_params_4 = {
+    'country': '124',
+    'term': 'AMNESTY INTERNATIONAL'
+}
+search_params_5 = {
+    'country': '124',
+    'term': 'SICKKIDS FOUNDATION'
 }
 
 causes = benevity.search_causes(**search_params)
@@ -35,6 +42,12 @@ causes_2 = benevity.search_causes(**search_params_2)
 for j in range(40):
     print ''
 causes_3 = benevity.search_causes(**search_params_3)
+for k in range(40):
+    print ''
+causes_4 = benevity.search_causes(**search_params_4)
+for l in range(40):
+    print ''
+causes_5 = benevity.search_causes(**search_params_5)
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
         print 'Causes fue success'
