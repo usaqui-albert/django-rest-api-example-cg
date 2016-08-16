@@ -15,16 +15,16 @@ query_params = {
 }
 
 search_params = {
-    'country': '124',
-    'term': 'MOUNT SINAI HOSPITAL FOUNDATION OF TORONTO'
+    'country': '840',
+    'term': 'LEUKEMIA SOCIETY'
 }
 search_params_2 = {
     'country': '840',
-    'term': 'AMERICAN CANCER SOCIETY'
+    'term': 'PATIENT ACCESS NETWORK FOUNDATION'
 }
 search_params_3 = {
     'country': '840',
-    'term': 'AMERICAN HEART ASSOCIATION'
+    'term': 'CANCER RESEARCH INSTITUTE'
 }
 
 causes = benevity.search_causes(**search_params)
