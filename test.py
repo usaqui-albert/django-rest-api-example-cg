@@ -16,15 +16,15 @@ query_params = {
 
 search_params = {
     'country': '840',
-    'term': 'NATURE CONSERVANCY'
+    'term': 'FOOD FOR THE POOR'
 }
 search_params_2 = {
     'country': '840',
-    'term': 'CONSERVATION INTERNATIONAL'
+    'term': 'WORLD VISION'
 }
 search_params_3 = {
     'country': '840',
-    'term': 'RARE'
+    'term': 'HABITAT FOR HUMANITY INTERNATIONAL'
 }
 
 causes = benevity.search_causes(**search_params)
