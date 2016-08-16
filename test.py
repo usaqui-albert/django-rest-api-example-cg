@@ -16,7 +16,7 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'CANADIAN NATIONAL INSTITUTE FOR THE BLIND'
+    'term': 'TERRY FOX FOUNDATION'
 }
 
 print search_params
