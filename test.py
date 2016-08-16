@@ -16,15 +16,15 @@ query_params = {
 
 search_params = {
     'country': '124',
-    'term': 'CALGARY HEALTH TRUST'
+    'term': 'MOUNT SINAI HOSPITAL FOUNDATION OF TORONTO'
 }
 search_params_2 = {
-    'country': '124',
-    'term': 'UBC HOSPITAL FOUNDATION'
+    'country': '840',
+    'term': 'AMERICAN CANCER SOCIETY'
 }
 search_params_3 = {
-    'country': '124',
-    'term': 'VGH HOSPITAL FOUNDATION'
+    'country': '840',
+    'term': 'AMERICAN HEART ASSOCIATION'
 }
 
 causes = benevity.search_causes(**search_params)
