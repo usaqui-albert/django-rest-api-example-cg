@@ -16,15 +16,15 @@ query_params = {
 
 search_params = {
     'country': '840',
-    'term': 'FOOD FOR THE POOR'
+    'term': 'DIRECT RELIEF'
 }
 search_params_2 = {
     'country': '840',
-    'term': 'WORLD VISION'
+    'term': 'ST. JUDE CHILDREN RESEARCH HOSPITAL'
 }
 search_params_3 = {
     'country': '840',
-    'term': 'HABITAT FOR HUMANITY INTERNATIONAL'
+    'term': 'MAYO CLINIC'
 }
 
 causes = benevity.search_causes(**search_params)
