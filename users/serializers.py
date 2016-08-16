@@ -47,7 +47,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         del validated_data['terms_conditions']
         plan_id = validated_data.pop('plan_id')
         card_token = validated_data.pop('card_token')
-        tax_receipts_as = validated_data.pop('is_corporate_account')
+        is_corporate_account = bool(validated_data.pop('is_corporate_account'))
 
         try:
             customer = stripe.Customer.create(
@@ -59,7 +59,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         except (APIConnectionError, InvalidRequestError, CardError) as e:
             raise serializers.ValidationError(stripe_errors_handler(e))
         else:
-            validated_data['tax_receipts_as'] = tax_receipts_as
+            validated_data['tax_receipts_as'] = 2 if is_corporate_account else 1
             user = create_user_hashing_password(**validated_data)
             if not user:
                 raise serializers.ValidationError('There was an Integrity Error creating a user')
@@ -193,13 +193,14 @@ def get_customer_in_stripe(instance):
 class UpdateUserSerializer(serializers.ModelSerializer):
     card_token = serializers.CharField(max_length=100, allow_null=True)
     plan_id = serializers.CharField(max_length=100, allow_null=True)
+    is_corporate_account = serializers.BooleanField(default=False)
 
     class Meta:
         model = User
         fields = (
             'pk', 'email', 'first_name', 'last_name', 'company', 'country', 'city', 'province',
             'phone_number', 'zip_code', 'is_active', 'street_address', 'password', 'plan_id',
-            'card_token'
+            'card_token', 'is_corporate_account'
         )
         extra_kwargs = {
             'pk': {'read_only': True},
@@ -247,6 +248,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError(card_res)
         self.fields.pop('plan_id', None)
         self.fields.pop('card_token', None)
+        if 'is_corporate_account' in validated_data:
+            is_corporate_account = bool(validated_data.pop('is_corporate_account'))
+            validated_data['tax_receipts_as'] = 2 if is_corporate_account else 1
         return super(UpdateUserSerializer, self).update(instance, validated_data)
 
     @staticmethod
