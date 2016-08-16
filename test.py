@@ -16,24 +16,10 @@ query_params = {
 
 search_params = {
     'country': '840',
-    'term': 'DIRECT RELIEF'
-}
-search_params_2 = {
-    'country': '840',
-    'term': 'ST. JUDE CHILDREN RESEARCH HOSPITAL'
-}
-search_params_3 = {
-    'country': '840',
-    'term': 'MAYO CLINIC'
+    'term': 'MEMORIAL SLOAN KETTERING CANCER CENTER'
 }
 
 causes = benevity.search_causes(**search_params)
-for i in range(40):
-    print ''
-causes_2 = benevity.search_causes(**search_params_2)
-for j in range(40):
-    print ''
-causes_3 = benevity.search_causes(**search_params_3)
 
 if not isinstance(causes, str):
     if causes.attrib['status'] == 'SUCCESS':
