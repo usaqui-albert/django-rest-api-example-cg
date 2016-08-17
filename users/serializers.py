@@ -226,7 +226,6 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             customer = get_customer_in_stripe(instance)
             if isinstance(customer, str):
                 raise serializers.ValidationError(customer)
-            print customer
             if 'card_token' in validated_data and 'plan_id' not in validated_data:
                 card_token = validated_data.pop('card_token')
                 res = self.update_payment_method(customer, card_token)
