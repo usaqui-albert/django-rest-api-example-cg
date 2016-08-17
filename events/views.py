@@ -47,10 +47,10 @@ class EventView(generics.ListCreateAPIView):
 
         page = self.paginate_queryset(queryset)
         if page is not None:
-            serializer = EventSerializer(page, many=True, context={'no_sender': True})
+            serializer = EventSerializer(page, many=True, context={'without_sender': True})
             return self.get_paginated_response(serializer.data)
 
-        serializer = EventSerializer(queryset, many=True, context={'no_sender': True})
+        serializer = EventSerializer(queryset, many=True, context={'without_sender': True})
         return Response(serializer.data)
 
     def get_queryset(self):
@@ -129,15 +129,16 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         """
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user_event = UserEvent.objects.filter(key=serializer.validated_data['key']).\
-            select_related('event__country', 'user')
+        user_event = self.get_object()
         if user_event.exists():
             event_status = get_event_status(serializer.validated_data['status'])
             response = self.handle_accept_or_reject(user_event.first(), event_status)
             if isinstance(response, str):
                 response = Response(response, status=status.HTTP_400_BAD_REQUEST)
             elif response:
-                response = Response(serializer.data, status=status.HTTP_200_OK)
+                user_event = self.get_object()
+                return_serializer = EventSerializer(user_event.event)
+                response = Response(return_serializer.data, status=status.HTTP_200_OK)
             else:
                 database_error = 'There was a conflict updating the database'
                 response = Response(database_error, status=status.HTTP_409_CONFLICT)
@@ -184,6 +185,11 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                     return res
                 notify_event_accepted.delay(event, user)
         return update_event_status(user_event, event_status)
+
+    def get_object(self):
+        obj = UserEvent.objects.filter(key=self.kwargs['key']).select_related(
+            'event__country', 'user')
+        return obj
 
 def get_user_params(user):
     """

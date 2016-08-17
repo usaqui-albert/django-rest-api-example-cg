@@ -26,7 +26,7 @@ class EventSerializer(serializers.ModelSerializer):
         super(EventSerializer, self).__init__(*args, **kwargs)
         if 'host' not in self.context:
             self.fields.pop('charities_by_category')
-        if 'no_sender' in self.context:
+        if 'without_sender' in self.context:
             self.fields.pop('sender')
 
     class Meta:
