@@ -1,14 +1,14 @@
 import stripe
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 from stripe.error import APIConnectionError, InvalidRequestError, CardError
 
-from rest_framework import generics, permissions, status, views
+from rest_framework import permissions, status, views
 from rest_framework.response import Response
-from rest_framework.generics import get_object_or_404
 
 from ConnectGood.settings import STRIPE_API_KEY
-from miscellaneous.models import CustomerStripe
-from .serializers import SubscriptionSerializer
-from .helpers import get_response_plan_list, filtering_plan_by_currency, reject_free_plans
+from .helpers import get_response_plan_list, filtering_plan_by_currency, reject_free_plans,\
+    get_response_invoice_list, get_timestamp_from_datetime
 from miscellaneous.helpers import stripe_errors_handler
 from users.serializers import get_customer_in_stripe
 
@@ -41,44 +41,49 @@ class PlanView(views.APIView):
             mapped_plans = get_response_plan_list(plans)
             if request.user.is_authenticated():
                 customer = get_customer_in_stripe(request.user)
-                currency = customer.subscriptions.data[0]['plan'].currency
-                filtered_plans = filtering_plan_by_currency(mapped_plans, str(currency))
-                no_free_plans = reject_free_plans(filtered_plans)
-                response = Response(no_free_plans, status=status.HTTP_200_OK)
+                if isinstance(customer, str):
+                    response = Response(customer, status=status.HTTP_404_NOT_FOUND)
+                else:
+                    currency = customer.subscriptions.data[0]['plan'].currency
+                    filtered_plans = filtering_plan_by_currency(mapped_plans, str(currency))
+                    no_free_plans = reject_free_plans(filtered_plans)
+                    response = Response(no_free_plans, status=status.HTTP_200_OK)
             else:
                 response = Response(mapped_plans, status=status.HTTP_200_OK)
         return response
 
 
-class SubscriptionView(generics.GenericAPIView):
-    """Method to subscribe to a plan a user(customer) in stripe
+class InvoiceView(views.APIView):
+    """Service to get all the invoices of a stripe customer for the last 6 months
 
     :accepted methods:
-        POST
+        GET
     """
-    def __init__(self, **kwargs):
-        super(SubscriptionView, self).__init__(**kwargs)
-        stripe.api_key = STRIPE_API_KEY
-
-    serializer_class = SubscriptionSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
-    def post(self, request):
-        """
+    def __init__(self, **kwargs):
+        super(InvoiceView, self).__init__(**kwargs)
+        stripe.api_key = STRIPE_API_KEY
 
-        :param request: data (JSON request)
-        :except: Invalid request error from stripe
-        :return: Http 201 if the subscription is successfully
+    @staticmethod
+    def get(request):
+        """Method to get the invoices of a user(customer) from stripe
+
+        :param request: user requesting instance
+        :return:  Http 200 if the getting data was success
+        :except: Http 404 if the user doesn't have a customer in stripe, Http 400 if the request
+        to the stripe api returns an error
         """
-        customer_stripe = get_object_or_404(CustomerStripe, user=request.user.id)
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        try:
-            stripe.Subscription.create(
-                customer=customer_stripe.customer_id,
-                plan=serializer.validated_data['plan_id']
-            )
-        except (APIConnectionError, InvalidRequestError, CardError) as err:
-            return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
+        customer = get_customer_in_stripe(request.user)
+        if isinstance(customer, str):
+            response = Response(customer, status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response(status=status.HTTP_201_CREATED)
+            unix_timestamp = get_timestamp_from_datetime(timezone.now() - relativedelta(months=+6))
+            try:
+                invoices = stripe.Invoice.list(customer=customer.id, date={'gte': unix_timestamp})
+            except (APIConnectionError, InvalidRequestError, CardError) as err:
+                response = Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
+            else:
+                mapped_invoices = get_response_invoice_list(invoices)
+                response = Response(mapped_invoices, status=status.HTTP_200_OK)
+        return response
