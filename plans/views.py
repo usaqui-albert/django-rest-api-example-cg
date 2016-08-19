@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from ConnectGood.settings import STRIPE_API_KEY
 from .helpers import get_response_plan_list, filtering_plan_by_currency, reject_free_plans,\
-    get_response_invoice_list, get_timestamp_from_datetime
+    get_response_invoice_list, get_timestamp_from_datetime, filter_free_plans
 from miscellaneous.helpers import stripe_errors_handler
 from users.serializers import get_customer_in_stripe
 
@@ -49,7 +49,7 @@ class PlanView(views.APIView):
                     no_free_plans = reject_free_plans(filtered_plans)
                     response = Response(no_free_plans, status=status.HTTP_200_OK)
             else:
-                response = Response(mapped_plans, status=status.HTTP_200_OK)
+                response = Response(filter_free_plans(mapped_plans), status=status.HTTP_200_OK)
         return response
 
 
@@ -84,6 +84,6 @@ class InvoiceView(views.APIView):
             except (APIConnectionError, InvalidRequestError, CardError) as err:
                 response = Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
             else:
-                mapped_invoices = get_response_invoice_list(invoices)
+                mapped_invoices = get_response_invoice_list(invoices, request.user.email)
                 response = Response(mapped_invoices, status=status.HTTP_200_OK)
         return response
