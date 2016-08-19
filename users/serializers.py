@@ -8,7 +8,7 @@ from .models import User
 from miscellaneous.models import CustomerStripe
 from ConnectGood.settings import STRIPE_API_KEY
 from miscellaneous.helpers import card_list, stripe_errors_handler
-from plans.helpers import get_response_plan_list
+from plans.helpers import get_plans_list_response
 from countries.serializers import CountrySerializer
 from states.serializers import StateSerializer
 
@@ -138,7 +138,7 @@ class UserSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError(customer)
                 self.customer = customer
             plan = self.customer.subscriptions.data[0]['plan']
-            return get_response_plan_list([plan])[0]
+            return get_plans_list_response([plan])[0]
         else:
             return None
 
