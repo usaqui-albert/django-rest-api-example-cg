@@ -10,6 +10,18 @@ from lxml import etree, objectify
 
 BENEVITY_BASE_URL = 'https://sandbox.benevity.org'
 
+def recursive_dict(element):
+    """Recursive function to build a dictionary based on a objectify element
+
+    :param element: objectify element
+    :return: benevity response in dictionary format
+    """
+    result_dict = {'attrib': element.attrib}
+    if element.getchildren():
+        result_dict['children'] = [{child.tag: recursive_dict(child)} for child in element.getchildren()]
+    else:
+        result_dict['text'] = element.text if element.text else ''
+    return result_dict
 
 def urllib2_error_handler(error):
     """Method to handle the errors of the urllib2 library
@@ -31,7 +43,8 @@ def benevity_response_handler(response):
     root = etree.XML(response)
     xml_string = etree.tostring(root)
     print xml_string
-    return objectify.fromstring(xml_string)
+    objectify_element = objectify.fromstring(xml_string)
+    return recursive_dict(objectify_element)
 
 def post(function):
     """Method to do a POST request to the benevity api handling response errors
