@@ -22,4 +22,4 @@ def get_charity_response(charities):
                                    charities_filter_keys) for charity in charities]
 
 def get_content_response(dic_list):
-    return [i for i in dic_list if 'content' in i][0]
+    return [i for i in dic_list if 'content' in i][0]['content']
