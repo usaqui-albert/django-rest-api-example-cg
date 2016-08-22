@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import CharityCategory, CharityCountry
 from ConnectGood.settings import MEDIA_URL
+from events.helpers import validate_uuid4
 
 
 class CharityCategorySerializer(serializers.ModelSerializer):
@@ -44,3 +45,14 @@ class CharityCountrySerializer(serializers.ModelSerializer):
 
     def get_picture(self, instance):
         return 'http://' + self.context['host'] + MEDIA_URL + instance.get_path_picture()
+
+
+class SearchCharitySerializer(serializers.Serializer):
+    term = serializers.CharField(max_length=255)
+    key = serializers.CharField(max_length=100)
+
+    @staticmethod
+    def validate_key(value):
+        if not validate_uuid4(value):
+            raise serializers.ValidationError('Invalid key')
+        return value
