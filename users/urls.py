@@ -1,5 +1,7 @@
+"""User URL Configuration"""
+
 from django.conf.urls import url
-from .views import *
+from .views import UserView, UserDetail
 
 urlpatterns = [
     url(r'^$', UserView.as_view()),
