@@ -66,7 +66,8 @@ class AcceptOrRejectEventSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=STATUS_OF_THE_EVENT)
     key = serializers.CharField(max_length=100)
 
-    def validate_key(self, value):
+    @staticmethod
+    def validate_key(value):
         if not validate_uuid4(value):
             raise serializers.ValidationError('Invalid key')
         return value

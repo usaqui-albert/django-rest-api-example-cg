@@ -42,7 +42,6 @@ def benevity_response_handler(response):
     """
     root = etree.XML(response)
     xml_string = etree.tostring(root)
-    print xml_string
     objectify_element = objectify.fromstring(xml_string)
     return recursive_dict(objectify_element)
 
@@ -108,6 +107,7 @@ class Benevity(object):
     @get
     def search_causes(self, **kwargs):
         """Method to get url path for the benevity SearchCauses endpoint"""
+        kwargs['term'] = kwargs['term'].upper()
         return self.get_url_request('SearchCauses', **kwargs)
 
     @post
@@ -168,10 +168,7 @@ class Benevity(object):
         :param dic: dictionary with the data to be ordered by key
         :return: query params path alphabetically ordered
         """
-        query_path = '?'
         ordered_dic = collections.OrderedDict(sorted(dic.items()))
-        for key, value in ordered_dic.iteritems():
-            query_path += key + '=' + str(value) + '&'
-        return query_path[:-1]
+        return '?' + urllib.urlencode(ordered_dic)
 
 benevity = Benevity()
