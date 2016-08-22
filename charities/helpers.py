@@ -23,3 +23,6 @@ def get_charity_response(charities):
 
 def get_content_response(dic_list):
     return [i for i in dic_list if 'content' in i][0]['content']
+
+def get_causes_response(dic_list):
+    return [i for i in dic_list if 'causes' in i][0]['causes']
