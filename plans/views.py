@@ -11,6 +11,7 @@ from .helpers import get_plans_list_response, filtering_plan_by_currency, reject
     get_invoices_list_response, get_timestamp_from_datetime, filter_free_plans
 from miscellaneous.helpers import stripe_errors_handler
 from users.serializers import get_customer_in_stripe
+from .serializers import UserDataSerializer
 
 
 class PlanView(views.APIView):
@@ -87,3 +88,31 @@ class InvoiceView(views.APIView):
                 mapped_invoices = get_invoices_list_response(invoices, request.user.email)
                 response = Response(mapped_invoices, status=status.HTTP_200_OK)
         return response
+
+
+class InvoiceDetail(views.APIView):
+    """
+    :accepted methods:
+        GET
+    """
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def __init__(self, **kwargs):
+        super(InvoiceDetail, self).__init__(**kwargs)
+        stripe.api_key = STRIPE_API_KEY
+
+    @staticmethod
+    def get(request, **kwargs):
+        """
+
+        :param request:
+        :return:
+        """
+        try:
+            invoice = stripe.Invoice.retrieve(str(kwargs['invoice_id']))
+        except (APIConnectionError, InvalidRequestError, CardError) as err:
+            return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
+        else:
+            mapped_invoice = get_invoices_list_response([invoice], request.user.email)
+            extra_data = UserDataSerializer(request.user).data
+            return Response(dict(mapped_invoice[0], **extra_data), status=status.HTTP_200_OK)
