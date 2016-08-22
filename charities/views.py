@@ -44,8 +44,8 @@ class SearchCharity(generics.GenericAPIView):
             if response['attrib']['status'] == 'SUCCESS':
                 content = get_content_response(response['children'])
                 causes = get_causes_response(content['children'])
-                # data = dict(causes['attrib'], data=get_charity_response(content['children']))
-                return Response(causes, status=status.HTTP_200_OK)
+                data = dict(causes['attrib'], data=get_charity_response(causes['children']))
+                return Response(data, status=status.HTTP_200_OK)
             return Response('Benevity error', status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
