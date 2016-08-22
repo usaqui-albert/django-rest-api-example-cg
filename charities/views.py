@@ -38,9 +38,12 @@ class SearchCharity(generics.GenericAPIView):
         event = self.get_object()
         if event.exists():
             iso_code = event.first().country.iso_code
-            causes = benevity.search_causes(country=iso_code,
+            response = benevity.search_causes(country=iso_code,
                                             term=serializer.validated_data['term'])
-            return Response(causes, status=status.HTTP_200_OK)
+            if response['attrib']['status'] == 'SUCCESS':
+                causes = response['children']['content']['children']['causes']
+                return Response(causes, status=status.HTTP_200_OK)
+            return Response('Benevity error', status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
     def get_object(self):
