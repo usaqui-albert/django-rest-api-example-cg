@@ -23,7 +23,7 @@ search_params_2 = {
 }
 search_params = {
     'country': '840',
-    'term': 'cross'
+    'term': 'red cross'
 }
 
 causes = benevity.search_causes(**search_params)
