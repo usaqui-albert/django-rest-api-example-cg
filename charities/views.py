@@ -36,7 +36,7 @@ class SearchCharity(generics.GenericAPIView):
         """
         serializer = SearchCharitySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        event = self.get_object()
+        event = self.get_queryset()
         if event.exists():
             iso_code = event.first().country.iso_code
             response = benevity.search_causes(country=iso_code,
@@ -48,6 +48,6 @@ class SearchCharity(generics.GenericAPIView):
             return Response('Benevity error', status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
-    def get_object(self):
+    def get_queryset(self):
         obj = Event.objects.filter(user_event__key=self.request.data['key']).select_related('country')
         return obj
