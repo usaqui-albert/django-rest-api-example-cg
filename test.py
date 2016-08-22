@@ -28,7 +28,3 @@ search_params = {
 
 causes = benevity.search_causes(**search_params)
 pp.pprint(causes)
-for i in range(50):
-    print ''
-response = benevity.add_user(**query_params)
-pp.pprint(response)
