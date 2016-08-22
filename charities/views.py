@@ -42,9 +42,9 @@ class SearchCharity(generics.GenericAPIView):
             response = benevity.search_causes(country=iso_code,
                                               term=serializer.validated_data['term'])
             if response['attrib']['status'] == 'SUCCESS':
-                causes = response['children']['content']['children']['causes']
-                data = dict(causes['attrib'], data=get_charity_response(causes['children']))
-                return Response(data, status=status.HTTP_200_OK)
+                causes = response['children']['content']['children']
+                # data = dict(causes['attrib'], data=get_charity_response(causes['children']))
+                return Response(causes, status=status.HTTP_200_OK)
             return Response('Benevity error', status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
