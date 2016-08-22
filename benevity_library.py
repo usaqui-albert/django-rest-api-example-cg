@@ -140,7 +140,8 @@ class Benevity(object):
         :return: complete url to hit benevity api
         """
         url_hmac = self.get_url_hmac(operation, **kwargs)
-        return BENEVITY_BASE_URL + url_hmac.replace(' ', '+') + '&' + self.get_hmac_code(url_hmac)
+        kwargs['hmac'] = self.get_hmac_code(url_hmac)
+        return BENEVITY_BASE_URL + self.helper(operation) + '?' + urllib.urlencode(kwargs)
 
     def get_url_hmac(self, operation, **kwargs):
         """Method to get url path that will be used to build the hmac code
@@ -149,7 +150,7 @@ class Benevity(object):
         :param kwargs: data to build the query param path
         :return: url path that will be used to build the hmac code
         """
-        url_request = '/Adapter.General/' + self.company_id + '/' + operation
+        url_request = self.helper(operation)
         return url_request + self.query_params_handler(kwargs) if len(kwargs) > 0 else url_request
 
     def get_hmac_code(self, url_hmac):
@@ -159,7 +160,7 @@ class Benevity(object):
         :return: hmac code to be append to the query params path
         """
         digest = hmac.new(self.api_key, url_hmac, sha1).digest()
-        return urllib.urlencode({'hmac': base64.encodestring(digest).strip()})
+        return base64.encodestring(digest).strip()
 
     @staticmethod
     def query_params_handler(dic):
@@ -168,7 +169,13 @@ class Benevity(object):
         :param dic: dictionary with the data to be ordered by key
         :return: query params path alphabetically ordered
         """
+        query_path = '?'
         ordered_dic = collections.OrderedDict(sorted(dic.items()))
-        return '?' + urllib.urlencode(ordered_dic)
+        for key, value in ordered_dic.iteritems():
+            query_path += key + '=' + str(value) + '&'
+        return query_path[:-1]
+
+    def helper(self, operation):
+        return '/Adapter.General/' + self.company_id + '/' + operation
 
 benevity = Benevity()
