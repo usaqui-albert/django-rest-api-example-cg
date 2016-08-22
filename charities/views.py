@@ -6,6 +6,7 @@ from .models import CharityCountry
 from benevity_library import benevity
 from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from events.models import Event
+from .helpers import get_charity_response
 
 
 class CharityDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -39,10 +40,11 @@ class SearchCharity(generics.GenericAPIView):
         if event.exists():
             iso_code = event.first().country.iso_code
             response = benevity.search_causes(country=iso_code,
-                                            term=serializer.validated_data['term'])
+                                              term=serializer.validated_data['term'])
             if response['attrib']['status'] == 'SUCCESS':
                 causes = response['children']['content']['children']['causes']
-                return Response(causes, status=status.HTTP_200_OK)
+                data = dict(causes['attrib'], data=get_charity_response(causes['children']))
+                return Response(data, status=status.HTTP_200_OK)
             return Response('Benevity error', status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
