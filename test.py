@@ -3,7 +3,7 @@ from benevity_library import benevity
 
 from pprint import PrettyPrinter
 
-pp = PrettyPrinter(indent=4)
+pp = PrettyPrinter(indent=1)
 
 benevity.api_key = BENEVITY_API_KEY
 benevity.company_id = BENEVITY_COMPANY_ID
