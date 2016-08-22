@@ -20,3 +20,6 @@ charities_filter_keys = ['name', 'id', 'city', 'postcode', 'state', 'website', '
 def get_charity_response(charities):
     return [filtering_dict_by_keys(charity['cause']['attrib'],
                                    charities_filter_keys) for charity in charities]
+
+def get_content_response(dic_list):
+    return [i for i in dic_list if 'content' in i][0]
