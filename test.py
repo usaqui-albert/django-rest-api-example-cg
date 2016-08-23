@@ -19,7 +19,7 @@ query_params = {
 }
 search_params = {
     'country': '124',
-    'term': 'red cross',
+    'term': 'cross',
     'page': 1,
     'pagesize': 5
 }
