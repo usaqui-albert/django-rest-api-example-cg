@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from .serializers import SearchCharitySerializer
 from benevity_library import benevity
-from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID
+from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID, BENEVITY_DEFAULT_PAGESIZE
 from events.models import Event
 from .helpers import get_charity_response, get_content_response, get_causes_response
 
@@ -41,6 +41,7 @@ class SearchCharity(generics.GenericAPIView):
             if response['attrib']['status'] == 'SUCCESS':
                 content = get_content_response(response['children'])
                 causes = get_causes_response(content['children'])
+                causes['attrib']['count'] = causes['attrib'].pop('total')
                 if 'children' in causes:
                     data = dict(causes['attrib'],
                                 data=get_charity_response(causes['children']))
@@ -56,6 +57,13 @@ class SearchCharity(generics.GenericAPIView):
         return obj
 
     def get_pagination_params(self):
-        page = self.request.GET.get('page', None)
-        pagesize = self.request.GET.get('pagesize', None)
-        return page if page else 1, pagesize if pagesize else 10
+        offset = self.request.GET.get('offset', None)
+        limit = self.request.GET.get('limit', None)
+        try:
+            offset = int(offset) if offset else 0
+            pagesize = int(limit) if limit else BENEVITY_DEFAULT_PAGESIZE
+        except ValueError:
+            return 1, BENEVITY_DEFAULT_PAGESIZE
+        else:
+            page = int(offset / pagesize) + 1
+            return page, pagesize
