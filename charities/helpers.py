@@ -15,7 +15,7 @@ class PathAndRename(object):
         return os.path.join(self.path, filename)
 
 charities_filter_keys = ['name', 'id', 'city', 'postcode', 'state', 'website', 'active',
-                         'address', 'facebook_url']
+                         'address', 'facebook-url']
 
 def get_charity_response(charities):
     return [filtering_dict_by_keys(charity['cause']['attrib'],
