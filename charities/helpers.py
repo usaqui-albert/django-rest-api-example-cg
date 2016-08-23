@@ -14,7 +14,7 @@ class PathAndRename(object):
         filename = '{}.{}'.format(uuid4().hex, ext)
         return os.path.join(self.path, filename)
 
-charities_filter_keys = ['name', 'id', 'city', 'postcode', 'state', 'website', 'active'
+charities_filter_keys = ['name', 'id', 'city', 'postcode', 'state', 'website', 'active',
                          'address', 'facebook_url']
 
 def get_charity_response(charities):
