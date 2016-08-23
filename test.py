@@ -17,13 +17,11 @@ query_params = {
     'country': '124',
     'active': 'yes'
 }
-search_params_2 = {
-    'country': '840',
-    'term': 'RARE'
-}
 search_params = {
-    'country': '840',
-    'term': 'red cross'
+    'country': '124',
+    'term': 'red cross',
+    'page': 1,
+    'pagesize': 5
 }
 
 causes = benevity.search_causes(**search_params)

@@ -69,6 +69,7 @@ def get(function):
     """
     def decorated_function(instance, **kwargs):
         """Decorator function of the one passed by parameter"""
+        print function(instance, **kwargs)
         try:
             response = urllib2.urlopen(function(instance, **kwargs)).read()
         except (urllib2.URLError, urllib2.HTTPError) as err:
