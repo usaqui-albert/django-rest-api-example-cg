@@ -26,7 +26,7 @@ transaction_data = {
     'user': 'user',
     'credits': '100',
     'refno': 'CG1',
-    'cause.840-Cause02-20160331210259006': '100'
+    'cause.124-119219814RR0001': '100'
 }
 
 transaction = benevity.user_transfer_credits_to_causes(**transaction_data)
