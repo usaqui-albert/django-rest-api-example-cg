@@ -84,52 +84,55 @@ class Benevity(object):
         self.company_id = str()
         self.api_key = str()
 
-    @get
-    def get_company_user_list(self, **kwargs):
-        """Method to get url path for the benevity GetCompanyUserList endpoint"""
-        return self.get_url_request('GetCompanyUserList', **kwargs)
+    @post
+    def activate_user(self, **kwargs):
+        """Method to get url path for the ActivateUser endpoint"""
+        return self.get_url_request('ActivateUser', **kwargs)
 
     @post
     def add_user(self, **kwargs):
-        """Method to get url path for the benevity AddUser endpoint"""
+        """Method to get url path for the AddUser endpoint"""
         return self.get_url_request('AddUser', **kwargs)
 
     @post
-    def activate_user(self, **kwargs):
-        """Method to get url path for the benevity ActivateUser endpoint"""
-        return self.get_url_request('ActivateUser', **kwargs)
-
-    @get
-    def get_company_cause_list(self, **kwargs):
-        """Method to get url path for the benevity GetCompanyCauseList endpoint"""
-        return self.get_url_request('GetCompanyCauseList', **kwargs)
-
-    @get
-    def search_causes(self, **kwargs):
-        """Method to get url path for the benevity SearchCauses endpoint"""
-        kwargs['term'] = kwargs['term'].upper()
-        return self.get_url_request('SearchCauses', **kwargs)
-
-    @post
     def company_transfer_credits_to_cause(self, **kwargs):
-        """Method to get url path for the benevity CompanyTransferCreditsToCause endpoint"""
+        """Method to get url path for the CompanyTransferCreditsToCause endpoint"""
         return self.get_url_request('CompanyTransferCreditsToCause', **kwargs)
 
     @post
     def company_transfer_credits_to_cause_for_user(self, **kwargs):
-        """Method to get url path for the benevity CompanyTransferCreditsToCauseForUser
-        endpoint
-        """
+        """Method to get url for the CompanyTransferCreditsToCauseForUser endpoint"""
         return self.get_url_request('CompanyTransferCreditsToCauseForUser', **kwargs)
 
     @post
     def company_transfer_credits_to_user(self, **kwargs):
-        """Method to get url path for the benevity CompanyTransferCreditsToUser endpoint"""
+        """Method to get url path for the CompanyTransferCreditsToUser endpoint"""
         return self.get_url_request('CompanyTransferCreditsToUser', **kwargs)
+
+    @get
+    def get_company_cause_list(self, **kwargs):
+        """Method to get url path for the GetCompanyCauseList endpoint"""
+        return self.get_url_request('GetCompanyCauseList', **kwargs)
+
+    @get
+    def get_company_user_list(self, **kwargs):
+        """Method to get url path for the GetCompanyUserList endpoint"""
+        return self.get_url_request('GetCompanyUserList', **kwargs)
+
+    @get
+    def get_receipt_pdf(self, **kwargs):
+        """Method to get url path for the GetReceiptPdf endpoint"""
+        return self.get_url_request('GetReceiptPdf', **kwargs)
+
+    @get
+    def search_causes(self, **kwargs):
+        """Method to get url path for the SearchCauses endpoint"""
+        kwargs['term'] = kwargs['term'].upper()
+        return self.get_url_request('SearchCauses', **kwargs)
 
     @post
     def user_transfer_credits_to_causes(self, **kwargs):
-        """Method to get url path for the benevity UserTransferCreditsToCauses endpoint"""
+        """Method to get url path for the UserTransferCreditsToCauses endpoint"""
         return self.get_url_request('UserTransferCreditsToCauses', **kwargs)
 
     def get_url_request(self, operation, **kwargs):
@@ -176,6 +179,11 @@ class Benevity(object):
         return query_path[:-1]
 
     def helper(self, operation):
+        """
+
+        :param operation:
+        :return:
+        """
         return '/Adapter.General/' + self.company_id + '/' + operation
 
 benevity = Benevity()
