@@ -109,6 +109,11 @@ class Benevity(object):
         """Method to get url path for the CompanyTransferCreditsToUser endpoint"""
         return self.get_url_request('CompanyTransferCreditsToUser', **kwargs)
 
+    @post
+    def generate_user_receipts(self, **kwargs):
+        """Method to get url path for the GenerateUserReceipts endpoint"""
+        return self.get_url_request('GenerateUserReceipts', **kwargs)
+
     @get
     def get_company_cause_list(self, **kwargs):
         """Method to get url path for the GetCompanyCauseList endpoint"""
