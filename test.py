@@ -9,11 +9,16 @@ benevity.api_key = BENEVITY_API_KEY
 benevity.company_id = BENEVITY_COMPANY_ID
 
 query_params = {
-    'user': 'user2',
+    'user': 'user',
     'lastname': 'Tremaine',
     'firstname': 'Kimberly',
     'email': 'KimberlyJTremaine@example.example',
     'country': '124',
+    'address-city': 'Calgary',
+    'address-country': '124',
+    'address-state': 'AB',
+    'address-postcode': 'T3B2C3',
+    'address-street': '504',
     'active': 'yes'
 }
 search_params = {
