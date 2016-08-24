@@ -29,8 +29,8 @@ transaction_data = {
     'cause.124-119219814RR0001': '100'
 }
 
-transaction = benevity.user_transfer_credits_to_causes(**transaction_data)
-pp.pprint(transaction)
+receipts = benevity.get_company_receipt_list()
+pp.pprint(receipts)
 
 response = benevity.get_receipt_list(user='user')
 pp.pprint(response)
