@@ -23,13 +23,13 @@ query_params = {
 }
 
 transaction_data = {
-    'cashable': 'no',
     'user': 'user',
-    'credits': '1000',
-    'refno': 'CG1'
+    'credits': '100',
+    'refno': 'CG1',
+    'cause.840-Cause02-20160331210259006': '100'
 }
 
-transaction = benevity.company_transfer_credits_to_user(**transaction_data)
+transaction = benevity.user_transfer_credits_to_causes(**transaction_data)
 pp.pprint(transaction)
 
 response = benevity.get_receipt_list(user='user')
