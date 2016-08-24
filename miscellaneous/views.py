@@ -6,7 +6,8 @@ from rest_framework.generics import get_object_or_404
 
 from .models import CustomerStripe
 from .helpers import card_list
-from ConnectGood.settings import STRIPE_API_KEY
+from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
+from benevity_library import benevity
 
 
 class PaymentMethodView(generics.GenericAPIView):
@@ -47,3 +48,26 @@ class PaymentMethodView(generics.GenericAPIView):
         customer = stripe.Customer.retrieve(customer_stripe.customer_id)
         cards_response = customer.sources.all(limit=3, object='card')
         return Response(card_list(cards_response.data))
+
+
+class BenevityReceiptView(generics.GenericAPIView):
+    """
+
+    :accepted methods:
+        GET
+    """
+    def __init__(self, *args, **kwargs):
+        super(BenevityReceiptView, self).__init__(*args, **kwargs)
+        benevity.api_key = BENEVITY_API_KEY
+        benevity.company_id = BENEVITY_COMPANY_ID
+
+    permission_classes = (permissions.AllowAny,)
+
+    @staticmethod
+    def get(request):
+        """
+
+        :param request:
+        :return:
+        """
+        pass
