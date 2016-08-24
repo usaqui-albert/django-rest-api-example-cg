@@ -22,8 +22,15 @@ query_params = {
     'active': 'yes'
 }
 
-user = benevity.add_user(**query_params)
-pp.pprint(user)
+transaction_data = {
+    'cashable': 'no',
+    'user': 'user',
+    'credits': '1000',
+    'refno': 'CG1'
+}
+
+transaction = benevity.company_transfer_credits_to_user(**transaction_data)
+pp.pprint(transaction)
 
 response = benevity.get_receipt_list(user='user')
 pp.pprint(response)
