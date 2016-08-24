@@ -53,6 +53,7 @@ def post(function):
     """
     def decorated_function(instance, **kwargs):
         """Decorator function of the one passed by parameter"""
+        print function(instance, **kwargs)
         try:
             response = urllib2.urlopen(function(instance, **kwargs), data="").read()
         except (urllib2.URLError, urllib2.HTTPError) as err:
@@ -148,6 +149,10 @@ class Benevity(object):
     @post
     def user_transfer_credits_to_causes(self, **kwargs):
         """Method to get url path for the UserTransferCreditsToCauses endpoint"""
+        cause_id = kwargs.pop('cause', None)
+        if cause_id:
+            new_cause_key = 'cause.%s' % cause_id
+            kwargs[new_cause_key] = kwargs['credits']
         return self.get_url_request('UserTransferCreditsToCauses', **kwargs)
 
     def get_url_request(self, operation, **kwargs):
