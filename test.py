@@ -28,5 +28,8 @@ search_params = {
     'pagesize': 5
 }
 
+user = benevity.add_user(**query_params)
+pp.pprint(user)
+
 response = benevity.get_company_user_list(active='yes')
 pp.pprint(response)
