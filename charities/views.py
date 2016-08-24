@@ -45,9 +45,10 @@ class SearchCharity(generics.GenericAPIView):
                 if 'children' in causes:
                     data = dict(causes['attrib'],
                                 data=get_charity_response(causes['children']))
+                    return Response(data, status=status.HTTP_200_OK)
                 else:
-                    data = dict(causes['attrib'], data=[])
-                return Response(data, status=status.HTTP_200_OK)
+                    return Response('There are no charities to show',
+                                    status=status.HTTP_404_NOT_FOUND)
             return Response('Benevity error', status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
