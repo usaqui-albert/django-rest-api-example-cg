@@ -11,7 +11,6 @@ benevity.company_id = BENEVITY_COMPANY_ID
 query_params = {
     'user': 'user2',
     'lastname': 'Tremaine',
-    'initials': 'J',
     'firstname': 'Kimberly',
     'email': 'KimberlyJTremaine@example.example',
     'country': '124',
@@ -24,5 +23,5 @@ search_params = {
     'pagesize': 5
 }
 
-causes = benevity.search_causes(**search_params)
-pp.pprint(causes)
+response = benevity.get_company_user_list(active='yes')
+pp.pprint(response)
