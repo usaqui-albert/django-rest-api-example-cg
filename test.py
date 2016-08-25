@@ -36,5 +36,6 @@ response = benevity.get_receipt_list(user='user')
 pp.pprint(response)
 
 send_receipt_pdf = benevity.get_receipt_pdf(receipt='D6399685NT',
-                                            email='usaqui.albert@gmail.com')
+                                            email='usaqui.albert@gmail.com',
+                                            banner='I do not know what is this')
 pp.pprint(send_receipt_pdf)
