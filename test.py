@@ -29,9 +29,8 @@ transaction_data = {
     'cause': '124-119219814RR0001'
 }
 
-response = benevity.get_receipt_list(user='user')
-pp.pprint(response)
-
 send_receipt_pdf = benevity.get_receipt_pdf(receipt='D6399685NT',
                                             email='albert.usaqui@blanclink.com')
 pp.pprint(send_receipt_pdf)
+
+receipt = benevity.get_receipt_pdf(receipt='D6399685NT')

@@ -59,6 +59,7 @@ def post(function):
         except (urllib2.URLError, urllib2.HTTPError) as err:
             return urllib2_error_handler(err)
         else:
+            print response
             return benevity_response_handler(response)
     return decorated_function
 
