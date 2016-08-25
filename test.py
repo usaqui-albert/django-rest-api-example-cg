@@ -34,6 +34,6 @@ transaction = benevity.user_transfer_credits_to_causes(**transaction_data)
 response = benevity.get_receipt_list(user='user')
 pp.pprint(response)
 
-# send_receipt_pdf = benevity.get_receipt_pdf(receipt='D6399685NT',
-#                                             email='usaqui.albert@gmail.com')
-# pp.pprint(send_receipt_pdf)
+send_receipt_pdf = benevity.get_receipt_pdf(receipt='D6399685NT',
+                                            email='usaqui.albert@gmail.com')
+pp.pprint(send_receipt_pdf)
