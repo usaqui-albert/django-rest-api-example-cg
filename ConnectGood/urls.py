@@ -14,18 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
-from django.contrib import admin
 
 from users.views import LoginView
-from miscellaneous.views import PaymentMethodView
 from plans.views import PlanView
 from ConnectGood.settings import MEDIA_ROOT
 
 urlpatterns = [
     url(r'^api/v1/login/', LoginView.as_view()),
-    url(r'^api/v1/payments/$', PaymentMethodView.as_view()),
     url(r'^api/v1/plans/$', PlanView.as_view()),
-    url(r'^admin/', admin.site.urls),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': MEDIA_ROOT}),
     url(r'^docs/', include('rest_framework_docs.urls')),
 
