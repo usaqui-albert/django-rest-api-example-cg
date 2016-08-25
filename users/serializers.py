@@ -56,8 +56,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 email=validated_data['email'],
                 plan=plan_id
             )
-        except (APIConnectionError, InvalidRequestError, CardError) as e:
-            raise serializers.ValidationError(stripe_errors_handler(e))
+        except (APIConnectionError, InvalidRequestError, CardError) as err:
+            raise serializers.ValidationError(stripe_errors_handler(err))
         else:
             validated_data['tax_receipts_as'] = 2 if is_corporate_account else 1
             user = create_user_hashing_password(**validated_data)
@@ -119,6 +119,11 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def get_payment_method(self, instance):
+        """
+
+        :param instance:
+        :return:
+        """
         if instance.has_a_plan:
             if self.customer is None:
                 customer = get_customer_in_stripe(instance)
@@ -131,6 +136,11 @@ class UserSerializer(serializers.ModelSerializer):
             return None
 
     def get_plan(self, instance):
+        """
+
+        :param instance:
+        :return:
+        """
         if instance.has_a_plan:
             if self.customer is None:
                 customer = get_customer_in_stripe(instance)
@@ -144,18 +154,22 @@ class UserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_tax_receipts_as(instance):
+        """Method to get the field tax receipts as string"""
         return instance.get_tax_receipts_as_string()
 
     @staticmethod
     def get_country(instance):
+        """Method to get the country data in dictionary format"""
         return CountrySerializer(instance.country).data
 
     @staticmethod
     def get_province(instance):
+        """Method to get the province data in dictionary format"""
         return StateSerializer(instance.province).data
 
     @staticmethod
     def get_is_corporate_account(instance):
+        """Method to get a boolean value indicating if this account is corporate or not"""
         return instance.is_corporate_account()
 
 
@@ -177,6 +191,11 @@ def create_user_hashing_password(**validated_data):
     return user
 
 def get_customer_in_stripe(instance):
+    """
+
+    :param instance:
+    :return:
+    """
     customer_stripe = CustomerStripe.objects.filter(user=instance.id)
     if customer_stripe.exists():
         try:
@@ -191,11 +210,13 @@ def get_customer_in_stripe(instance):
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
+    """Serializer to update the profile of a user"""
     card_token = serializers.CharField(max_length=100, allow_null=True)
     plan_id = serializers.CharField(max_length=100, allow_null=True)
     is_corporate_account = serializers.BooleanField(default=False)
 
     class Meta:
+        """Class to relating the User model to this serializer"""
         model = User
         fields = (
             'pk', 'email', 'first_name', 'last_name', 'company', 'country', 'city', 'province',
@@ -254,6 +275,12 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def update_payment_method(customer, card_token):
+        """
+
+        :param customer:
+        :param card_token:
+        :return:
+        """
         customer.source = card_token
         try:
             customer.save()
@@ -264,6 +291,12 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def update_subscription_plan(customer, plan_id):
+        """
+
+        :param customer:
+        :param plan_id:
+        :return:
+        """
         subscription_id = str(customer.subscriptions.data[0].id)
         try:
             subscription = stripe.Subscription.retrieve(subscription_id)

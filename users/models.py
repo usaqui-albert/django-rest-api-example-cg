@@ -1,9 +1,7 @@
-import datetime
 import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager
 from django.db import models
-from django.utils import timezone
 
 from countries.models import Country
 from states.models import State
@@ -49,34 +47,21 @@ class User(AbstractBaseUser):
     def __str__(self):
         return self.email
 
-    def free_trial_is_over(self):
-        """Method to check if a free trial from a user has finished
-
-        :return: True if the free trial has finished, otherwise False
-        """
-        if self.free_trial_started_at:
-            return self.free_trial_started_at <= timezone.now() - datetime.timedelta(days=15)
-
-    def free_trial_has_started(self):
-        """Method to check if a free trial from a user has already started
-
-        :return: True if the free trial has already started, otherwise False
-        """
-        return self.free_trial_started_at is not None
-
-    def start_free_trial(self):
-        """Method to set the free_trial_started_at user field to date object(now)
-
-        :return: True
-        """
-        self.free_trial_started_at = timezone.now()
-        return True
-
     def get_tax_receipts_as_string(self):
+        """Method to get the tax receipts value as a description"""
         return self.get_full_name() if self.tax_receipts_as == 1 else self.company
 
     def get_full_name(self):
         return self.first_name + " " + self.last_name
 
     def is_corporate_account(self):
+        """Method to get a boolean indicating if this object is a corporate account or not"""
         return self.tax_receipts_as == 2
+
+    def get_country_iso_code(self):
+        """Method to get the country iso code of this user"""
+        return self.country.iso_code
+
+    def get_state_as_string(self):
+        """Method to get the province/state value of this user as string"""
+        return self.province.__str__()
