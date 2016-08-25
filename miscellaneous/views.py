@@ -1,11 +1,11 @@
-from rest_framework import generics, permissions, status
-from rest_framework.response import Response
+from django.http import HttpResponse
+from rest_framework import permissions, views
 
 from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from benevity_library import benevity
 
 
-class BenevityReceiptView(generics.GenericAPIView):
+class BenevityReceiptView(views.APIView):
     """
 
     :accepted methods:
@@ -25,4 +25,8 @@ class BenevityReceiptView(generics.GenericAPIView):
         :param request:
         :return:
         """
-        pass
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+        receipt = benevity.get_receipt_pdf(receipt='D6399685NT')
+        response.write(receipt)
+        return response

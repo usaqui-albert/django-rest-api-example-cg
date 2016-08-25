@@ -18,10 +18,12 @@ from django.conf.urls import url, include
 from users.views import LoginView
 from plans.views import PlanView
 from ConnectGood.settings import MEDIA_ROOT
+from miscellaneous.views import BenevityReceiptView
 
 urlpatterns = [
     url(r'^api/v1/login/', LoginView.as_view()),
     url(r'^api/v1/plans/$', PlanView.as_view()),
+    url(r'^api/v1/receipts/$', BenevityReceiptView.as_view()),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': MEDIA_ROOT}),
     url(r'^docs/', include('rest_framework_docs.urls')),
 
