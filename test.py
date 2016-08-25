@@ -30,6 +30,7 @@ transaction_data = {
 }
 
 transaction = benevity.user_transfer_credits_to_causes(**transaction_data)
+pp.pprint(transaction)
 
 response = benevity.get_receipt_list(user='user')
 pp.pprint(response)
