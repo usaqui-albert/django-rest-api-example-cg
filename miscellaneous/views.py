@@ -26,7 +26,7 @@ class BenevityReceiptView(views.APIView):
         :return:
         """
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="somefilename.pdf"'
+        response['Content-Disposition'] = 'inline; filename="receipt.pdf"'
         receipt = benevity.get_receipt_pdf(receipt='D6399685NT')
         response.write(receipt)
         return response
