@@ -23,7 +23,7 @@ from miscellaneous.views import BenevityReceiptView
 urlpatterns = [
     url(r'^api/v1/login/', LoginView.as_view()),
     url(r'^api/v1/plans/$', PlanView.as_view()),
-    url(r'^api/v1/receipts/$', BenevityReceiptView.as_view()),
+    url(r'^api/v1/receipts/(?P<receipt_id>[0-9A-Za-z]+)/$', BenevityReceiptView.as_view()),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': MEDIA_ROOT}),
     url(r'^docs/', include('rest_framework_docs.urls')),
 
