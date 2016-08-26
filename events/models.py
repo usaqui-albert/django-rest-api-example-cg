@@ -17,6 +17,7 @@ class Event(models.Model):
     landing_message = models.TextField()
     donation_amount = models.DecimalField(max_digits=7, decimal_places=2)
     card_id = models.CharField(max_length=100)
+    receipt_id = models.CharField(max_length=100, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

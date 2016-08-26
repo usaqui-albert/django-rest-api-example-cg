@@ -40,10 +40,14 @@ def benevity_response_handler(response):
     :param response: benevity response as xml
     :return: response as dictionary
     """
-    root = etree.XML(response)
-    xml_string = etree.tostring(root)
-    objectify_element = objectify.fromstring(xml_string)
-    return recursive_dict(objectify_element)
+    try:
+        root = etree.XML(response)
+    except etree.XMLSyntaxError:
+        return response
+    else:
+        xml_string = etree.tostring(root)
+        objectify_element = objectify.fromstring(xml_string)
+        return recursive_dict(objectify_element)
 
 def post(function):
     """Method to do a POST request to the benevity api handling response errors
@@ -74,9 +78,6 @@ def get(function):
         except (urllib2.URLError, urllib2.HTTPError) as err:
             return urllib2_error_handler(err)
         else:
-            if function.__name__ == 'get_receipt_pdf':
-                print type(response)
-                print response
             return benevity_response_handler(response)
     return decorated_function
 
