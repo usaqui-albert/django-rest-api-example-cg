@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+import base64
+
 from rest_framework import permissions, views, status
 from rest_framework.response import Response
 
@@ -29,7 +30,7 @@ class BenevityReceiptView(views.APIView):
         event = self.get_object()
         if event.exists():
             receipt = benevity.get_receipt_pdf(receipt=kwargs['receipt_id'])
-            return Response({'pdf': receipt}, status=status.HTTP_200_OK)
+            return Response({'pdf': base64.encodestring(receipt)}, status=status.HTTP_200_OK)
         return Response('You are not allow to access this information',
                         status=status.HTTP_403_FORBIDDEN)
 
