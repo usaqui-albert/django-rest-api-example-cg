@@ -1,28 +1,17 @@
 from celery.task import task
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import get_template
-from django.template import Context
 
 from users.models import User
-from ConnectGood import settings
+from mandrill_script import send_mandrill_email
 
 
 @task(ignore_result=True)
 def post_create_user(user_id):
-    obj = User.objects.get(pk=user_id)
-    send_email_to_activate(obj)
+    user = User.objects.get(pk=user_id)
+    template_vars = [{'content': user.first_name, 'name': 'user'}]
+    receiver = {'email': user.email,
+                'name': user.get_full_name(),
+                'type': 'to'}
+    subject = 'Welcome to ConnectGood %s!' % user.first_name
+    template_name = 'Signup'
+    send_mandrill_email(template_vars, receiver, subject, template_name)
     return True
-
-def send_email_to_activate(obj_user):
-    subject = 'Welcome to ConnectGood Registration Service'
-    from_email = settings.EMAIL_HOST_USER
-    to = obj_user.email
-    text_content = ''
-    htmly = get_template('email_to_active.html')
-    d = Context({'complete_name': str(obj_user.first_name) + ' ' + str(obj_user.last_name),
-                 'confirm_url': 'www.google.com'  # TODO: set url to the frontend confirm view
-                 })
-    html_content = htmly.render(d)
-    msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-    msg.attach_alternative(html_content, "text/html")
-    msg.send()

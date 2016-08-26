@@ -32,6 +32,7 @@ class CharityCategorySerializer(serializers.ModelSerializer):
 class CharityCountrySerializer(serializers.ModelSerializer):
     """Serializer to get the detail of a charity"""
     picture = serializers.SerializerMethodField()
+    id = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(CharityCountrySerializer, self).__init__(*args, **kwargs)
@@ -45,6 +46,10 @@ class CharityCountrySerializer(serializers.ModelSerializer):
 
     def get_picture(self, instance):
         return 'http://' + self.context['host'] + MEDIA_URL + instance.get_path_picture()
+
+    @staticmethod
+    def get_id(instance):
+        return instance.benevity_id
 
 
 class SearchCharitySerializer(serializers.Serializer):

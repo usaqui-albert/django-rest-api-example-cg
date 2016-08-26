@@ -9,7 +9,8 @@ from rest_framework import generics, permissions, status
 
 from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectEventSerializer
 from .models import Event, UserEvent
-from .tasks import notify_event_invitation, notify_event_accepted, notify_event_rejected
+from .tasks import notify_event_invitation, notify_event_accepted_user,\
+    notify_event_accepted_recipient
 from .helpers import validate_uuid4, get_event_status, update_event_status
 from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler
@@ -137,7 +138,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 response = Response(response, status=status.HTTP_400_BAD_REQUEST)
             elif response:
                 user_event = self.get_object()
-                return_serializer = EventSerializer(user_event.event)
+                return_serializer = EventSerializer(user_event.first().event)
                 response = Response(return_serializer.data, status=status.HTTP_200_OK)
             else:
                 database_error = 'There was a conflict updating the database'
@@ -156,7 +157,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         event = user_event.event
         user = user_event.user
         if event_status == user_event.REJECTED:
-            notify_event_rejected.delay(event, user)
+            pass
         else:
             country = event.country
             try:
@@ -171,9 +172,8 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             else:
                 if not user.added_to_benevity:
                     response = benevity.add_user(**get_user_params(user))
-                    if isinstance(response, str):
-                        return response
-                    # TODO: set the added_to_benevity attribute of user as True
+                    user.added_to_benevity = True
+                    user.save()
                 transfer_params = {
                     'cashable': 'no',
                     'user': str(user.benevity_id),
@@ -181,13 +181,15 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                     'refno': 'CG%s' % str(event.id)
                 }
                 res = benevity.company_transfer_credits_to_user(**transfer_params)
-                if isinstance(res, str):
-                    return res
-                notify_event_accepted.delay(event, user)
+                # TODO: validate the response of the benevity api
+                event.receipt_id = 'D6399685NT'
+                event.save()
+                notify_event_accepted_user.delay(event, user)
+                notify_event_accepted_recipient.delay(event, user)
         return update_event_status(user_event, event_status)
 
     def get_object(self):
-        obj = UserEvent.objects.filter(key=self.kwargs['key']).select_related(
+        obj = UserEvent.objects.filter(key=self.request.data['key']).select_related(
             'event__country', 'user')
         return obj
 
