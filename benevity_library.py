@@ -53,13 +53,11 @@ def post(function):
     """
     def decorated_function(instance, **kwargs):
         """Decorator function of the one passed by parameter"""
-        print function(instance, **kwargs)
         try:
             response = urllib2.urlopen(function(instance, **kwargs), data="").read()
         except (urllib2.URLError, urllib2.HTTPError) as err:
             return urllib2_error_handler(err)
         else:
-            print response
             return benevity_response_handler(response)
     return decorated_function
 
@@ -77,7 +75,8 @@ def get(function):
             return urllib2_error_handler(err)
         else:
             if function.__name__ == 'get_receipt_pdf':
-                return response
+                print type(response)
+                print response
             return benevity_response_handler(response)
     return decorated_function
 
