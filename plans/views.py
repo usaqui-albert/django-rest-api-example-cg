@@ -1,4 +1,5 @@
 import stripe
+
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from stripe.error import APIConnectionError, InvalidRequestError, CardError
@@ -43,15 +44,29 @@ class PlanView(views.APIView):
             if request.user.is_authenticated():
                 customer = get_customer_in_stripe(request.user)
                 if isinstance(customer, str):
-                    response = Response(customer, status=status.HTTP_404_NOT_FOUND)
+                    return Response(customer, status=status.HTTP_404_NOT_FOUND)
                 else:
                     currency = customer.subscriptions.data[0]['plan'].currency
                     filtered_plans = filtering_plan_by_currency(mapped_plans, str(currency))
                     no_free_plans = reject_free_plans(filtered_plans)
-                    response = Response(no_free_plans, status=status.HTTP_200_OK)
-            else:
-                response = Response(filter_free_plans(mapped_plans), status=status.HTTP_200_OK)
-        return response
+                    return Response(no_free_plans, status=status.HTTP_200_OK)
+            country_id = request.GET.get('country', None)
+            free_plans = filter_free_plans(mapped_plans)
+            if country_id:
+                try:
+                    country_id = int(country_id)
+                except ValueError:
+                    pass
+                else:
+                    if country_id == 2:
+                        currency = 'usd'
+                    elif country_id == 1:
+                        currency = 'cad'
+                    else:
+                        currency = ''
+                    response = filtering_plan_by_currency(free_plans, currency)
+                    return Response(response, status=status.HTTP_200_OK)
+            return Response(free_plans, status=status.HTTP_200_OK)
 
 
 class InvoiceView(views.APIView):
