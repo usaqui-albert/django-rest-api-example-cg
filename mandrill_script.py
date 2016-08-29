@@ -1,12 +1,12 @@
 import mandrill
-from ConnectGood.settings import MANDRILL_API_KEY
+from ConnectGood.settings import MANDRILL_API_KEY, MANDRILL_SENDER_EMAIL
 
 def send_mandrill_email(template_vars, to, subject, template_name):
     try:
         mandrill_client = mandrill.Mandrill(MANDRILL_API_KEY)
         template_content = []
         message = {
-            'from_email': 'bryan@connectgood.net',
+            'from_email': MANDRILL_SENDER_EMAIL,
             'from_name': 'ConnectGood',
             'global_merge_vars': template_vars,
             'subject': subject,
