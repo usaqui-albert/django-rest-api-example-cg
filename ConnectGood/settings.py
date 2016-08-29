@@ -141,13 +141,6 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.User'
 CUSTOM_USER_MODEL = 'users.User'
 
-# Email INFO
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'blanclink.test@gmail.com'
-EMAIL_HOST_PASSWORD = 'blanclink.test123456'
-EMAIL_PORT = 587
-
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
@@ -158,7 +151,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-# This is the key to connect to the stripe api
+# Stripe info
 STRIPE_API_KEY = "sk_test_JutiYwXisOBbK5ORfS1BlqCZ"
 
 CLIENT_URL_SERVER = "http://23.246.237.99:3000"
@@ -166,8 +159,11 @@ CLIENT_URL_SERVER = "http://23.246.237.99:3000"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# Benevity info
 BENEVITY_COMPANY_ID = '1Z66WX7C28'
 BENEVITY_API_KEY = 'lah0aegeephaeCei'
 BENEVITY_DEFAULT_PAGESIZE = 10
 
+# Mandrill info
 MANDRILL_API_KEY = 'yWAsP2GjtFiLudNrjOyFOQ'
+MANDRILL_SENDER_EMAIL = 'good@connectgood.net'
