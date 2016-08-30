@@ -157,9 +157,10 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         event = user_event.event
         user = user_event.user
         if event_status == user_event.REJECTED:
-            pass
+            user_event.status = user_event.REJECTED
         else:
             country = event.country
+            user_event.status = user_event.ACCEPTED
             try:
                 stripe.Charge.create(
                     amount=int(event.donation_amount * 100),
@@ -186,6 +187,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 event.save()
                 notify_event_accepted_user.delay(event, user)
                 notify_event_accepted_recipient.delay(event, user)
+        user_event.save()
         return update_event_status(user_event, event_status)
 
     def get_object(self):
