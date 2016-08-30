@@ -147,6 +147,7 @@ class Benevity(object):
     def search_causes(self, **kwargs):
         """Method to get url path for the SearchCauses endpoint"""
         kwargs['term'] = kwargs['term'].upper()
+        kwargs['cause-type'] = 'A0'
         return self.get_url_request('SearchCauses', **kwargs)
 
     @post
