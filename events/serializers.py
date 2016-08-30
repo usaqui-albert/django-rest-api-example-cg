@@ -67,7 +67,7 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class AcceptOrRejectEventSerializer(serializers.Serializer):
-    charity = serializers.CharField(max_length=100)
+    charity = serializers.CharField(max_length=100, required=False)
     status = serializers.ChoiceField(choices=STATUS_OF_THE_EVENT)
     key = serializers.CharField(max_length=100)
 
