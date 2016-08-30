@@ -11,7 +11,7 @@ from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectE
 from .models import Event, UserEvent
 from .tasks import notify_event_invitation, notify_event_accepted_user,\
     notify_event_accepted_recipient
-from .helpers import validate_uuid4, get_event_status, update_event_status
+from .helpers import validate_uuid4, get_event_status
 from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler
 from benevity_library import benevity
@@ -140,9 +140,6 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 user_event = self.get_object()
                 return_serializer = EventSerializer(user_event.first().event)
                 response = Response(return_serializer.data, status=status.HTTP_200_OK)
-            else:
-                database_error = 'There was a conflict updating the database'
-                response = Response(database_error, status=status.HTTP_409_CONFLICT)
             return response
         return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -173,6 +170,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             else:
                 if not user.added_to_benevity:
                     response = benevity.add_user(**get_user_params(user))
+                    # TODO: validate the response of the benevity api
                     user.added_to_benevity = True
                     user.save()
                 transfer_params = {
@@ -188,7 +186,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 notify_event_accepted_user.delay(event, user)
                 notify_event_accepted_recipient.delay(event, user)
         user_event.save()
-        return update_event_status(user_event, event_status)
+        return True
 
     def get_object(self):
         obj = UserEvent.objects.filter(key=self.request.data['key']).select_related(
