@@ -21,6 +21,7 @@ class EventSerializer(serializers.ModelSerializer):
     charities_by_category = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
     sender = serializers.SerializerMethodField()
+    recipient_name = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super(EventSerializer, self).__init__(*args, **kwargs)
@@ -59,6 +60,10 @@ class EventSerializer(serializers.ModelSerializer):
     def get_sender(instance):
         user_event = instance.user_event.first()
         return user_event.user.get_full_name()
+
+    @staticmethod
+    def get_recipient_name(instance):
+        return str(instance.recipient_name).split(' ')[0]
 
 
 class AcceptOrRejectEventSerializer(serializers.Serializer):
