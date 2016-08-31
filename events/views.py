@@ -102,8 +102,9 @@ class GetEventByToken(generics.RetrieveAPIView):
         :return: user event instance updated as viewed
         """
         user_event = event.user_event.filter(key=self.kwargs['key']).first()
-        user_event.status = user_event.VIEWED
-        user_event.save()
+        if user_event.status == user_event.WAITING:
+            user_event.status = user_event.VIEWED
+            user_event.save()
         return user_event
 
 
