@@ -29,6 +29,10 @@ transaction_data = {
     'cause': '124-119219814RR0001'
 }
 
-receipt = benevity.get_receipt_pdf(receipt='D6399685NT')
+# receipt = benevity.get_receipt_pdf(receipt='D6399685NT')
 
-print receipt
+receipts = benevity.get_receipt_list(user='user')
+pp.pprint(receipts)
+
+users = benevity.get_company_user_list()
+pp.pprint(users)
