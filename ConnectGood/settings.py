@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'states',
     'miscellaneous',
     'events',
-    'charities'
+    'charities',
+    'plans'
 ]
 
 MIDDLEWARE_CLASSES = [

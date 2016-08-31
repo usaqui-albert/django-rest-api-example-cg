@@ -13,6 +13,7 @@ from .helpers import get_plans_list_response, filtering_plan_by_currency, reject
 from miscellaneous.helpers import stripe_errors_handler
 from users.serializers import get_customer_in_stripe
 from .serializers import UserDataSerializer
+from .models import Invoice
 
 
 class PlanView(views.APIView):
@@ -116,8 +117,7 @@ class InvoiceDetail(views.APIView):
         super(InvoiceDetail, self).__init__(**kwargs)
         stripe.api_key = STRIPE_API_KEY
 
-    @staticmethod
-    def get(request, **kwargs):
+    def get(self, request, **kwargs):
         """
 
         :param request:
@@ -128,6 +128,19 @@ class InvoiceDetail(views.APIView):
         except (APIConnectionError, InvalidRequestError, CardError) as err:
             return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
         else:
-            mapped_invoice = get_invoices_list_response([invoice], request.user.email)
+            mapped_invoice = get_invoices_list_response([invoice], request.user.email)[0]
+            stripe_invoice_id = str(mapped_invoice['id'])
+            invoice_obj = self.get_object(stripe_invoice_id)
+            if invoice_obj.exists():
+                serial_number = invoice_obj.first().serial_number
+            else:
+                invoice_obj = Invoice.objects.create(stripe_id=stripe_invoice_id)
+                invoice_obj.serial_number = serial_number = invoice_obj.generate_invoice_number()
+                invoice_obj.save()
             extra_data = UserDataSerializer(request.user).data
-            return Response(dict(mapped_invoice[0], **extra_data), status=status.HTTP_200_OK)
+            extra_data['invoice_number'] = serial_number
+            return Response(dict(mapped_invoice, **extra_data), status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get_object(stripe_id):
+        return Invoice.objects.filter(stripe_id=stripe_id)
