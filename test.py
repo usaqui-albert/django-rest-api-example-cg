@@ -34,5 +34,5 @@ transaction_data = {
 receipts = benevity.get_receipt_list(user='user')
 pp.pprint(receipts)
 
-users = benevity.get_company_user_list()
-pp.pprint(users)
+company_receipts = benevity.get_company_receipt_list()
+pp.pprint(company_receipts)
