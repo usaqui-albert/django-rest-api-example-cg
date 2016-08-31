@@ -133,18 +133,17 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         user_event = self.get_object()
         if user_event.exists():
             event_status = get_event_status(serializer.validated_data['status'])
-            response = self.handle_accept_or_reject(user_event.first(), event_status)
-            if isinstance(response, str):
-                response = Response(response, status=status.HTTP_400_BAD_REQUEST)
-            elif response:
+            response = self.handle_accept_or_reject(user_event.first(),
+                                                    event_status,
+                                                    serializer.validated_data['charity'])
+            if response is True:
                 user_event = self.get_object()
                 return_serializer = EventSerializer(user_event.first().event)
-                response = Response(return_serializer.data, status=status.HTTP_200_OK)
-            return response
+                return Response(return_serializer.data, status=status.HTTP_200_OK)
+            return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    @staticmethod
-    def handle_accept_or_reject(user_event, event_status):
+    def handle_accept_or_reject(self, user_event, event_status, charity):
         """Method to handle when a user reject or accept a CG invitation
 
         :param user_event: user_event instance
@@ -155,6 +154,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         user = user_event.user
         if event_status == user_event.REJECTED:
             user_event.status = user_event.REJECTED
+            response = True
         else:
             country = event.country
             user_event.status = user_event.ACCEPTED
@@ -168,29 +168,56 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             except (APIConnectionError, InvalidRequestError, CardError) as err:
                 return stripe_errors_handler(err)
             else:
-                if not user.added_to_benevity:
-                    response = benevity.add_user(**get_user_params(user))
-                    # TODO: validate the response of the benevity api
-                    user.added_to_benevity = True
-                    user.save()
-                transfer_params = {
-                    'cashable': 'no',
-                    'user': str(user.benevity_id),
-                    'credits': str(int(event.donation_amount * 100)),
-                    'refno': 'CG%s' % str(event.id)
-                }
-                res = benevity.company_transfer_credits_to_user(**transfer_params)
-                # TODO: validate the response of the benevity api
-                event.receipt_id = 'D6399685NT'
-                event.save()
-                notify_event_accepted_user.delay(event, user)
-                notify_event_accepted_recipient.delay(event, user)
+                response = self.benevity_process(user, event, charity)
         user_event.save()
+        return response
+
+    @staticmethod
+    def benevity_process(user, event, charity):
+        if not user.added_to_benevity:
+            # Adding a new user to benevity
+            response = benevity.add_user(**get_user_params(user))
+            if response['attrib']['status'] == 'FAILED':
+                return 'There was an error adding a user in benevity'
+            user.added_to_benevity = True
+            user.save()
+
+        credits_to_transfer = str(int(event.donation_amount * 100))
+        refno = 'CG%s' % str(event.id)
+        user_benevity_id = str(user.benevity_id)
+
+        # ConnectGood transfers credits to the user
+        transference = benevity.company_transfer_credits_to_user(
+            cashable='no',
+            user=user_benevity_id,
+            credits=credits_to_transfer,
+            refno=refno
+        )
+        if transference['attrib']['status'] == 'FAILED':
+            return 'There was an error transferring credits to the user'
+        # User transfers credits to a cause(charity)
+        transfer = benevity.user_transfer_credits_to_causes(
+            user=str(user.benevity_id),
+            credits=credits_to_transfer,
+            refno=refno,
+            cause=charity
+        )
+        if transfer['attrib']['status'] == 'FAILED':
+            return 'There was an error transferring credits to a charity'
+        # Generating the receipt of the day for this user
+        receipt = benevity.generate_user_receipts(user=user_benevity_id,
+                                                  start='2016-08-31')
+        if receipt['attrib']['status'] == 'FAILED':
+            return 'There was an error generating the receipt for this user'
+        event.receipt_id = 'D6399685NT'
+        event.save()
+        notify_event_accepted_user.delay(event, user)
+        notify_event_accepted_recipient.delay(event, user)
         return True
 
     def get_object(self):
         obj = UserEvent.objects.filter(key=self.request.data['key']).select_related(
-            'event__country', 'user')
+            'event__country', 'user__country')
         return obj
 
 def get_user_params(user):
@@ -200,9 +227,14 @@ def get_user_params(user):
     :return: dictionary with the necessary fields to do the benevity request
     """
     return {
-        'email': user.email,
-        'firstname': user.first_name,
-        'lastname': user.last_name,
+        'email': str(user.email),
+        'firstname': str(user.first_name),
+        'lastname': str(user.last_name),
         'active': 'yes',
-        'user': str(user.benevity_id)
+        'user': str(user.benevity_id),
+        'address-city': str(user.city),
+        'address-country': str(user.get_country_iso_code()),
+        'address-postcode': str(user.zip_code),
+        'address-state': str(user.get_state_as_string()),
+        'address-street': str(user.street_address)
     }
