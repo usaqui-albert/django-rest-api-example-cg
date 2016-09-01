@@ -24,23 +24,23 @@ query_params = {
 }
 
 company_transfer = benevity.company_transfer_credits_to_user(
-    user='user2',
+    user='user3',
     credits='10000',
-    refno='CG1003',
+    refno='CG1004',
     cashable='no'
 )
 pp.pprint(company_transfer)
 
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT, D78N2ABLZ1')
 user_transfer = benevity.user_transfer_credits_to_causes(
-    user='user2',
+    user='user3',
     credits=200,
-    refno='CG1003',
+    refno='CG1004',
     cause='124-106846942RR0001'
 )
 pp.pprint(user_transfer)
 
-generated_receipt = benevity.generate_user_receipts(user='user2')
+generated_receipt = benevity.generate_user_receipts(user='user3')
 pp.pprint(generated_receipt)
 
 content = get_content_response(generated_receipt['children'])
@@ -55,5 +55,5 @@ pp.pprint(receipt)
 for i in range(50):
     print ''
 
-receipts_list = benevity.get_receipt_list(user='user2')
+receipts_list = benevity.get_receipt_list(user='user3')
 pp.pprint(receipts_list)
