@@ -31,9 +31,7 @@ transaction_data = {
 
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT')
 
-generated_receipt = benevity.generate_user_receipts(user='user',
-                                                    start='2016-05-30',
-                                                    end='2016-08-30')
+generated_receipt = benevity.generate_user_receipts(user='user')
 pp.pprint(generated_receipt)
 
 receipts = benevity.get_receipt_list(user='user')
