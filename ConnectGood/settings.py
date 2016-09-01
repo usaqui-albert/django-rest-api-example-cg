@@ -89,11 +89,11 @@ WSGI_APPLICATION = 'ConnectGood.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'connectgood-mariadb',
+        'NAME': 'connect_good',
         'USER': 'root',
-        'PASSWORD': '123',
+        'PASSWORD': 'bimbo123',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '80',
     }
 }
 

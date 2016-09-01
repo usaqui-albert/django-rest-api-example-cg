@@ -206,8 +206,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         if transfer['attrib']['status'] == 'FAILED':
             return 'There was an error transferring credits to a charity'
         # Generating the receipt of the day for this user
-        receipt = benevity.generate_user_receipts(user=user_benevity_id,
-                                                  start='2016-08-31')
+        receipt = benevity.generate_user_receipts(user=user_benevity_id)
         if receipt['attrib']['status'] == 'FAILED':
             return 'There was an error generating the receipt for this user'
         event.receipt_id = 'D6399685NT'
