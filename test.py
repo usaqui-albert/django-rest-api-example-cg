@@ -23,19 +23,12 @@ query_params = {
     'active': 'yes'
 }
 
-transaction_data = {
-    'user': 'user',
-    'credits': '100',
-    'refno': 'CG1',
-    'cause': '124-106846942RR0001'
-}
-
 receipt = benevity.get_receipt_pdf(receipt='D6399685NT')
 user_transfer = benevity.user_transfer_credits_to_causes(
     user='user',
     credits=200,
-    refno='CG1001',
-    cause='124-119219814RR0001'
+    refno='CG1002',
+    cause='124-106846942RR0001'
 )
 pp.pprint(user_transfer)
 
