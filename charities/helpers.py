@@ -29,3 +29,6 @@ def get_causes_response(dic_list):
 
 def get_receipts_response(dic_list):
     return [i for i in dic_list if 'receipts' in i][0]['receipts']
+
+def get_receipt_response(dic_list):
+    return [i for i in dic_list if 'receipt' in i][0]['receipt']
