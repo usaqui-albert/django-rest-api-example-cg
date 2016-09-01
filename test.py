@@ -31,6 +31,22 @@ transaction_data = {
 
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT')
 
+company_transfer = benevity.company_transfer_credits_to_user(
+    user='user',
+    cashable='no',
+    credits='10000',
+    refno='CG1000'
+)
+pp.pprint(company_transfer)
+
+user_transfer = benevity.user_transfer_credits_to_causes(
+    user='user',
+    credits=200,
+    refno='CG1000',
+    cause='124-119219814RR0001'
+)
+pp.pprint(user_transfer)
+
 generated_receipt = benevity.generate_user_receipts(user='user')
 pp.pprint(generated_receipt)
 
