@@ -28,7 +28,7 @@ def notify_event_invitation(event, user, key):
     send_mandrill_email(template_vars, receiver, subject, template_name)
 
 @task(ignore_result=True)
-def notify_event_accepted_user(event, user):
+def notify_event_accepted_user(event, user, charity_name):
     template_vars = [
         {
             'content': event.recipient_name,
@@ -37,6 +37,10 @@ def notify_event_accepted_user(event, user):
         {
             'content': str(event.donation_amount),
             'name': 'donation_amount'
+        },
+        {
+            'content': charity_name,
+            'name': 'charity'
         }
     ]
     receiver = {'email': user.email,
@@ -48,7 +52,7 @@ def notify_event_accepted_user(event, user):
     return True
 
 @task(ignore_result=True)
-def notify_event_accepted_recipient(event, user):
+def notify_event_accepted_recipient(event, user, charity_name):
     template_vars = [
         {
             'content': event.recipient_name,
@@ -61,6 +65,10 @@ def notify_event_accepted_recipient(event, user):
         {
             'content': str(event.donation_amount),
             'name': 'donation_amount'
+        },
+        {
+            'content': charity_name,
+            'name': 'charity'
         }
     ]
     receiver = {'email': event.email,
