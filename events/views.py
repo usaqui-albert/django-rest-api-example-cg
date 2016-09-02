@@ -134,22 +134,31 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         user_event = self.get_object()
         if user_event.exists():
+            user_event = user_event.first()
+            if user_event.status != user_event.VIEWED:
+                return Response("This ConnectGood has been accepted or rejected previously",
+                                status=status.HTTP_403_FORBIDDEN)
             event_status = get_event_status(serializer.validated_data['status'])
-            response = self.handle_accept_or_reject(user_event.first(),
+            charity = serializer.validated_data.pop('charity', None)
+            charity_name = serializer.validated_data.pop('charity_name', None)
+            response = self.handle_accept_or_reject(user_event,
                                                     event_status,
-                                                    serializer.validated_data['charity'])
+                                                    charity,
+                                                    charity_name)
             if response is True:
                 user_event = self.get_object()
-                return_serializer = EventSerializer(user_event.first().event)
+                return_serializer = EventSerializer(user_event.event)
                 return Response(return_serializer.data, status=status.HTTP_200_OK)
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    def handle_accept_or_reject(self, user_event, event_status, charity):
+    def handle_accept_or_reject(self, user_event, event_status, charity, charity_name):
         """Method to handle when a user reject or accept a CG invitation
 
         :param user_event: user_event instance
         :param event_status: status of the event, example: 'ACCEPTED'
+        :param charity: charity(cause) id from benevity
+        :param charity_name: charity name to use in the emails templates
         :return:
         """
         event = user_event.event
@@ -173,12 +182,13 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 response = self.benevity_process(user, event, charity)
                 if isinstance(response, str):
                     return response
-                notify_event_accepted_user.delay(event, user)
-                notify_event_accepted_recipient.delay(event, user)
+                notify_event_accepted_user.delay(event, user, charity_name)
+                notify_event_accepted_recipient.delay(event, user, charity_name)
         return True
 
     @staticmethod
     def benevity_process(user, event, charity):
+        """Method to process all request to the benevity api"""
         if not user.added_to_benevity:
             # Adding a new user to benevity
             response = benevity.add_user(**get_user_params(user))
