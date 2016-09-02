@@ -134,6 +134,11 @@ class Benevity(object):
         return self.get_url_request('GetCompanyUserList', **kwargs)
 
     @get
+    def get_receipt_detail(self, **kwargs):
+        """Method to get url path for the GetReceiptDetails endpoint"""
+        return self.get_url_request('GetReceiptDetails', **kwargs)
+
+    @get
     def get_receipt_list(self, **kwargs):
         """Method to get url path for the GetReceiptList endpoint"""
         return self.get_url_request('GetReceiptList', **kwargs)

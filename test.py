@@ -1,6 +1,5 @@
 from ConnectGood.settings import BENEVITY_COMPANY_ID, BENEVITY_API_KEY
 from benevity_library import benevity
-from charities.helpers import get_content_response, get_receipts_response, get_receipt_response
 
 from pprint import PrettyPrinter
 
@@ -23,37 +22,13 @@ query_params = {
     'active': 'yes'
 }
 
-company_transfer = benevity.company_transfer_credits_to_user(
-    user='user3',
-    credits='10000',
-    refno='CG1004',
-    cashable='no'
-)
-pp.pprint(company_transfer)
-
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT, D78N2ABLZ1')
-user_transfer = benevity.user_transfer_credits_to_causes(
-    user='user3',
-    credits=200,
-    refno='CG1004',
-    cause='124-106846942RR0001'
-)
-pp.pprint(user_transfer)
 
-generated_receipt = benevity.generate_user_receipts(user='user3')
-pp.pprint(generated_receipt)
-
-content = get_content_response(generated_receipt['children'])
-pp.pprint(content)
-
-receipts = get_receipts_response(content['children'])
-pp.pprint(receipts)
-
-receipt = get_receipt_response(receipts['children'])
-pp.pprint(receipt)
-
-for i in range(50):
-    print ''
-
-receipts_list = benevity.get_receipt_list(user='user3')
+receipts_list = benevity.get_receipt_list(user='user')
 pp.pprint(receipts_list)
+
+receipt_1 = benevity.get_receipt_detail(receipt='D6399685NT')
+pp.pprint(receipt_1)
+
+receipt_2 = benevity.get_receipt_detail(receipt='D78N2ABLZ1')
+pp.pprint(receipt_2)
