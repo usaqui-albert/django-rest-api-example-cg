@@ -15,6 +15,7 @@ from .helpers import validate_uuid4, get_event_status
 from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler
 from benevity_library import benevity
+from charities.helpers import get_content_response, get_receipts_response, get_receipt_response
 
 
 class EventView(generics.ListCreateAPIView):
@@ -155,7 +156,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         user = user_event.user
         if event_status == user_event.REJECTED:
             user_event.status = user_event.REJECTED
-            response = True
+            user_event.save()
         else:
             country = event.country
             user_event.status = user_event.ACCEPTED
@@ -170,8 +171,11 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 return stripe_errors_handler(err)
             else:
                 response = self.benevity_process(user, event, charity)
-        user_event.save()
-        return response
+                if isinstance(response, str):
+                    return response
+                notify_event_accepted_user.delay(event, user)
+                notify_event_accepted_recipient.delay(event, user)
+        return True
 
     @staticmethod
     def benevity_process(user, event, charity):
@@ -196,6 +200,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         )
         if transference['attrib']['status'] == 'FAILED':
             return 'There was an error transferring credits to the user'
+
         # User transfers credits to a cause(charity)
         transfer = benevity.user_transfer_credits_to_causes(
             user=str(user.benevity_id),
@@ -205,15 +210,21 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         )
         if transfer['attrib']['status'] == 'FAILED':
             return 'There was an error transferring credits to a charity'
+
         # Generating the receipt of the day for this user
-        receipt = benevity.generate_user_receipts(user=user_benevity_id)
-        if receipt['attrib']['status'] == 'FAILED':
+        generated_receipt = benevity.generate_user_receipts(user=user_benevity_id)
+        if generated_receipt['attrib']['status'] == 'FAILED':
             return 'There was an error generating the receipt for this user'
-        event.receipt_id = 'D6399685NT'
-        event.save()
-        notify_event_accepted_user.delay(event, user)
-        notify_event_accepted_recipient.delay(event, user)
-        return True
+        try:
+            content = get_content_response(generated_receipt['children'])
+            receipts = get_receipts_response(content['children'])
+            receipt = get_receipt_response(receipts['children'])
+        except KeyError:
+            return 'Generating receipt status success but there are no any receipt'
+        else:
+            event.receipt_id = receipt['attrib']['id']
+            event.save()
+            return True
 
     def get_object(self):
         obj = UserEvent.objects.filter(key=self.request.data['key']).select_related(
