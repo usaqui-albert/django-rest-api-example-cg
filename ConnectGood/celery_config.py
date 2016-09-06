@@ -1,2 +1,4 @@
-BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/1'
+import os
+
+BROKER_URL = os.environ['BROKER_URL']
+CELERY_RESULT_BACKEND = os.environ['CELERY_RESULT_BACKEND']

@@ -39,7 +39,7 @@ class EventView(generics.ListCreateAPIView):
             user_event = UserEvent.objects.create(event=event, user=user)
             transaction.on_commit(
                 lambda: notify_event_invitation.delay(
-                    event, user, user_event.get_key_as_string()
+                    event, user, user_event.get_key_as_string(), self.request.get_host()
                 )
             )
         return self.serializer_class(event)

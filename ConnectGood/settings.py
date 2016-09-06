@@ -20,12 +20,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'w&^wl7c^to0ec1)8qzwp%dw-i-(3jyelz@dg-%_net6z=h#1#-'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ['ALLOWED_HOSTS']]
 
 
 # Application definition
@@ -89,16 +89,13 @@ WSGI_APPLICATION = 'ConnectGood.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'connectgood-mariadb',
-        'USER': 'root',
-        'PASSWORD': '123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': os.environ['DATABASE_NAME'],
+        'USER': os.environ['DATABASE_USER'],
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'HOST': os.environ['DATABASE_HOST'],
+        'PORT': os.environ['DATABASE_PORT'],
     }
 }
-
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -153,18 +150,16 @@ REST_FRAMEWORK = {
 }
 
 # Stripe info
-STRIPE_API_KEY = "sk_test_JutiYwXisOBbK5ORfS1BlqCZ"
-
-CLIENT_URL_SERVER = "http://23.246.237.99:3000"
+STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # Benevity info
-BENEVITY_COMPANY_ID = '1Z66WX7C28'
-BENEVITY_API_KEY = 'lah0aegeephaeCei'
+BENEVITY_COMPANY_ID = os.environ['BENEVITY_COMPANY_ID']
+BENEVITY_API_KEY = os.environ['BENEVITY_API_KEY']
 BENEVITY_DEFAULT_PAGESIZE = 10
 
 # Mandrill info
-MANDRILL_API_KEY = 'yWAsP2GjtFiLudNrjOyFOQ'
-MANDRILL_SENDER_EMAIL = 'good@connectgood.net'
+MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
+MANDRILL_SENDER_EMAIL = os.environ['MANDRILL_SENDER_EMAIL']
