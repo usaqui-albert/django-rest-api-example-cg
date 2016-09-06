@@ -1,11 +1,10 @@
 from celery.task import task
 
-from ConnectGood.settings import CLIENT_URL_SERVER
 from mandrill_script import send_mandrill_email
 
 @task(ignore_result=True)
-def notify_event_invitation(event, user, key):
-    url = CLIENT_URL_SERVER + '/landing/' + key
+def notify_event_invitation(event, user, key, base_url):
+    url = base_url + '/landing/' + key
     template_vars = [
         {
             'content': user.get_full_name(),
