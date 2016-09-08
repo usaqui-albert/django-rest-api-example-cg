@@ -30,10 +30,6 @@ class User(AbstractBaseUser):
     free_trial_started_at = models.DateTimeField(null=True)
     has_a_plan = models.BooleanField(default=False)
 
-    facebook = models.CharField(max_length=100, null=True)
-    twitter = models.CharField(max_length=100, null=True)
-    linkedin = models.CharField(max_length=100, null=True)
-
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
