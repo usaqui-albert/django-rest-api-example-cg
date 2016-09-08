@@ -4,8 +4,10 @@
 
 Run the following commands to install some dependencies and virtualenv:
 
-     sudo apt-get install python-pip python-dev build-essential
-     sudo pip install virtualenv
+    sudo apt-get install python-lxml
+    sudo apt-get install libxml2-dev libxslt-dev
+    sudo apt-get install python-pip build-essential python-dev
+    sudo pip install virtualenv
 
 Clonning the project by ssh:
 
@@ -31,10 +33,25 @@ Remember to change to the right branch, then install the dependencies of the pro
 
     python manage.py runserver <port_number>
 
-If there is no port_number provided it will take by default port 8000.
+If there is no port_number provided it will take port 8000 by default.
 
 ### Migrations ###
 
 To run migrations to the database you have to type the following command:
 
     python manage.py migrate
+
+### Running seeders(fixtures) ###
+
+Type the following commands by the order than they appear:
+
+    python manage.py loaddata countries/fixtures/countries.json
+    python manage.py loaddata states/fixtures/states.json
+    python manage.py loaddata users/fixtures/users.json
+    python manage.py loaddata miscellaneous/fixtures/customers.json
+    python manage.py loaddata charities/fixtures/charities_by_category.json
+    python manage.py loaddata charities/fixtures/charities_by_country.json
+
+### Running Celery ###
+
+    celery -A ConnectGood worker -l info

@@ -20,13 +20,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'w&^wl7c^to0ec1)8qzwp%dw-i-(3jyelz@dg-%_net6z=h#1#-'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ['ALLOWED_HOSTS']]
 
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    os.environ['ALLOWED_HOSTS'],
+)
 
 # Application definition
 
@@ -38,9 +44,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_docs',
+    'corsheaders',
+    'users',
+    'countries',
+    'states',
+    'miscellaneous',
+    'events',
+    'charities',
+    'plans'
 ]
 
 MIDDLEWARE_CLASSES = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -77,11 +94,14 @@ WSGI_APPLICATION = 'ConnectGood.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['DATABASE_NAME'],
+        'USER': os.environ['DATABASE_USER'],
+        'PASSWORD': os.environ['DATABASE_PASSWORD'],
+        'HOST': os.environ['DATABASE_HOST'],
+        'PORT': os.environ['DATABASE_PORT'],
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -120,3 +140,32 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# It uses User model for the system authentication
+AUTH_USER_MODEL = 'users.User'
+CUSTOM_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
+
+# Stripe info
+STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Benevity info
+BENEVITY_COMPANY_ID = os.environ['BENEVITY_COMPANY_ID']
+BENEVITY_API_KEY = os.environ['BENEVITY_API_KEY']
+BENEVITY_DEFAULT_PAGESIZE = 10
+
+# Mandrill info
+MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
+MANDRILL_SENDER_EMAIL = os.environ['MANDRILL_SENDER_EMAIL']

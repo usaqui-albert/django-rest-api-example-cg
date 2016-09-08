@@ -1,0 +1,22 @@
+[
+  {
+    "model": "countries.Country",
+    "pk": 1,
+    "fields": {
+      "name": "Canada",
+      "currency": "cad",
+      "iso_code": "124",
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  },
+  {
+    "model": "countries.Country",
+    "pk": 2,
+    "fields": {
+      "name": "United States",
+      "currency": "usd",
+      "iso_code": "840",
+      "created_at": "2016-07-11T17:43:19.809415"
+    }
+  }
+]
