@@ -18,6 +18,7 @@ class Event(models.Model):
     donation_amount = models.DecimalField(max_digits=7, decimal_places=2)
     card_id = models.CharField(max_length=100)
     receipt_id = models.CharField(max_length=100, null=True)
+    refno_benevity = models.UUIDField(default=uuid.uuid4, editable=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

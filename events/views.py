@@ -198,7 +198,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             user.save()
 
         credits_to_transfer = str(int(event.donation_amount * 100))
-        refno = 'CG%s' % str(event.id)
+        refno = str(event.refno_benevity)
         user_benevity_id = str(user.benevity_id)
 
         # ConnectGood transfers credits to the user
