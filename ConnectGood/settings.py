@@ -27,6 +27,12 @@ DEBUG = False
 
 ALLOWED_HOSTS = [os.environ['ALLOWED_HOSTS']]
 
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    os.environ['ALLOWED_HOSTS'],
+)
 
 # Application definition
 
