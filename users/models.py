@@ -27,7 +27,6 @@ class User(AbstractBaseUser):
     added_to_benevity = models.BooleanField(default=False)
     benevity_id = models.UUIDField(default=uuid.uuid4, editable=False)
 
-    free_trial_started_at = models.DateTimeField(null=True)
     has_a_plan = models.BooleanField(default=False)
 
     is_active = models.BooleanField(default=False)
