@@ -11,7 +11,7 @@ from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectE
 from .models import Event, UserEvent
 from .tasks import notify_event_invitation, notify_event_accepted_user,\
     notify_event_accepted_recipient
-from .helpers import validate_uuid4, get_event_status
+from .helpers import validate_uuid4, get_event_status, get_custom_host
 from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler
 from benevity_library import benevity
@@ -39,7 +39,7 @@ class EventView(generics.ListCreateAPIView):
             user_event = UserEvent.objects.create(event=event, user=user)
             transaction.on_commit(
                 lambda: notify_event_invitation.delay(
-                    event, user, user_event.get_key_as_string(), self.request.get_host()
+                    event, user, user_event.get_key_as_string(), get_custom_host(self.request)
                 )
             )
         return self.serializer_class(event)
@@ -81,8 +81,9 @@ class GetEventByToken(generics.RetrieveAPIView):
             if queryset.exists():
                 event = queryset.first()
                 self.update_event_status_as_viewed(event)
-                serializer = self.serializer_class(event,
-                                                   context={'host': request.get_host()})
+                serializer = self.serializer_class(
+                    event,
+                    context={'host': get_custom_host(request)})
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -146,7 +147,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                                                     charity,
                                                     charity_name)
             if response is True:
-                user_event = self.get_object()
+                user_event = self.get_object().first()
                 return_serializer = EventSerializer(user_event.event)
                 return Response(return_serializer.data, status=status.HTTP_200_OK)
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
