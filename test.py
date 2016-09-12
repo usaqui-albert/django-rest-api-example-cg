@@ -31,5 +31,8 @@ data = {
     'credits': '7500'
 }
 
+users = benevity.get_company_user_list()
+pp.pprint(users)
+
 transfer = benevity.company_transfer_credits_to_user(**data)
 pp.pprint(transfer)
