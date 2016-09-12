@@ -144,8 +144,8 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             charity_name = serializer.validated_data.pop('charity_name', None)
             response = self.handle_accept_or_reject(user_event,
                                                     event_status,
-                                                    charity,
-                                                    charity_name)
+                                                    str(charity),
+                                                    str(charity_name))
             if response is True:
                 user_event = self.get_object().first()
                 return_serializer = EventSerializer(user_event.event)

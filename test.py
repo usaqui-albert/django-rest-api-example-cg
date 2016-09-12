@@ -23,5 +23,12 @@ query_params = {
 }
 
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT, D78N2ABLZ1')
-add_user = benevity.add_user(**query_params)
-pp.pprint(add_user)
+data = {
+    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
+    'credits': '7500',
+    'refno': 'e9c22c22-62d4-47ca-881e-4feabd9911db',
+    'cause': '840-131788491'
+}
+
+transfer = benevity.user_transfer_credits_to_causes(**data)
+pp.pprint(transfer)
