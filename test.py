@@ -9,30 +9,19 @@ benevity.api_key = BENEVITY_API_KEY
 benevity.company_id = BENEVITY_COMPANY_ID
 
 query_params = {
-    'user': 'user3',
-    'lastname': 'Tremaine',
-    'firstname': 'Kimberly',
-    'email': 'KimberlyJTremaine@example.example',
+    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
+    'lastname': 'Usaqui',
+    'firstname': 'Albert',
+    'email': 'usaqui.albert@gmail.com',
     'country': '124',
-    'address-city': 'Calgary',
+    'address-city': 'Toronto',
     'address-country': '124',
-    'address-state': 'ABCDFGHIJK',
-    'address-postcode': 'T3B2C3',
-    'address-street': '504',
+    'address-state': 'Alberta',
+    'address-postcode': '123-456',
+    'address-street': 'Plaza Venezuela',
     'active': 'yes'
 }
 
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT, D78N2ABLZ1')
-
-data = {
-    'cashable': 'no',
-    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
-    'refno': 'e9c22c22-62d4-47ca-881e-4feabd9911db',
-    'credits': '7500'
-}
-
-users = benevity.get_company_user_list()
-pp.pprint(users)
-
-transfer = benevity.company_transfer_credits_to_user(**data)
-pp.pprint(transfer)
+add_user = benevity.add_user(**query_params)
+pp.pprint(add_user)
