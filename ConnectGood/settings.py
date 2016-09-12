@@ -23,16 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True if os.environ['DEBUG'] == 'True' else False
 
-ALLOWED_HOSTS = [os.environ['ALLOWED_HOSTS']]
-
-CORS_ORIGIN_ALLOW_ALL = False
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ORIGIN_WHITELIST = (
-    os.environ['ALLOWED_HOSTS'],
-)
+HOST = os.environ.get('ALLOWED_HOSTS', None)
+ALLOWED_HOSTS = [HOST] if HOST else []
 
 # Application definition
 
