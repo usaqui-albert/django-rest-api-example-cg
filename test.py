@@ -24,11 +24,12 @@ query_params = {
 
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT, D78N2ABLZ1')
 
-receipts_list = benevity.get_receipt_list(user='user')
-pp.pprint(receipts_list)
+data = {
+    'cashable': 'no',
+    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
+    'refno': 'e9c22c22-62d4-47ca-881e-4feabd9911db',
+    'credits': '7500'
+}
 
-receipt_1 = benevity.get_receipt_detail(receipt='D6399685NT')
-pp.pprint(receipt_1)
-
-receipt_2 = benevity.get_receipt_detail(receipt='D78N2ABLZ1')
-pp.pprint(receipt_2)
+transfer = benevity.company_transfer_credits_to_user(**data)
+pp.pprint(transfer)
