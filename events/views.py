@@ -254,6 +254,7 @@ def get_user_params(user):
         'lastname': str(user.last_name),
         'active': 'yes',
         'user': str(user.benevity_id),
+        'country': str(user.get_country_iso_code()),
         'address-city': str(user.city),
         'address-country': str(user.get_country_iso_code()),
         'address-postcode': str(user.zip_code),
