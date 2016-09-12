@@ -7,8 +7,7 @@ import collections
 
 from hashlib import sha1
 from lxml import etree, objectify
-
-BENEVITY_BASE_URL = 'https://sandbox.benevity.org'
+from ConnectGood.settings import BENEVITY_BASE_URL
 
 def recursive_dict(element):
     """Recursive function to build a dictionary based on a objectify element
