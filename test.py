@@ -9,26 +9,26 @@ benevity.api_key = BENEVITY_API_KEY
 benevity.company_id = BENEVITY_COMPANY_ID
 
 query_params = {
-    'user': 'user3',
-    'lastname': 'Tremaine',
-    'firstname': 'Kimberly',
-    'email': 'KimberlyJTremaine@example.example',
+    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
+    'lastname': 'Usaqui',
+    'firstname': 'Albert',
+    'email': 'usaqui.albert@gmail.com',
     'country': '124',
-    'address-city': 'Calgary',
+    'address-city': 'Toronto',
     'address-country': '124',
-    'address-state': 'ABCDFGHIJK',
-    'address-postcode': 'T3B2C3',
-    'address-street': '504',
+    'address-state': 'Alberta',
+    'address-postcode': '123-456',
+    'address-street': 'Plaza Venezuela',
     'active': 'yes'
 }
 
 # receipt = benevity.get_receipt_pdf(receipt='D6399685NT, D78N2ABLZ1')
+data = {
+    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
+    'credits': '7500',
+    'refno': 'e9c22c22-62d4-47ca-881e-4feabd9911db',
+    'cause': '840-131788491'
+}
 
-receipts_list = benevity.get_receipt_list(user='user')
-pp.pprint(receipts_list)
-
-receipt_1 = benevity.get_receipt_detail(receipt='D6399685NT')
-pp.pprint(receipt_1)
-
-receipt_2 = benevity.get_receipt_detail(receipt='D78N2ABLZ1')
-pp.pprint(receipt_2)
+transfer = benevity.user_transfer_credits_to_causes(**data)
+pp.pprint(transfer)

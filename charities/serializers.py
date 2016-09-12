@@ -45,7 +45,7 @@ class CharityCountrySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'picture', 'created_at', 'updated_at')
 
     def get_picture(self, instance):
-        return 'http://' + self.context['host'] + MEDIA_URL + instance.get_path_picture()
+        return self.context['host'] + MEDIA_URL + instance.get_path_picture()
 
     @staticmethod
     def get_id(instance):
