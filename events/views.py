@@ -183,6 +183,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                 response = self.benevity_process(user, event, charity)
                 if isinstance(response, str):
                     return response
+                user_event.save()
                 notify_event_accepted_user.delay(event, user, charity_name)
                 notify_event_accepted_recipient.delay(event, user, charity_name)
         return True
