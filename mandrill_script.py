@@ -11,6 +11,7 @@ def send_mandrill_email(template_vars, to, subject, template_name):
             'global_merge_vars': template_vars,
             'subject': subject,
             'to': [to],
+            'important': True,
             'track_clicks': None,
             'track_opens': None,
             'url_strip_qs': None,
