@@ -1,5 +1,4 @@
 import uuid
-from django.db import IntegrityError
 
 STATUS_OF_THE_EVENT = (('ACCEPTED', 'A'), ('REJECTED', 'R'))
 
@@ -17,3 +16,6 @@ def get_event_status(status_requested):
 def get_custom_host(request):
     http_or_https = request.build_absolute_uri().split(':')[0]
     return http_or_https + '://' + request.get_host()
+
+def error_message_handler(message, host):
+    return message if '3000' in host else 'Unexpected error'

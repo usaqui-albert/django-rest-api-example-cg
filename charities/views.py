@@ -6,6 +6,7 @@ from benevity_library import benevity
 from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID, BENEVITY_DEFAULT_PAGESIZE
 from events.models import Event
 from .helpers import get_charity_response, get_content_response, get_causes_response
+from events.helpers import error_message_handler
 
 
 class SearchCharity(generics.GenericAPIView):
@@ -49,7 +50,9 @@ class SearchCharity(generics.GenericAPIView):
                 else:
                     return Response('There are no charities to show',
                                     status=status.HTTP_404_NOT_FOUND)
-            return Response('Benevity error', status=status.HTTP_409_CONFLICT)
+            error_message = error_message_handler('Benevity error',
+                                                  request.get_host())
+            return Response(error_message, status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
     def get_queryset(self):
