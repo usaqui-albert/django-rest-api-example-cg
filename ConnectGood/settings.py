@@ -161,7 +161,7 @@ MEDIA_URL = '/media/'
 BENEVITY_COMPANY_ID = os.environ['BENEVITY_COMPANY_ID']
 BENEVITY_API_KEY = os.environ['BENEVITY_API_KEY']
 BENEVITY_DEFAULT_PAGESIZE = 10
-BENEVITY_BASE_URL = 'https://sandbox.benevity.org'
+BENEVITY_BASE_URL = os.environ['BENEVITY_BASE_URL']
 
 # Mandrill info
 MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
