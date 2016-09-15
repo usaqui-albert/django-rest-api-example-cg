@@ -11,11 +11,13 @@ from .serializers import CreateEventSerializer, EventSerializer, AcceptOrRejectE
 from .models import Event, UserEvent
 from .tasks import notify_event_invitation, notify_event_accepted_user,\
     notify_event_accepted_recipient
-from .helpers import validate_uuid4, get_event_status, get_custom_host
+from .helpers import validate_uuid4, get_event_status, get_custom_host,\
+    error_message_handler
 from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler
 from benevity_library import benevity
-from charities.helpers import get_content_response, get_receipts_response, get_receipt_response
+from charities.helpers import get_content_response, get_receipts_response,\
+    get_receipt_response
 
 
 class EventView(generics.ListCreateAPIView):
@@ -180,21 +182,26 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             except (APIConnectionError, InvalidRequestError, CardError) as err:
                 return stripe_errors_handler(err)
             else:
-                response = self.benevity_process(user, event, charity)
+                response = self.benevity_process(user,
+                                                 event,
+                                                 charity,
+                                                 self.request.get_host())
                 if isinstance(response, str):
                     return response
+                user_event.save()
                 notify_event_accepted_user.delay(event, user, charity_name)
                 notify_event_accepted_recipient.delay(event, user, charity_name)
         return True
 
     @staticmethod
-    def benevity_process(user, event, charity):
+    def benevity_process(user, event, charity, host):
         """Method to process all request to the benevity api"""
         if not user.added_to_benevity:
             # Adding a new user to benevity
             response = benevity.add_user(**get_user_params(user))
             if response['attrib']['status'] == 'FAILED':
-                return 'There was an error adding a user in benevity'
+                message = 'There was an error adding a user in benevity'
+                return error_message_handler(message, host)
             user.added_to_benevity = True
             user.save()
 
@@ -210,8 +217,8 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             refno=refno
         )
         if transference['attrib']['status'] == 'FAILED':
-            return 'There was an error transferring credits to the user'
-
+            message = 'There was an error transferring credits to the user'
+            return error_message_handler(message, host)
         # User transfers credits to a cause(charity)
         transfer = benevity.user_transfer_credits_to_causes(
             user=str(user.benevity_id),
@@ -220,18 +227,21 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             cause=charity
         )
         if transfer['attrib']['status'] == 'FAILED':
-            return 'There was an error transferring credits to a charity'
+            message = 'There was an error transferring credits to the user'
+            return error_message_handler(message, host)
 
         # Generating the receipt of the day for this user
         generated_receipt = benevity.generate_user_receipts(user=user_benevity_id)
         if generated_receipt['attrib']['status'] == 'FAILED':
-            return 'There was an error generating the receipt for this user'
+            message = 'There was an error generating the receipt for this user'
+            return error_message_handler(message, host)
         try:
             content = get_content_response(generated_receipt['children'])
             receipts = get_receipts_response(content['children'])
             receipt = get_receipt_response(receipts['children'])
         except KeyError:
-            return 'Generating receipt status success but there are no any receipt'
+            message = 'Generating receipt status success but there are no any receipt'
+            return error_message_handler(message, host)
         else:
             event.receipt_id = receipt['attrib']['id']
             event.save()
