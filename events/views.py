@@ -85,7 +85,7 @@ class GetEventByToken(generics.RetrieveAPIView):
                 self.update_event_status_as_viewed(event)
                 serializer = self.serializer_class(
                     event,
-                    context={'host': get_custom_host(request)})
+                    context={'host': request.get_host()})
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_400_BAD_REQUEST)
