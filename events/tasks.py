@@ -7,7 +7,7 @@ def notify_event_invitation(event, user, key, base_url):
     url = base_url + '/landing/' + key
     template_vars = [
         {
-            'content': user.get_full_name(),
+            'content': str(user.company) if user.is_corporate_account() else user.get_full_name(),
             'name': 'sender'
         },
         {
@@ -58,7 +58,7 @@ def notify_event_accepted_recipient(event, user, charity_name):
             'name': 'recipient'
         },
         {
-            'content': user.company if user.is_corporate_account() else user.get_full_name(),
+            'content': str(user.company) if user.is_corporate_account() else user.get_full_name(),
             'name': 'sender'
         },
         {

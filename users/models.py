@@ -47,7 +47,7 @@ class User(AbstractBaseUser):
         return self.get_full_name() if self.tax_receipts_as == 1 else self.company
 
     def get_full_name(self):
-        return self.first_name + " " + self.last_name
+        return str(self.first_name + " " + self.last_name)
 
     def is_corporate_account(self):
         """Method to get a boolean indicating if this object is a corporate account or not"""
