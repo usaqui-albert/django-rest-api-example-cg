@@ -260,8 +260,8 @@ def get_user_params(user):
     """
     return {
         'email': str(user.email),
-        'firstname': str(user.first_name),
-        'lastname': str(user.last_name),
+        'firstname': str(user.company) if user.is_corporate_account() else str(user.first_name),
+        'lastname': '-' if user.is_corporate_account() else str(user.last_name),
         'active': 'yes',
         'user': str(user.benevity_id),
         'country': str(user.get_country_iso_code()),

@@ -29,6 +29,9 @@ ALLOWED_HOSTS = [HOST] if HOST else []
 
 CORS_ORIGIN_ALLOW_ALL = True if os.environ['CORS_ORIGIN_ALLOW_ALL'] == 'True' else False
 CORS_ALLOW_CREDENTIALS = True if os.environ['CORS_ALLOW_CREDENTIALS'] == 'True' else False
+CORS_ORIGIN_WHITELIST = (
+    os.environ['ALLOWED_HOSTS'],
+)
 
 # Application definition
 
