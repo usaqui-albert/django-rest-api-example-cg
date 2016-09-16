@@ -155,6 +155,11 @@ class Benevity(object):
         return self.get_url_request('SearchCauses', **kwargs)
 
     @post
+    def update_user(self, **kwargs):
+        """Method to get url path for the UpdateUser endpoint"""
+        return self.get_url_request('UpdateUser', **kwargs)
+
+    @post
     def user_transfer_credits_to_causes(self, **kwargs):
         """Method to get url path for the UserTransferCreditsToCauses endpoint"""
         cause_id = kwargs.pop('cause', None)
