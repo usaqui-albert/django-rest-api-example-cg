@@ -41,6 +41,10 @@ def notify_event_accepted_user(event, user, charity_name):
         {
             'content': charity_name,
             'name': 'charity'
+        },
+        {
+            'content': 'mailto:?subject=I am feeling great about my latest good deed via ConnectGood.',
+            'name': 'forward'
         }
     ]
     receiver = {'email': user.email,
@@ -69,6 +73,10 @@ def notify_event_accepted_recipient(event, user, charity_name):
         {
             'content': charity_name,
             'name': 'charity'
+        },
+        {
+            'content': 'mailto:?subject=I am feeling great about my latest good deed via ConnectGood.',
+            'name': 'forward'
         }
     ]
     receiver = {'email': event.email,
