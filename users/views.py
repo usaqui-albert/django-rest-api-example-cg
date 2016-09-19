@@ -170,7 +170,6 @@ class LoginView(generics.GenericAPIView):
     throttle_classes = ()
     permission_classes = (permissions.AllowAny,)
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
-    renderer_classes = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer)
     serializer_class = AuthTokenSerializer
 
     def post(self, request):

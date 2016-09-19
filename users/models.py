@@ -14,7 +14,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(max_length=100, unique=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    company = models.CharField(max_length=100)
+    company = models.CharField(max_length=100, null=True)
     street_address = models.TextField()
     country = models.ForeignKey(Country, related_name='country')
     city = models.CharField(max_length=100)
