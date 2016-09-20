@@ -34,7 +34,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {
             'password': {'write_only': True},
-            'pk': {'read_only': True}
+            'pk': {'read_only': True},
+            'company': {'allow_blank': True}
         }
 
     def create(self, validated_data):
@@ -225,7 +226,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {
             'pk': {'read_only': True},
-            'password': {'write_only': True}
+            'password': {'write_only': True},
+            'company': {'allow_blank': True}
         }
 
     def __init__(self, *args, **kwargs):
