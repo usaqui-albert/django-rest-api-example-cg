@@ -14,6 +14,9 @@ class CreateEventSerializer(serializers.ModelSerializer):
         """Relating to an Event model and including all fields"""
         model = Event
         fields = '__all__'
+        extra_kwargs = {
+            'company': {'allow_blank': True}
+        }
 
 
 class EventSerializer(serializers.ModelSerializer):

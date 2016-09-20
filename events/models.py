@@ -11,7 +11,7 @@ from users.models import User
 class Event(models.Model):
     """Model of the event object"""
     recipient_name = models.CharField(max_length=100)
-    company = models.CharField(max_length=100)
+    company = models.CharField(max_length=100, null=True)
     email = models.EmailField(max_length=100)
     country = models.ForeignKey(Country, related_name='event_country')
     landing_message = models.TextField()
@@ -30,11 +30,15 @@ class UserEvent(models.Model):
     REJECTED = 'R'
     WAITING = 'W'
     VIEWED = 'V'
+    BOUNCED = 'B'
+    EXPIRED = 'E'
     STATUS_OF_THE_EVENT = (
         (ACCEPTED, 'ACCEPTED'),
         (REJECTED, 'REJECTED'),
         (WAITING, 'WAITING'),
-        (VIEWED, 'VIEWED')
+        (VIEWED, 'VIEWED'),
+        (BOUNCED, 'BOUNCED'),
+        (EXPIRED, 'EXPIRED')
     )
 
     user = models.ForeignKey(User, related_name='user_event')

@@ -1,4 +1,5 @@
 from celery.task import task
+from .models import UserEvent
 
 from mandrill_script import send_mandrill_email
 
@@ -25,7 +26,9 @@ def notify_event_invitation(event, user, key, base_url):
                 'type': 'to'}
     subject = '%s sent you a ConnectGood!' % sender
     template_name = 'ConnectGood Landing Page Link'
-    send_mandrill_email(template_vars, receiver, subject, template_name)
+    response = send_mandrill_email(template_vars, receiver, subject, template_name)
+    if 'A mandrill error occurred' in response:
+        UserEvent.objects.filter(user=user.id, event=event.id).update(status='B')
 
 @task(ignore_result=True)
 def notify_event_accepted_user(event, user, charity_name):
