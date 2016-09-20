@@ -14,6 +14,9 @@ class CreateEventSerializer(serializers.ModelSerializer):
         """Relating to an Event model and including all fields"""
         model = Event
         fields = '__all__'
+        extra_kwargs = {
+            'company': {'allow_blank': True}
+        }
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -58,8 +61,8 @@ class EventSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_sender(instance):
-        user_event = instance.user_event.first()
-        return user_event.user.get_full_name()
+        user = instance.user_event.first().user
+        return str(user.company) if user.is_corporate_account() else user.get_full_name()
 
     @staticmethod
     def get_recipient_name(instance):

@@ -29,6 +29,9 @@ ALLOWED_HOSTS = [HOST] if HOST else []
 
 CORS_ORIGIN_ALLOW_ALL = True if os.environ['CORS_ORIGIN_ALLOW_ALL'] == 'True' else False
 CORS_ALLOW_CREDENTIALS = True if os.environ['CORS_ALLOW_CREDENTIALS'] == 'True' else False
+CORS_ORIGIN_WHITELIST = (
+    os.environ['ALLOWED_HOSTS'],
+)
 
 # Application definition
 
@@ -146,6 +149,9 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10

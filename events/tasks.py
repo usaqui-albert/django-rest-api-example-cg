@@ -1,13 +1,15 @@
 from celery.task import task
+from .models import UserEvent
 
 from mandrill_script import send_mandrill_email
 
 @task(ignore_result=True)
 def notify_event_invitation(event, user, key, base_url):
     url = base_url + '/landing/' + key
+    sender = str(user.company) if user.is_corporate_account() else user.get_full_name()
     template_vars = [
         {
-            'content': str(user.company) if user.is_corporate_account() else user.get_full_name(),
+            'content': sender,
             'name': 'sender'
         },
         {
@@ -22,9 +24,11 @@ def notify_event_invitation(event, user, key, base_url):
     receiver = {'email': event.email,
                 'name': event.recipient_name,
                 'type': 'to'}
-    subject = '%s sent you a ConnectGood!' % user.get_full_name()
+    subject = '%s sent you a ConnectGood!' % sender
     template_name = 'ConnectGood Landing Page Link'
-    send_mandrill_email(template_vars, receiver, subject, template_name)
+    response = send_mandrill_email(template_vars, receiver, subject, template_name)
+    if 'A mandrill error occurred' in response:
+        UserEvent.objects.filter(user=user.id, event=event.id).update(status='B')
 
 @task(ignore_result=True)
 def notify_event_accepted_user(event, user, charity_name):
@@ -40,6 +44,10 @@ def notify_event_accepted_user(event, user, charity_name):
         {
             'content': charity_name,
             'name': 'charity'
+        },
+        {
+            'content': 'mailto:?subject=I am feeling great about my latest good deed via ConnectGood.',
+            'name': 'forward'
         }
     ]
     receiver = {'email': user.email,
@@ -68,6 +76,10 @@ def notify_event_accepted_recipient(event, user, charity_name):
         {
             'content': charity_name,
             'name': 'charity'
+        },
+        {
+            'content': 'mailto:?subject=I am feeling great about my latest good deed via ConnectGood.',
+            'name': 'forward'
         }
     ]
     receiver = {'email': event.email,
