@@ -27,7 +27,7 @@ def notify_event_invitation(event, user, key, base_url):
     subject = '%s sent you a ConnectGood!' % sender
     template_name = 'ConnectGood Landing Page Link'
     response = send_mandrill_email(template_vars, receiver, subject, template_name)
-    if 'A mandrill error occurred' in response:
+    if 'A mandrill error occurred' in response or 'rejected' in response:
         UserEvent.objects.filter(user=user.id, event=event.id).update(status='B')
 
 @task(ignore_result=True)
