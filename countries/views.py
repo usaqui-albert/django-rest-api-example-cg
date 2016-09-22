@@ -1,5 +1,4 @@
 from rest_framework import generics, permissions
-from django.db.models import Prefetch
 
 from .serializers import CountrySerializer
 from .models import Country
