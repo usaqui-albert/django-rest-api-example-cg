@@ -3,7 +3,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
 
-from rest_framework import parsers, renderers, status, generics, permissions
+from rest_framework import parsers, status, generics, permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
@@ -11,6 +11,9 @@ from rest_framework.response import Response
 from .models import User
 from .serializers import CreateUserSerializer, UserSerializer, UpdateUserSerializer
 from .tasks import post_create_user
+from benevity_library import benevity
+from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID
+
 
 class UserView(generics.ListCreateAPIView):
     """Service to create a new user and get all users(temporary)
@@ -67,6 +70,11 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         GET
         DELETE
     """
+    def __init__(self, *args, **kwargs):
+        super(UserDetail, self).__init__(*args, **kwargs)
+        benevity.api_key = BENEVITY_API_KEY
+        benevity.company_id = BENEVITY_COMPANY_ID
+
     serializer_class = UpdateUserSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -122,6 +130,12 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
             raw_password = serializer.validated_data['password']
             serializer.validated_data['password'] = make_password(raw_password)
         obj = serializer.save()
+        dic_to_update = {
+            'user': str(obj.benevity_id),
+            'firstname': str(obj.company) if obj.is_corporate_account() else str(obj.first_name),
+            'lastname': '-' if obj.is_corporate_account() else str(obj.last_name)
+        }
+        benevity.update_user(**dic_to_update)
         return obj
 
     def destroy(self, request, **kwargs):
