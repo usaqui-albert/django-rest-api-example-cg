@@ -87,8 +87,8 @@ class GetEventByToken(generics.RetrieveAPIView):
                     event,
                     context={'host': request.get_host()})
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'detail': 'Invalid format key.'}, status=status.HTTP_400_BAD_REQUEST)
 
     def get_queryset(self):
         queryset = Event.objects.filter(user_event__key=self.kwargs['key']).prefetch_related(
@@ -107,7 +107,10 @@ class GetEventByToken(generics.RetrieveAPIView):
         """
         user_event = event.user_event.filter(key=self.kwargs['key']).first()
         if user_event.status == user_event.WAITING:
-            user_event.status = user_event.VIEWED
+            if user_event.has_key_expired():
+                user_event.status = user_event.EXPIRED
+            else:
+                user_event.status = user_event.VIEWED
             user_event.save()
         return user_event
 
