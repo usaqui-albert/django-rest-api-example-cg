@@ -211,6 +211,15 @@ class LoginView(generics.GenericAPIView):
             Token.objects.filter(user=user).delete()
             token = Token.objects.create(user=user)
 
+            if admin_mode:
+                return_serializer = UserSerializer(user,
+                                                   context={
+                                                       'without_payment': True,
+                                                       'without_plan': True
+                                                   })
+            else:
+                return_serializer = UserSerializer(user)
+
             data = {'token': str(token),
-                    'user': UserSerializer(user).data}
+                    'user': return_serializer.data}
             return Response(data, status=status.HTTP_200_OK)
