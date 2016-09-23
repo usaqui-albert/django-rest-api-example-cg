@@ -5,8 +5,8 @@ from pprint import PrettyPrinter
 
 pp = PrettyPrinter(indent=1)
 
-benevity.api_key = BENEVITY_API_KEY
-benevity.company_id = BENEVITY_COMPANY_ID
+benevity.api_key = 'soothai8to9yab6E'
+benevity.company_id = '1VHRBZWMAL'
 
 query_params = {
     'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
@@ -21,18 +21,6 @@ query_params = {
     'address-street': 'Plaza Venezuela',
     'active': 'yes'
 }
-
-benevity_users = benevity.get_company_user_list()
-pp.pprint(benevity_users)
-
-data_to_update = {
-    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
-    'firstname': 'Alberto',
-    'lastname': 'Hernandez'
-}
-
-user_updated = benevity.update_user(**data_to_update)
-pp.pprint(data_to_update)
 
 benevity_users = benevity.get_company_user_list()
 pp.pprint(benevity_users)
