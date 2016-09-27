@@ -172,3 +172,75 @@ BENEVITY_BASE_URL = os.environ['BENEVITY_BASE_URL']
 # Mandrill info
 MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
 MANDRILL_SENDER_EMAIL = os.environ['MANDRILL_SENDER_EMAIL']
+
+# Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'detail': {
+            'format': '%(levelname)s %(asctime)s [%(module)s %(filename)s %(funcName)s %(lineno)d] %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
+    'handlers': {
+        'users_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'formatter': 'detail',
+            'filename': 'logs/users.log'
+        },
+        'plans_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'formatter': 'detail',
+            'filename': 'logs/plans.log'
+        },
+        'receipts_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'formatter': 'detail',
+            'filename': 'logs/receipts.log'
+        },
+        'events_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'formatter': 'detail',
+            'filename': 'logs/events.log'
+        },
+        'charities_file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'formatter': 'detail',
+            'filename': 'logs/charities.log'
+        }
+    },
+    'loggers': {
+        'users.views': {
+            'handlers': ['users_file'],
+            'level': 'WARNING'
+        },
+        'users.serializers': {
+            'handlers': ['users_file'],
+            'level': 'WARNING'
+        },
+        'plans.views': {
+            'handlers': ['plans_file'],
+            'level': 'WARNING'
+        },
+        'miscellaneous.views': {
+            'handlers': ['receipts_file'],
+            'level': 'WARNING'
+        },
+        'events.views': {
+            'handlers': ['events_file'],
+            'level': 'WARNING'
+        },
+        'charities.views': {
+            'handlers': ['charities_file'],
+            'level': 'WARNING'
+        }
+    }
+}

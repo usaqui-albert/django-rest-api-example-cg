@@ -13,3 +13,6 @@ dump.rdb
 
 env/
 db.sqlite3
+
+# Ignore logs folder
+logs/
