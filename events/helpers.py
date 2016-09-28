@@ -27,7 +27,7 @@ def get_message_error(dic):
         error_message = 'Message error: %s - %s, Code error: %s' % (
             message['attrib']['field'],
             message['text'].strip(),
-            message['attrib']['code'],
+            message['attrib']['code']
         )
     except (KeyError, IndexError):
         return None
