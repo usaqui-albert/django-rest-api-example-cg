@@ -1,4 +1,6 @@
 import stripe
+import logging
+
 from stripe.error import InvalidRequestError, APIConnectionError, CardError
 
 from rest_framework import serializers
@@ -23,6 +25,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super(CreateUserSerializer, self).__init__(*args, **kwargs)
         stripe.api_key = STRIPE_API_KEY
+        self.logger = logging.getLogger(__name__)
 
     class Meta:
         """Relating to a User model and customizing the serializer fields"""
@@ -58,7 +61,9 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 plan=plan_id
             )
         except (APIConnectionError, InvalidRequestError, CardError) as err:
-            raise serializers.ValidationError(stripe_errors_handler(err))
+            message = stripe_errors_handler(err)
+            self.logger.error(message)
+            raise serializers.ValidationError(message)
         else:
             validated_data['tax_receipts_as'] = 2 if is_corporate_account else 1
             user = create_user_hashing_password(**validated_data)
@@ -203,6 +208,8 @@ def get_customer_in_stripe(instance):
             customer = stripe.Customer.retrieve(customer_stripe.first().customer_id)
         except (APIConnectionError, InvalidRequestError, CardError) as err:
             error = stripe_errors_handler(err)
+            logger = logging.getLogger(__name__)
+            logger.error(error)
         else:
             return customer
     else:
@@ -237,6 +244,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         if 'without_plan' in self.context:
             self.fields.pop('plan_id')
         stripe.api_key = STRIPE_API_KEY
+        self.logger = logging.getLogger(__name__)
 
     def update(self, instance, validated_data):
         """
@@ -275,8 +283,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             validated_data['tax_receipts_as'] = 2 if is_corporate_account else 1
         return super(UpdateUserSerializer, self).update(instance, validated_data)
 
-    @staticmethod
-    def update_payment_method(customer, card_token):
+    def update_payment_method(self, customer, card_token):
         """
 
         :param customer:
@@ -287,12 +294,13 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         try:
             customer.save()
         except (APIConnectionError, InvalidRequestError, CardError) as err:
-            return stripe_errors_handler(err)
+            message = stripe_errors_handler(err)
+            self.logger.error(message)
+            return message
         else:
             return customer
 
-    @staticmethod
-    def update_subscription_plan(customer, plan_id):
+    def update_subscription_plan(self, customer, plan_id):
         """
 
         :param customer:
@@ -303,12 +311,16 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         try:
             subscription = stripe.Subscription.retrieve(subscription_id)
         except (APIConnectionError, InvalidRequestError, CardError) as err:
-            return stripe_errors_handler(err)
+            message = stripe_errors_handler(err)
+            self.logger.error(message)
+            return message
         else:
             subscription.plan = plan_id
             try:
                 subscription.save()
             except (APIConnectionError, InvalidRequestError, CardError) as err:
-                return stripe_errors_handler(err)
+                message = stripe_errors_handler(err)
+                self.logger.error(message)
+                return message
             else:
                 return subscription

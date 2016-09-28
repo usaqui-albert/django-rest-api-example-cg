@@ -1,4 +1,5 @@
 import stripe
+import logging
 
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
@@ -27,9 +28,9 @@ class PlanView(views.APIView):
     def __init__(self, **kwargs):
         super(PlanView, self).__init__(**kwargs)
         stripe.api_key = STRIPE_API_KEY
+        self.logger = logging.getLogger(__name__)
 
-    @staticmethod
-    def get(request):
+    def get(self, request):
         """Method to list all plans stored in stripe handling exceptions
 
         :param request: To use in a future query params filtering
@@ -39,7 +40,9 @@ class PlanView(views.APIView):
         try:
             plans = stripe.Plan.list()
         except (APIConnectionError, InvalidRequestError, CardError) as err:
-            return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
+            message = stripe_errors_handler(err)
+            self.logger.error(message)
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
         else:
             mapped_plans = get_plans_list_response(plans)
             if request.user.is_authenticated():
@@ -81,9 +84,9 @@ class InvoiceView(views.APIView):
     def __init__(self, **kwargs):
         super(InvoiceView, self).__init__(**kwargs)
         stripe.api_key = STRIPE_API_KEY
+        self.logger = logging.getLogger(__name__)
 
-    @staticmethod
-    def get(request):
+    def get(self, request):
         """Method to get the invoices of a user(customer) from stripe
 
         :param request: user requesting instance
@@ -99,7 +102,9 @@ class InvoiceView(views.APIView):
             try:
                 invoices = stripe.Invoice.list(customer=customer.id, date={'gte': unix_timestamp})
             except (APIConnectionError, InvalidRequestError, CardError) as err:
-                response = Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
+                message = stripe_errors_handler(err)
+                self.logger.error(message)
+                response = Response(message, status=status.HTTP_400_BAD_REQUEST)
             else:
                 mapped_invoices = get_invoices_list_response(invoices, request.user.email)
                 response = Response(mapped_invoices, status=status.HTTP_200_OK)
@@ -116,6 +121,7 @@ class InvoiceDetail(views.APIView):
     def __init__(self, **kwargs):
         super(InvoiceDetail, self).__init__(**kwargs)
         stripe.api_key = STRIPE_API_KEY
+        self.logger = logging.getLogger(__name__)
 
     def get(self, request, **kwargs):
         """
@@ -126,7 +132,9 @@ class InvoiceDetail(views.APIView):
         try:
             invoice = stripe.Invoice.retrieve(str(kwargs['invoice_id']))
         except (APIConnectionError, InvalidRequestError, CardError) as err:
-            return Response(stripe_errors_handler(err), status=status.HTTP_400_BAD_REQUEST)
+            message = stripe_errors_handler(err)
+            self.logger.error(message)
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
         else:
             mapped_invoice = get_invoices_list_response([invoice], request.user.email)[0]
             stripe_invoice_id = str(mapped_invoice['id'])

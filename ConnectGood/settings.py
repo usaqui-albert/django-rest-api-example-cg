@@ -186,60 +186,35 @@ LOGGING = {
         }
     },
     'handlers': {
-        'users_file': {
+        'console': {
             'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'formatter': 'detail',
-            'filename': 'logs/users.log'
-        },
-        'plans_file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'formatter': 'detail',
-            'filename': 'logs/plans.log'
-        },
-        'receipts_file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'formatter': 'detail',
-            'filename': 'logs/receipts.log'
-        },
-        'events_file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'formatter': 'detail',
-            'filename': 'logs/events.log'
-        },
-        'charities_file': {
-            'level': 'WARNING',
-            'class': 'logging.FileHandler',
-            'formatter': 'detail',
-            'filename': 'logs/charities.log'
+            'class': 'logging.StreamHandler',
+            'formatter': 'detail'
         }
     },
     'loggers': {
         'users.views': {
-            'handlers': ['users_file'],
+            'handlers': ['console'],
             'level': 'WARNING'
         },
         'users.serializers': {
-            'handlers': ['users_file'],
+            'handlers': ['console'],
             'level': 'WARNING'
         },
         'plans.views': {
-            'handlers': ['plans_file'],
+            'handlers': ['console'],
             'level': 'WARNING'
         },
         'miscellaneous.views': {
-            'handlers': ['receipts_file'],
+            'handlers': ['console'],
             'level': 'WARNING'
         },
         'events.views': {
-            'handlers': ['events_file'],
+            'handlers': ['console'],
             'level': 'WARNING'
         },
         'charities.views': {
-            'handlers': ['charities_file'],
+            'handlers': ['console'],
             'level': 'WARNING'
         }
     }
