@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 
@@ -6,7 +8,7 @@ from benevity_library import benevity
 from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID, BENEVITY_DEFAULT_PAGESIZE
 from events.models import Event
 from .helpers import get_charity_response, get_content_response, get_causes_response
-from events.helpers import error_message_handler
+from events.helpers import error_message_handler, get_message_error
 
 
 class SearchCharity(generics.GenericAPIView):
@@ -22,6 +24,7 @@ class SearchCharity(generics.GenericAPIView):
         super(SearchCharity, self).__init__(**kwargs)
         benevity.api_key = BENEVITY_API_KEY
         benevity.company_id = BENEVITY_COMPANY_ID
+        self.logger = logging.getLogger(__name__)
 
     def post(self, request):
         """
@@ -50,9 +53,11 @@ class SearchCharity(generics.GenericAPIView):
                 else:
                     return Response('There are no charities to show',
                                     status=status.HTTP_404_NOT_FOUND)
-            error_message = error_message_handler('Benevity error',
-                                                  request.get_host())
-            return Response(error_message, status=status.HTTP_409_CONFLICT)
+            message = 'There was an error searching charities in benevity'
+            self.logger.error(message + ', ' + get_message_error(response))
+            return Response(error_message_handler(message,
+                                                  request.get_host()),
+                            status=status.HTTP_409_CONFLICT)
         return Response('ConnectGood not found.', status=status.HTTP_404_NOT_FOUND)
 
     def get_queryset(self):

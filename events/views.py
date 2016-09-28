@@ -186,7 +186,9 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
                     description="Charge for " + user.__str__()
                 )
             except (APIConnectionError, InvalidRequestError, CardError) as err:
-                return stripe_errors_handler(err)
+                message = stripe_errors_handler(err)
+                self.logger.error(message)
+                return message
             else:
                 response = self.benevity_process(user,
                                                  event,
