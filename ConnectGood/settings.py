@@ -172,3 +172,50 @@ BENEVITY_BASE_URL = os.environ['BENEVITY_BASE_URL']
 # Mandrill info
 MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
 MANDRILL_SENDER_EMAIL = os.environ['MANDRILL_SENDER_EMAIL']
+
+# Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'detail': {
+            'format': '%(levelname)s %(asctime)s [%(module)s %(filename)s %(funcName)s %(lineno)d] %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'detail'
+        }
+    },
+    'loggers': {
+        'users.views': {
+            'handlers': ['console'],
+            'level': 'WARNING'
+        },
+        'users.serializers': {
+            'handlers': ['console'],
+            'level': 'WARNING'
+        },
+        'plans.views': {
+            'handlers': ['console'],
+            'level': 'WARNING'
+        },
+        'miscellaneous.views': {
+            'handlers': ['console'],
+            'level': 'WARNING'
+        },
+        'events.views': {
+            'handlers': ['console'],
+            'level': 'WARNING'
+        },
+        'charities.views': {
+            'handlers': ['console'],
+            'level': 'WARNING'
+        }
+    }
+}

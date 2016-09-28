@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+import logging
+
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth.hashers import make_password
@@ -13,6 +15,7 @@ from .serializers import CreateUserSerializer, UserSerializer, UpdateUserSeriali
 from .tasks import post_create_user
 from benevity_library import benevity
 from ConnectGood.settings import BENEVITY_API_KEY, BENEVITY_COMPANY_ID
+from events.helpers import get_message_error
 
 
 class UserView(generics.ListCreateAPIView):
@@ -74,6 +77,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         super(UserDetail, self).__init__(*args, **kwargs)
         benevity.api_key = BENEVITY_API_KEY
         benevity.company_id = BENEVITY_COMPANY_ID
+        self.logger = logging.getLogger(__name__)
 
     serializer_class = UpdateUserSerializer
     permission_classes = (permissions.IsAuthenticated,)
@@ -135,7 +139,10 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
             'firstname': str(obj.company) if obj.is_corporate_account() else str(obj.first_name),
             'lastname': '-' if obj.is_corporate_account() else str(obj.last_name)
         }
-        benevity.update_user(**dic_to_update)
+        updated_user = benevity.update_user(**dic_to_update)
+        if updated_user['attrib']['status'] == 'FAILED':
+            message = 'There was a benevity error updating the user'
+            self.logger.error(message + ', ' + get_message_error(updated_user))
         return obj
 
     def destroy(self, request, **kwargs):
@@ -211,6 +218,15 @@ class LoginView(generics.GenericAPIView):
             Token.objects.filter(user=user).delete()
             token = Token.objects.create(user=user)
 
+            if admin_mode:
+                return_serializer = UserSerializer(user,
+                                                   context={
+                                                       'without_payment': True,
+                                                       'without_plan': True
+                                                   })
+            else:
+                return_serializer = UserSerializer(user)
+
             data = {'token': str(token),
-                    'user': UserSerializer(user).data}
+                    'user': return_serializer.data}
             return Response(data, status=status.HTTP_200_OK)

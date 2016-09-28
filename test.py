@@ -1,5 +1,6 @@
 from ConnectGood.settings import BENEVITY_COMPANY_ID, BENEVITY_API_KEY
 from benevity_library import benevity
+from events.helpers import get_message_error
 
 from pprint import PrettyPrinter
 
@@ -22,17 +23,6 @@ query_params = {
     'active': 'yes'
 }
 
-benevity_users = benevity.get_company_user_list()
-pp.pprint(benevity_users)
-
-data_to_update = {
-    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
-    'firstname': 'Alberto',
-    'lastname': 'Hernandez'
-}
-
-user_updated = benevity.update_user(**data_to_update)
-pp.pprint(data_to_update)
-
-benevity_users = benevity.get_company_user_list()
-pp.pprint(benevity_users)
+user_updated = benevity.update_user(user='111', firstname='Albert')
+pp.pprint(user_updated)
+print get_message_error(user_updated)
