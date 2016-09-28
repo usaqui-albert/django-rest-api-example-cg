@@ -14,7 +14,7 @@ from .models import Event, UserEvent
 from .tasks import notify_event_invitation, notify_event_accepted_user,\
     notify_event_accepted_recipient
 from .helpers import validate_uuid4, get_event_status, get_custom_host,\
-    error_message_handler
+    error_message_handler, get_message_error
 from ConnectGood.settings import STRIPE_API_KEY, BENEVITY_API_KEY, BENEVITY_COMPANY_ID
 from miscellaneous.helpers import stripe_errors_handler
 from benevity_library import benevity
@@ -206,7 +206,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             response = benevity.add_user(**get_user_params(user))
             if response['attrib']['status'] == 'FAILED':
                 message = 'There was an error adding a user in benevity'
-                self.logger.error(message)
+                self.logger.error(message + ', ' + get_message_error(response))
                 return error_message_handler(message, host)
             user.added_to_benevity = True
             user.save()
@@ -224,8 +224,9 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         )
         if transference['attrib']['status'] == 'FAILED':
             message = 'There was an error transferring credits to the user'
-            self.logger.error(message)
+            self.logger.error(message + ', ' + get_message_error(transference))
             return error_message_handler(message, host)
+
         # User transfers credits to a cause(charity)
         transfer = benevity.user_transfer_credits_to_causes(
             user=str(user.benevity_id),
@@ -235,14 +236,14 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         )
         if transfer['attrib']['status'] == 'FAILED':
             message = 'There was an error transferring credits to the user'
-            self.logger.error(message)
+            self.logger.error(message + ', ' + get_message_error(transfer))
             return error_message_handler(message, host)
 
         # Generating the receipt of the day for this user
         generated_receipt = benevity.generate_user_receipts(user=user_benevity_id)
         if generated_receipt['attrib']['status'] == 'FAILED':
             message = 'There was an error generating the receipt for this user'
-            self.logger.error(message)
+            self.logger.error(message + ', ' + get_message_error(generated_receipt))
             return error_message_handler(message, host)
         try:
             content = get_content_response(generated_receipt['children'])
