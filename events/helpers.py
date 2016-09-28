@@ -23,8 +23,12 @@ def error_message_handler(message, host):
 def get_message_error(dic):
     try:
         messages = [i for i in dic['children'] if 'messages' in i][0]['messages']['children']
-        message = messages[0]['message']['attrib']
-        error_message = 'Message error: %s, Code error: %s' % (message['field'], message['code'])
+        message = messages[0]['message']
+        error_message = 'Message error: %s - %s, Code error: %s' % (
+            message['attrib']['field'],
+            message['text'].strip(),
+            message['attrib']['code']
+        )
     except (KeyError, IndexError):
         return None
     else:
