@@ -148,6 +148,11 @@ class Benevity(object):
         return self.get_url_request('GetReceiptPdf', **kwargs)
 
     @get
+    def get_user_profile(self, **kwargs):
+        """Method to get url path for GetUserProfile endpoint"""
+        return self.get_url_request('GetUserProfile', **kwargs)
+
+    @get
     def search_causes(self, **kwargs):
         """Method to get url path for the SearchCauses endpoint"""
         kwargs['term'] = kwargs['term'].upper()
