@@ -137,7 +137,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         dic_to_update = {
             'user': str(obj.benevity_id),
             'firstname': str(obj.company) if obj.is_corporate_account() else str(obj.first_name),
-            'lastname': '-' if obj.is_corporate_account() else str(obj.last_name)
+            'lastname': '-' if obj.is_corporate_account() else str(obj.last_name),
+            'address-postcode': str(obj.zip_code),
         }
         updated_user = benevity.update_user(**dic_to_update)
         if updated_user['attrib']['status'] == 'FAILED':
