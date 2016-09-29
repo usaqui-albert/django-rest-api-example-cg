@@ -23,6 +23,5 @@ query_params = {
     'active': 'yes'
 }
 
-user_updated = benevity.update_user(user='111', firstname='Albert')
+user_updated = benevity.get_company_user_list()
 pp.pprint(user_updated)
-print get_message_error(user_updated)
