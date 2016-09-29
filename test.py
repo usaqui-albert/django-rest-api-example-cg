@@ -12,7 +12,8 @@ benevity.company_id = BENEVITY_COMPANY_ID
 
 bryan = User.objects.get(email='bryan@connectgood.net')
 data = get_user_params(bryan)
-
+data.pop('active')
+data.pop('country')
 
 user_detail = benevity.get_user_profile(user=str(bryan.benevity_id))
 pp.pprint(user_detail)
