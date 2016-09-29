@@ -23,5 +23,22 @@ query_params = {
     'active': 'yes'
 }
 
-user_updated = benevity.get_company_user_list()
+data = {
+    'user': '2ec25bf3-5f36-40bd-925a-69b23c15586e',
+    'lastname': 'Usaqui',
+    'country': '840',
+    'address-city': 'Toronto',
+    'address-country': '840',
+    'address-state': 'Alabama',
+    'address-postcode': '654-321',
+    'address-street': 'Cubo Negro'
+}
+
+user_detail = benevity.get_user_profile(user='2ec25bf3-5f36-40bd-925a-69b23c15586e')
+pp.pprint(user_detail)
+
+user_updated = benevity.update_user(**data)
 pp.pprint(user_updated)
+
+user_detail = benevity.get_user_profile(user='2ec25bf3-5f36-40bd-925a-69b23c15586e')
+pp.pprint(user_detail)
