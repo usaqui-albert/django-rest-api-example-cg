@@ -208,7 +208,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             response = benevity.add_user(**get_user_params(user))
             if response['attrib']['status'] == 'FAILED':
                 message = 'There was an error adding a user in benevity'
-                self.logger.error(message + ', ' + get_message_error(response))
+                self.logger.error(message + '\n' + str(response))
                 return error_message_handler(message, host)
             user.added_to_benevity = True
             user.save()
@@ -226,7 +226,7 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
         )
         if transference['attrib']['status'] == 'FAILED':
             message = 'There was an error transferring credits to the user'
-            self.logger.error(message + ', ' + get_message_error(transference))
+            self.logger.error(message + '\n' + str(transference))
             return error_message_handler(message, host)
 
         # User transfers credits to a cause(charity)
@@ -237,15 +237,15 @@ class AcceptOrRejectEvent(generics.GenericAPIView):
             cause=charity
         )
         if transfer['attrib']['status'] == 'FAILED':
-            message = 'There was an error transferring credits to the user'
-            self.logger.error(message + ', ' + get_message_error(transfer))
+            message = 'There was an error transferring credits to a cause'
+            self.logger.error(message + '\n' + str(transfer))
             return error_message_handler(message, host)
 
         # Generating the receipt of the day for this user
         generated_receipt = benevity.generate_user_receipts(user=user_benevity_id)
         if generated_receipt['attrib']['status'] == 'FAILED':
             message = 'There was an error generating the receipt for this user'
-            self.logger.error(message + ', ' + get_message_error(generated_receipt))
+            self.logger.error(message + '\n' + str(generated_receipt))
             return error_message_handler(message, host)
         try:
             content = get_content_response(generated_receipt['children'])
