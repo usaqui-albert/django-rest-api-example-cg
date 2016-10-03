@@ -13,7 +13,7 @@
     "model": "miscellaneous.CustomerStripe",
     "pk": 2,
     "fields": {
-      "customer_id": "cus_9GuC6CPs1D3m0Y",
+      "customer_id": "cus_9HMouTS0sZo0Y7",
       "user": 1,
       "updated_at": "2016-09-19 22:05:51.358851",
       "created_at": "2016-09-19 22:05:51.358851"
