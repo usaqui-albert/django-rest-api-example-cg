@@ -1,16 +1,16 @@
 [
   {
     "model": "users.User",
-    "pk": 1,
+    "pk": 23,
     "fields": {
       "email": "bryan@disruptiveconsultinggroup.com",
       "password": "pbkdf2_sha256$24000$PJ5e00mP9U6x$97kjT2eszHzJDvQPjX1KcmUzNvbF6sDgWRDRHionkXw=",
       "first_name": "Bryan",
       "last_name": "Socransky",
-      "company": "ConnectGood Inc.",
+      "company": "Disruptive Consulting Group",
       "street_address": "63 Abbeywood Trail",
       "country": 1,
-      "city": "Toronto",
+      "city": "North York",
       "province": 10,
       "phone_number": "416-519-6282",
       "is_active": true,
